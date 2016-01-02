@@ -22,6 +22,12 @@ Extension for add sticky notes to the pages you visit.
 
 **Github repository:** https://github.com/txusko/PostItAll
 
-****
-Javi Filella
+## About
+
+_Copyright Javi Filella (http://www.txusko.com/)_
+
+_Dual-licensed under the MIT and GPL Version 2 licenses_
+
+http://postitall.txusko.com/
+
 postitall@txusko.com
