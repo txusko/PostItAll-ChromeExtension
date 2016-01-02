@@ -12,7 +12,7 @@ All notes are stored by using the Chrome Storage API. There are some advantages 
 * **jQuery plugin:**  https://github.com/txusko/PostItAll 
 
 **** 
-This is the an alpha release, so it will probably have some bugs. If you find some of them, commit an issue on github, in the help tab or send me an email. Be patient, I will fix it as soon as I can. 
+This is the an alpha release, so it will probably have some bugs. If you find some of them, create an issue on github, or send me an email. Be patient, I will fix it as soon as I can. 
 ****
 
 Javi Filella
