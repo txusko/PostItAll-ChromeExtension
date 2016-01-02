@@ -1,6 +1,5 @@
 # Post It All : Chrome Extension
-
-Add sticky notes to your favorite web pages.
+###### Add sticky notes to your favorite web pages.
 
 Notes will be loaded automatically each time you visit the page again.
 
@@ -8,6 +7,7 @@ The notes can be created in the same page or in the extension Dashboard page, an
 
 All notes are stored by using the Chrome Storage API. There are some advantages with it like the automatically sync of your notes between browsers, and some limitations with the data storage quota (https://developer.chrome.com/extensions/storage#property-sync).
 
+* **Chrome extension:**  https://chrome.google.com/webstore/detail/post-it-all-sticky-notes/ifbdckgghfmehefajfoichlhcdiibkoc 
 * **More info at:**  http://postitall.txusko.com/extension.html 
 * **jQuery plugin:**  https://github.com/txusko/PostItAll 
 
