@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link href='css/jquery.postitall.fontstyles.css' rel='stylesheet' type='text/css'>
+<link href="css/lightbox.css" rel="stylesheet">
+<link href="css/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+<link href="css/bootstrap-switch.min.css" rel="stylesheet">
+<link href="css/trumbowyg.css" rel="stylesheet">
+<!--link href="css/trumbowyg.smallicons.css" rel="stylesheet"-->
+<link href="css/jquery.minicolors.css" rel="stylesheet">
+<link href="css/jquery.postitall.css" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<title i18n="extName"></title>
+</head>
+<body>
+<div class="container-fluid">
+
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+  	<div class="navbar-header">
+  		<a class="navbar-brand" href="#">
+			<img class="pull-left" alt="PostItAll" src="../img/icono_64.png" height="36" />
+			<h4 class="pull-left" >&nbsp;<b i18n="extName"></b>&nbsp;<small i18n="title"></small></h4>
+		</a>
+    </div>
+    <div class="navbar-text navbar-right">
+        <a type="button" href="dashboard.html" class="btn btn-primary" id="idMyDashboard"><span class="glyphicon glyphicon-dashboard"></span> Dashboard</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" name="state" id="idState" data-off-color="danger" data-on-color="success" data-on-text="Running" data-off-text="Paused" data-label-text="State" data-size="large">&nbsp;&nbsp;&nbsp;&nbsp;
+    </div>
+  </div>
+</nav>
+
+	<div class="row">
+		<div class="col-md-2">
+			<ul class="nav nav-pills nav-stacked" role="tablist" id="tabs">
+		    	<li role="presentation" class="active"><a href="#tabs-1" aria-controls="tabs-1" role="tab" data-toggle="tab" i18n="menu_settings" id="idTab1"></a></li>
+		    	<li role="presentation"><a href="#tabs-2" aria-controls="tabs-2" role="tab" data-toggle="tab" i18n="menu_features" id="idTab2"></a></li>
+		    	<li role="presentation"><a href="#tabs-4" aria-controls="tabs-4" role="tab" data-toggle="tab" i18n="menu_config" id="idTab4"></a></li>
+		    	<li role="presentation"><a href="#tabs-3" aria-controls="tabs-3" role="tab" data-toggle="tab" i18n="menu_list" id="idTab3"></a></li>
+		    	<li role="presentation"><a href="#tabs-5" aria-controls="tabs-5" role="tab" data-toggle="tab" i18n="menu_about" id="idTab5"></a></li>
+		  	</ul>
+            <hr>
+            <a href="#" id="idAddDemoPostit"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> <span i18n="add_demo_note"></span></a>
+		</div>
+		<div class="col-md-10">
+
+			<div id="status" class="alert alert-danger alert-sm pull-right" style="height:28px;padding-top:3px;margin:0px;">
+				<span class="glyphicon glyphicon-info-sign"></span>
+				<span id="status-msg"></span>
+			</div>
+
+			<form role="form" class="form-horizontal panel panel-default">
+
+				<div class="tab-content panel-body">
+				  	<div role="tabpanel" class="tab-pane fade in active" id="tabs-1">
+                        <h3 style="margin-top:0px;padding-top:0px;">
+                            <span i18n="menu_settings"></span>
+                        </h3>
+
+                        <hr>
+
+				  		<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+							    	<label for="" class="col-sm-3 control-label" i18n="visibility"></label>
+							    	<div class="col-sm-9">
+							    		<input name="tipoFiltro" type="radio" value="domain"> <span i18n="visibility_domain"></span><br>
+							    		<input name="tipoFiltro" type="radio" value="page"> <span i18n="visibility_page"></span><br>
+							    		<input name="tipoFiltro" type="radio" value="all"> <span i18n="visibility_all"></span><br>
+								    </div>
+							    </div>
+
+                                <div class="form-group">
+							    	<label for="idAutoloadEnabled" class="col-sm-3 control-label" i18n="autoload_enabled"></label>
+							    	<div class="col-sm-9">
+								    	<input type="checkbox" name="autoloadEnabled" id="idAutoloadEnabled" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+                                <div class="form-group">
+							    	<label for="idTrayIconMenu" class="col-sm-3 control-label" i18n="tray_icon_menu"></label>
+							    	<div class="col-sm-9">
+								    	<input type="checkbox" name="trayIconMenu" id="idTrayIconMenu" data-on-text="menu" data-off-text="new_note" data-off-color="warning">
+								    </div>
+							    </div>
+
+							</div>
+						</div>
+				  	</div>
+
+				  	<div role="tabpanel" class="tab-pane fade" id="tabs-2">
+                        <div class="pull-right">
+                            <label><input id="idCheckAll" type="checkbox" name="checkAll" checked> Check/Uncheck all</label>
+                        </div>
+                        <h3 style="margin-top:0px;padding-top:0px;">
+                            <span i18n="note_features"></span><hr>
+                        </h3>
+
+				  		<div class="row">
+							<div class="col-md-6">
+
+                                <div class="form-group">
+							    	<label for="idAllowFix" class="col-sm-4 control-label" i18n="allowFix"></label>
+							    	<div class="col-sm-8">
+                                        <div class="PIAfixed PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+								    	<input type="checkbox" name="allowFix" class="feature" id="idAllowFix" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+                                <div class="form-group">
+							    	<label for="idHidden" class="col-sm-4 control-label" i18n="addHidden"></label>
+							    	<div class="col-sm-8">
+                                        <div class="PIAhide PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+								    	<input type="checkbox" name="addHidden" class="feature" id="idHidden" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+                                <div class="form-group">
+							    	<label for="idAllowMinimize" class="col-sm-4 control-label" i18n="allowMinimize"></label>
+							    	<div class="col-sm-8">
+                                        <div class="PIAminimize PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+								    	<input type="checkbox" name="allowMinimize" class="feature" id="idAllowMinimize" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+							    <div class="form-group">
+							    	<label for="idAllowExpand" class="col-sm-4 control-label" i18n="allowExpand"></label>
+							    	<div class="col-sm-8">
+                                        <div class="PIAexpand PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+								    	<input type="checkbox" name="allowExpand" class="feature" id="idAllowExpand" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+                                <div class="form-group">
+							    	<label for="idAllowBlock" class="col-sm-4 control-label" i18n="allowBlock"></label>
+							    	<div class="col-sm-8">
+                                        <div class="PIAblocked PIAicon" style="display:block;margin: 8px 12px 4px 0px;float:left;"></div>
+								    	<input type="checkbox" name="allowBlock" class="feature" id="idAllowBlock" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+								<div class="form-group">
+							    	<label for="idChangeOptions" class="col-sm-4 control-label" i18n="changeOptions"></label>
+							    	<div class="col-sm-8">
+                                        <div class="PIAconfig PIAicon" style="display:block;margin: 8px 12px 4px 0px;float:left;"></div>
+								    	<input type="checkbox" name="changeOptions" class="feature" id="idChangeOptions" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+                                <div class="form-group">
+							    	<label for="idShowInfo" class="col-sm-4 control-label" i18n="showInfo"></label>
+							    	<div class="col-sm-8">
+                                        <div class="PIAinfoIcon PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+								    	<input type="checkbox" name="showInfo" class="feature" id="idShowInfo" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+                                <div class="form-group">
+							    	<label for="idAddNew" class="col-sm-4 control-label" i18n="addNew"></label>
+							    	<div class="col-sm-8">
+                                        <div class="PIAnew PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+								    	<input type="checkbox" name="addNew" class="feature" id="idAddNew" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+							</div>
+
+							<div class="col-md-6">
+
+                                <div class="form-group">
+							    	<label for="idHideToolbar" class="col-sm-4 control-label" i18n="hideToolbar"></label>
+							    	<div class="col-sm-8">
+								    	<input type="checkbox" name="hideToolbar" class="feature" id="idHideToolbar" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+                                <div class="form-group">
+							    	<label for="idAskOnDelete" class="col-sm-4 control-label" i18n="askOnDelete"></label>
+							    	<div class="col-sm-8">
+								    	<input type="checkbox" name="askOnDelete" class="feature" id="idAskOnDelete" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+								<div class="form-group">
+							    	<label for="idPasteHtml" class="col-sm-4 control-label" i18n="allowPasteHtml"></label>
+							    	<div class="col-sm-8">
+								    	<input type="checkbox" name="pasteHtml" class="feature" id="idPasteHtml" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+							    <div class="form-group">
+							    	<label for="idHtmlEditor" class="col-sm-4 control-label" i18n="htmlEditor"></label>
+							    	<div class="col-sm-8">
+								    	<input type="checkbox" name="htmlEditor" class="feature" id="idHtmlEditor" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+                                <div class="form-group">
+							    	<label for="idAutoPosition" class="col-sm-4 control-label" i18n="autoPosition"></label>
+							    	<div class="col-sm-8">
+								    	<input type="checkbox" name="autoPosition" class="feature" id="idAutoPosition" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+                                <div class="form-group">
+							    	<label for="idResizable" class="col-sm-4 control-label" i18n="resizable"></label>
+							    	<div class="col-sm-8">
+								    	<input type="checkbox" name="resizable" class="feature" id="idResizable" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+							    <div class="form-group">
+							    	<label for="idAddArrow" class="col-sm-4 control-label" i18n="addArrow"></label>
+							    	<div class="col-sm-8">
+								    	<input type="checkbox" name="addArrow" class="feature" id="idAddArrow" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+							    <div class="form-grup arrowOptions" style='display:none;'>
+							    	<label for="idPosArrow" class="col-sm-4 control-label" i18n="arrowOptions"></label>
+							    	<div class="col-sm-8">
+								    	<select class="form-control" id="idPosArrow">
+								    		<option value="back" i18n="posArrow_back">Back (Dropdown select in the "Options panel")</option>
+								    		<option value="all" i18n="posArrow_both">Front (Arrows in the cardinal points of the note) and Back (Dropdown select in the "Options panel")</option>
+								    	</select>
+                                        <p class="text-muted">* The "Options panel" is in the back of the note. You must enable the "Allow change note options" note feature.</p>
+								    </div>
+							    </div>
+
+							</div>
+						</div>
+				  	</div>
+
+			<div role="tabpanel" class="tab-pane fade" id="tabs-4">
+                <div class="form-group" id="config" style="margin-top:0px;">
+                    <h3 style="margin-top:0px;padding-top:0px;">
+                        <span i18n="default_design"></span>
+                    </h3>
+
+                    <hr/>
+
+                    <div class="col-md-12">
+
+                        <div class="form-group">
+					    	<label for="idFixedPosition" class="col-sm-2 control-label" i18n="fixed_position"></label>
+					    	<div class="col-sm-10">
+						    	<input type="checkbox" name="fixedPosition" id="idFixedPosition" data-on-text="Yes" data-off-text="No">
+						    </div>
+					    </div>
+
+                        <div class="form-group">
+							<label class="col-sm-2 control-label" for="idNoteSize" i18n="note_size"></label>
+                            <div class="col-sm-10">
+								<select id="idNoteSize" name="noteSize" class="form-control">
+									<option value="small" i18n="small"></option>
+                                    <option value="small_square" i18n="small_square"></option>
+									<option value="medium" i18n="medium"></option>
+                                    <option value="medium_square" i18n="medium_square"></option>
+									<option value="large" i18n="large"></option>
+                                    <option value="large_square" i18n="large_square"></option>
+                                    <option value="big" i18n="big"></option>
+                                    <option value="big_square" i18n="big_square"></option>
+                                    <option value="custom" i18n="custom"></option>
+								</select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="idOptCusW">
+							<label class="col-sm-4 control-label" for="idNoteWidth" i18n="custom_width"></label>
+                            <div class="col-sm-8">
+                                <input type="text" name="noteWidth" class="form-control" id="idNoteWidth" value="">
+                            </div>
+                        </div>
+                        <div class="form-group" id="idOptCusH">
+							<label class="col-sm-4 control-label" for="idNoteHeight" i18n="custom_height"></label>
+                            <div class="col-sm-8">
+                                <input type="text" name="noteHeight" class="form-control" id="idNoteHeight" value="">
+                            </div>
+						</div>
+
+                        <div class="form-group">
+							<label class="col-sm-2 control-label" for="idGeneralStyle" i18n="tresd_style"></label>
+                            <div class="col-sm-10">
+                                <input id="idGeneralStyle" type="checkbox" name="generalStyle">
+                            </div>
+						</div>
+
+					    <div class="form-group">
+					    	<label for="idRandomColor" class="col-sm-2 control-label" i18n="randomcolor_enabled"></label>
+					    	<div class="col-sm-10">
+						    	<input type="checkbox" name="randomColor" id="idRandomColor" data-on-text="Yes" data-off-text="No">
+						    </div>
+					    </div>
+
+						<div id="idOptBgCol" class="form-group">
+							<label class="col-sm-4 control-label" for="idBgTextColor" i18n="background_color"></label>
+                            <div class="col-sm-8">
+                                <input class="form-control minicolors" id="idBgTextColor" type="text" name="bgColor">
+                            </div>
+						</div>
+                        <div id="idOptTxCol" class="form-group">
+							<label class="col-sm-4 control-label" for="idTextColor" i18n="text_color"></label>
+                            <div class="col-sm-8">
+                                <input id="idTextColor" type="text" name="textColor" class="form-control minicolors">
+                            </div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="idFontFamily" i18n="font_family"></label>
+                            <div class="col-sm-10">
+								<select class="form-control" id="idFontFamily" name="fontFamily">
+									<option value="verdana">Verdana</option>
+									<option value="'Open Sans', sans-serif">Open Sans</option>
+									<option value="'Oswald', sans-serif">Oswald</option>
+									<option value="'Roboto', sans-serif">Roboto</option>
+									<option value="'Lato', sans-serif">Lato</option>
+									<option value="'Indie Flower', sans-serif">Indie Flower</option>
+									<option value="'Shadows Into Light', sans-serif">Shadows Into Light</option>
+									<option value="'Bangers', sans-serif">Bangers</option>
+								</select>
+                            </div>
+						</div>
+                        <div class="form-group">
+							<label class="col-sm-2 control-label" for="idFontSize" i18n="font_size"></label>
+                            <div class="col-sm-10">
+								<select id="idFontSize" name="fontSize" class="form-control">
+                                    <option value="smaller" i18n="smaller"></option>
+									<option value="small" i18n="small"></option>
+                                    <option value="larger" i18n="larger"></option>
+									<option value="medium" i18n="medium"></option>
+									<option value="large" i18n="large"></option>
+                                    <option value="x-large" i18n="x_large"></option>
+								</select>
+                            </div>
+						</div>
+                        <div class="form-group">
+							<label class="col-sm-2 control-label" for="idTextShadow" i18n="text_shadow"></label>
+                            <div class="col-sm-10">
+                                <input id="idTextShadow" type="checkbox" name="textShadow">
+                            </div>
+						</div>
+					</div>
+
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="tabs-3">
+                <div class="form-group" id="list" style="margin-top:0px;">
+                    <div class="pull-right">
+                        <button name="deleteNotes" id="idDeleteNotes" class="btn btn-danger" i18n="delete_all_notes"></button>
+                    </div>
+                    <h3 style="margin-top:0px;padding-top:0px;">
+                        <span i18n="menu_list"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <div class="btn-group" role="group" aria-label="...">
+                          <button type="button" class="btn btn-default" id="idListTypeScreenShots"><span class="glyphicon glyphicon-th-large"></span> Screenshots</button>
+                          <button type="button" class="btn btn-default" id="idListTypeList"><span class="glyphicon glyphicon-th-list"></span> List</button>
+                        </div>
+                    </h3>
+                    <hr/>
+                    <div id="idNoteList"></div>
+                    <p class="text-muted">* The screenshots of your domains will be catured automatically when you visit a page with a note or when you create a new note.</p>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="tabs-5">
+                <div class="form-group" id="about" style="margin:0px -15px;">
+			    	<div class="pull-right">
+			    		<button name="deleteAll" id="idDeleteAll" class="btn btn-danger" i18n="reset_default"></button>
+					</div>
+					<h3 style="margin-top:0px;padding-top:0px;">
+						<span i18n="extName"></span>
+						<small><span i18n="version">Version</span> <span id="idVersion"></span></small>
+					</h3>
+					<hr/>
+                    <p>
+                        You can add sticky notes to your favorite web pages by pressing the top-right extension icon or with the contextual menu by pressing the right button of your mouse over the visited page.<br>
+                        The notes can be created in the same page or in a Dashboard page, and can be blank notes or with the selected text on page. Notes can be filtered by domain, web page or without filter. There are lots of possibilities!<br>
+                    </p>
+                    <p>
+                        All notes are stored by using the <a href="https://developer.chrome.com/apps/storage" target=_blank>Chrome Storage API</a>. There are some advantages with <a href="https://developer.chrome.com/extensions/storage#property-sync" target=_blank>chrome.storage.sync</a> like the automatically sync of your notes between browsers, and some limitations with the storage quota.
+                    </p>
+                    <p>
+                        Feel free to leave me a <a href="https://chrome.google.com/webstore/detail/postitall/ifbdckgghfmehefajfoichlhcdiibkoc/reviews" target=_blank>feedback</a>.
+                    </p>
+                    <hr/>
+					<p>
+						<span i18n="more_info"></span>:
+						&nbsp;<a href="http://postitall.txusko.com/extension.html" target=_blank>http://postitall.txusko.com/extension.html</a>
+						<br><span i18n="source_code"></span>:
+						&nbsp;<a href="https://github.com/txusko/PostItAll" target=_blank>https://github.com/txusko/PostItAll</a>
+						<br><span i18n="bug_report"></span>:
+						&nbsp;<a href="https://github.com/txusko/PostItAll/issues" target=_blank>https://github.com/txusko/PostItAll/issues</a>
+					</p>
+				</div>
+				<div class="form-group">
+					<h3 i18n="developed_by"></h3>
+					<address>
+					  <strong>Javi Filella</strong><br>
+					  <a href="mailto:postitall@txusko.com" target=_blank>postitall@txusko.com</a><br>
+					  <a href="https://twitter.com/txusko" target=_blank><img src="img/twitter.png" alt="twitter" /></a>
+					  <a href="https://www.linkedin.com/in/javifilella" target=_blank><img src="img/linkedin.png" alt="linkedin" /></a>
+					  <a href="https://github.com/txusko" target=_blank><img src="img/github.png" alt="github" /></a>
+					  <a href="https://plus.google.com/+JaviFilella" target=_blank><img src="img/gplus.png" alt="google plus" /></a>
+					</address>
+                    <a href="https://flattr.com/profile/txusko">Flattr this!</a>
+				</div>
+		  	</div>
+
+			</form>
+
+		</div>
+
+	</div>
+
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/lightbox.js"></script>
+<script src="js/jquery-ui-1.10.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-switch.min.js"></script>
+<script src="js/jquery.minicolors.js"></script>
+<script src="js/trumbowyg.js"></script>
+<script src="js/jquery.postitall.chromeManager.js"></script>
+<script src="js/jquery.postitall.js"></script>
+<script src="js/asyncTracking.js"></script>
+<script src="js/functions.js"></script>
+<script src="js/options.js"></script>
+
+</body>
+</html>

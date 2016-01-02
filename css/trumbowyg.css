@@ -1,0 +1,661 @@
+/**
+ * Trumbowyg v2.0.0-beta.4 - A lightweight WYSIWYG editor
+ * Default stylesheet for Trumbowyg editor
+ * ------------------------
+ * @link http://alex-d.github.io/Trumbowyg
+ * @license MIT
+ * @author Alexandre Demode (Alex-D)
+ *         Twitter : @AlexandreDemode
+ *         Website : alex-d.fr
+ */
+
+.trumbowyg-box *, .trumbowyg-box *::before, .trumbowyg-box *::after {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box; }
+
+.trumbowyg-box, .trumbowyg-editor {
+  display: block;
+  position: relative;
+  border: 1px solid #DDD;
+  width: 96%;
+  min-height: 300px;
+  margin: 17px auto; }
+
+.trumbowyg-box .trumbowyg-editor {
+  margin: 0 auto; }
+
+.trumbowyg-box.trumbowyg-fullscreen {
+  background: #FEFEFE; }
+
+.trumbowyg-editor, .trumbowyg-textarea {
+  position: relative;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 1% 2%;
+  min-height: 300px;
+  width: 100%;
+  border-style: none;
+  resize: none;
+  outline: none; }
+
+.trumbowyg-box-blur .trumbowyg-editor * {
+  color: transparent !important;
+  text-shadow: 0 0 7px #333; }
+.trumbowyg-box-blur .trumbowyg-editor img {
+  opacity: 0.2; }
+
+.trumbowyg-textarea {
+  position: relative;
+  display: block;
+  overflow: auto;
+  border: none;
+  white-space: normal;
+  font-size: 14px;
+  font-family: "Inconsolata", "Consolas", "Courier", "Courier New", sans-serif;
+  line-height: 18px; }
+
+.trumbowyg-box.trumbowyg-editor-visible .trumbowyg-textarea {
+  position: absolute;
+  top: 37px;
+  height: 1px !important;
+  width: 25%;
+  min-height: 0 !important;
+  padding: 0 !important;
+  background: none;
+  opacity: 0; }
+
+.trumbowyg-box.trumbowyg-editor-hidden .trumbowyg-textarea {
+  display: block; }
+.trumbowyg-box.trumbowyg-editor-hidden .trumbowyg-editor {
+  display: none; }
+
+.trumbowyg-editor[contenteditable=true]:empty:before {
+  content: attr(placeholder);
+  color: #999; }
+
+.trumbowyg-button-pane {
+  position: relative;
+  width: 100%;
+  background: #ecf0f1;
+  border-bottom: 1px solid #d7e0e2;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  line-height: 10px;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden; }
+  .trumbowyg-button-pane li {
+    display: inline-block;
+    text-align: center;
+    overflow: hidden;
+    padding: 0 !important; }
+    .trumbowyg-button-pane li.trumbowyg-separator {
+      width: 1px;
+      background: #d7e0e2;
+      margin: 0 5px;
+      height: 35px; }
+  .trumbowyg-button-pane.trumbowyg-disable li:not(.trumbowyg-not-disable) button:not(.trumbowyg-active) {
+    opacity: 0.2;
+    cursor: default; }
+  .trumbowyg-button-pane.trumbowyg-disable li.trumbowyg-separator {
+    background: #e3e9eb; }
+  .trumbowyg-button-pane li button {
+    padding: 1px 6px !important; }
+  .trumbowyg-button-pane:not(.trumbowyg-disable) li button:hover, .trumbowyg-button-pane:not(.trumbowyg-disable) li button:focus, .trumbowyg-button-pane li button.trumbowyg-active, .trumbowyg-button-pane li.trumbowyg-not-disable button:hover, .trumbowyg-button-pane li.trumbowyg-not-disable button:focus {
+    background-color: #FFF;
+    outline: none; }
+  .trumbowyg-button-pane li .trumbowyg-open-dropdown:after {
+    display: block;
+    content: " ";
+    position: absolute;
+    top: 25px;
+    right: 3px;
+    height: 0;
+    width: 0;
+    border: 3px solid transparent;
+    border-top-color: #555; }
+  .trumbowyg-button-pane .trumbowyg-buttons-right {
+    float: right;
+    width: auto; }
+    .trumbowyg-button-pane .trumbowyg-buttons-right button {
+      float: left; }
+
+.trumbowyg-dropdown {
+  width: 200px;
+  border: 1px solid #ecf0f1;
+  padding: 5px 0;
+  border-top: none;
+  background: #FFF;
+  margin-left: -1px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 2px 3px;
+          box-shadow: rgba(0, 0, 0, 0.1) 0 2px 3px; }
+  .trumbowyg-dropdown button {
+    display: block;
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    text-decoration: none;
+    background: #FFF;
+    padding: 0 14px;
+    color: #333 !important;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 15px;
+    -webkit-transition: all 0.15s;
+            transition: all 0.15s; }
+    .trumbowyg-dropdown button:hover, .trumbowyg-dropdown button:focus {
+      background: #ecf0f1; }
+
+/* Modal box */
+.trumbowyg-modal {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -260px;
+  width: 520px;
+  height: 350px;
+  overflow: hidden;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden; }
+
+.trumbowyg-modal-box {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -250px;
+  width: 500px;
+  padding-bottom: 45px;
+  z-index: 1;
+  background-color: #FFF;
+  text-align: center;
+  font-size: 14px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 3px;
+          box-shadow: rgba(0, 0, 0, 0.2) 0 2px 3px;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden; }
+  .trumbowyg-modal-box .trumbowyg-modal-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 20px;
+    padding: 15px 0 13px;
+    display: block;
+    border-bottom: 1px solid #EEE;
+    color: #333;
+    background: #fbfcfc; }
+  .trumbowyg-modal-box .trumbowyg-progress {
+    width: 100%;
+    background: #F00;
+    height: 3px;
+    position: absolute;
+    top: 58px; }
+    .trumbowyg-modal-box .trumbowyg-progress .trumbowyg-progress-bar {
+      background: #2BC06A;
+      height: 100%;
+      -webkit-transition: width 0.15s linear;
+              transition: width 0.15s linear; }
+  .trumbowyg-modal-box label {
+    display: block;
+    position: relative;
+    margin: 15px 12px;
+    height: 27px;
+    line-height: 27px;
+    overflow: hidden; }
+    .trumbowyg-modal-box label .trumbowyg-input-infos {
+      display: block;
+      text-align: left;
+      height: 25px;
+      line-height: 25px;
+      -webkit-transition: all 0.15;
+              transition: all 0.15; }
+      .trumbowyg-modal-box label .trumbowyg-input-infos span {
+        display: block;
+        color: #69878e;
+        background-color: #fbfcfc;
+        border: 1px solid #DEDEDE;
+        padding: 0 7px;
+        width: 137px; }
+      .trumbowyg-modal-box label .trumbowyg-input-infos span.trumbowyg-msg-error {
+        color: #e74c3c; }
+    .trumbowyg-modal-box label.trumbowyg-input-error input, .trumbowyg-modal-box label.trumbowyg-input-error textarea {
+      border: 1px solid #e74c3c; }
+    .trumbowyg-modal-box label.trumbowyg-input-error .trumbowyg-input-infos {
+      margin-top: -27px; }
+    .trumbowyg-modal-box label input {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 27px;
+      line-height: 27px;
+      border: 1px solid #DEDEDE;
+      background: transparent;
+      font-size: 14px;
+      width: 340px;
+      padding: 0 7px;
+      -webkit-transition: all 0.15s;
+              transition: all 0.15s; }
+      .trumbowyg-modal-box label input:hover, .trumbowyg-modal-box label input:focus {
+        outline: none;
+        border: 1px solid #95a5a6; }
+      .trumbowyg-modal-box label input:focus {
+        background: rgba(230, 230, 255, 0.1); }
+  .trumbowyg-modal-box .error {
+    margin-top: 25px;
+    display: block;
+    color: red; }
+  .trumbowyg-modal-box .trumbowyg-modal-button {
+    position: absolute;
+    bottom: 10px;
+    right: 0;
+    text-decoration: none;
+    color: #FFF;
+    display: block;
+    width: 100px;
+    height: 35px;
+    line-height: 33px;
+    margin: 0 10px;
+    background-color: #333;
+    border: none;
+    border-top: none;
+    cursor: pointer;
+    font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif;
+    font-size: 16px;
+    -webkit-transition: all 0.15s;
+            transition: all 0.15s; }
+    .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit {
+      right: 110px;
+      background: #2bc069; }
+      .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:hover, .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:focus {
+        background: #40d47d;
+        outline: none; }
+      .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:active {
+        background: #25a259; }
+    .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset {
+      color: #555;
+      background: #e6e6e6; }
+      .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:hover, .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:focus {
+        background: #fbfbfb;
+        outline: none; }
+      .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:active {
+        background: #d4d4d4; }
+
+.trumbowyg-overlay {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.5);
+  width: 100%;
+  left: 0;
+  display: none; }
+
+/**
+ * Fullscreen
+ */
+body.trumbowyg-body-fullscreen {
+  overflow: hidden; }
+
+.trumbowyg-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  z-index: 99999; }
+  .trumbowyg-fullscreen.trumbowyg-box, .trumbowyg-fullscreen .trumbowyg-editor {
+    border: none; }
+  .trumbowyg-fullscreen .trumbowyg-overlay {
+    height: 100% !important; }
+
+/*
+ * Reset for resetCss option
+ */
+.trumbowyg-editor object, .trumbowyg-editor embed, .trumbowyg-editor video, .trumbowyg-editor img {
+  width: auto;
+  max-width: 100%; }
+.trumbowyg-editor video, .trumbowyg-editor img {
+  height: auto; }
+.trumbowyg-editor img {
+  cursor: move; }
+.trumbowyg-editor.trumbowyg-reset-css {
+  background: #FEFEFE !important;
+  font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.45em !important;
+  white-space: normal !important;
+  color: #333; }
+  .trumbowyg-editor.trumbowyg-reset-css a {
+    color: #15c !important;
+    text-decoration: underline !important; }
+  .trumbowyg-editor.trumbowyg-reset-css div, .trumbowyg-editor.trumbowyg-reset-css p, .trumbowyg-editor.trumbowyg-reset-css ul, .trumbowyg-editor.trumbowyg-reset-css ol, .trumbowyg-editor.trumbowyg-reset-css blockquote {
+    -webkit-box-shadow: none !important;
+            box-shadow: none !important;
+    background: none !important;
+    margin: 0 !important;
+    margin-bottom: 15px !important;
+    line-height: 1.4em !important;
+    font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
+    font-size: 14px !important;
+    border: none; }
+  .trumbowyg-editor.trumbowyg-reset-css iframe, .trumbowyg-editor.trumbowyg-reset-css object, .trumbowyg-editor.trumbowyg-reset-css hr {
+    margin-bottom: 15px !important; }
+  .trumbowyg-editor.trumbowyg-reset-css blockquote {
+    margin-left: 32px !important;
+    font-style: italic !important;
+    color: #555; }
+  .trumbowyg-editor.trumbowyg-reset-css ul, .trumbowyg-editor.trumbowyg-reset-css ol {
+    padding-left: 20px !important; }
+  .trumbowyg-editor.trumbowyg-reset-css ul ul, .trumbowyg-editor.trumbowyg-reset-css ol ol, .trumbowyg-editor.trumbowyg-reset-css ul ol, .trumbowyg-editor.trumbowyg-reset-css ol ul {
+    border: none;
+    margin: 2px !important;
+    padding: 0 !important;
+    padding-left: 24px !important; }
+  .trumbowyg-editor.trumbowyg-reset-css hr {
+    display: block;
+    height: 1px;
+    border: none;
+    border-top: 1px solid #CCC; }
+  .trumbowyg-editor.trumbowyg-reset-css h1, .trumbowyg-editor.trumbowyg-reset-css h2, .trumbowyg-editor.trumbowyg-reset-css h3, .trumbowyg-editor.trumbowyg-reset-css h4 {
+    color: #111;
+    background: none;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-weight: bold; }
+  .trumbowyg-editor.trumbowyg-reset-css h1 {
+    font-size: 32px !important;
+    line-height: 38px !important;
+    margin-bottom: 20px !important; }
+  .trumbowyg-editor.trumbowyg-reset-css h2 {
+    font-size: 26px !important;
+    line-height: 34px !important;
+    margin-bottom: 15px !important; }
+  .trumbowyg-editor.trumbowyg-reset-css h3 {
+    font-size: 22px !important;
+    line-height: 28px !important;
+    margin-bottom: 7px !important; }
+  .trumbowyg-editor.trumbowyg-reset-css h4 {
+    font-size: 16px !important;
+    line-height: 22px !important;
+    margin-bottom: 7px !important; }
+
+/*
+ * Black theme
+ */
+.trumbowyg-black .trumbowyg-button-pane {
+  background-color: #222;
+  border-bottom-color: #343434; }
+  .trumbowyg-black .trumbowyg-button-pane li.trumbowyg-separator {
+    background-color: #343434; }
+  .trumbowyg-black .trumbowyg-button-pane.trumbowyg-disable li.trumbowyg-separator {
+    background-color: #2a2a2a; }
+  .trumbowyg-black .trumbowyg-button-pane:not(.trumbowyg-disable) li button:hover, .trumbowyg-black .trumbowyg-button-pane:not(.trumbowyg-disable) li button:focus, .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-active, .trumbowyg-black .trumbowyg-button-pane li.trumbowyg-not-disable button:hover, .trumbowyg-black .trumbowyg-button-pane li.trumbowyg-not-disable button:focus {
+    background-color: #555; }
+  .trumbowyg-black .trumbowyg-button-pane li .trumbowyg-open-dropdown:after {
+    border-top-color: #fff; }
+.trumbowyg-black .trumbowyg-dropdown {
+  border-color: #222;
+  background: #222; }
+  .trumbowyg-black .trumbowyg-dropdown button {
+    background: #222;
+    color: #fff; }
+    .trumbowyg-black .trumbowyg-dropdown button:hover, .trumbowyg-black .trumbowyg-dropdown button:focus {
+      background: #555; }
+.trumbowyg-black .trumbowyg-modal-box {
+  background-color: #222; }
+  .trumbowyg-black .trumbowyg-modal-box .trumbowyg-modal-title {
+    border-bottom: 1px solid #555;
+    color: #fff;
+    background: #3c3c3c; }
+  .trumbowyg-black .trumbowyg-modal-box label {
+    display: block;
+    position: relative;
+    margin: 15px 12px;
+    height: 27px;
+    line-height: 27px;
+    overflow: hidden; }
+    .trumbowyg-black .trumbowyg-modal-box label .trumbowyg-input-infos span {
+      color: #eee;
+      background-color: #2f2f2f;
+      border-color: #222; }
+    .trumbowyg-black .trumbowyg-modal-box label .trumbowyg-input-infos span.trumbowyg-msg-error {
+      color: #e74c3c; }
+    .trumbowyg-black .trumbowyg-modal-box label.trumbowyg-input-error input, .trumbowyg-black .trumbowyg-modal-box label.trumbowyg-input-error textarea {
+      border-color: #e74c3c; }
+    .trumbowyg-black .trumbowyg-modal-box label input {
+      border-color: #222;
+      color: #eee;
+      background: #333; }
+      .trumbowyg-black .trumbowyg-modal-box label input:hover, .trumbowyg-black .trumbowyg-modal-box label input:focus {
+        border-color: #95a5a6; }
+      .trumbowyg-black .trumbowyg-modal-box label input:focus {
+        background-color: rgba(230, 230, 255, 0.1); }
+.trumbowyg-black .trumbowyg-overlay {
+  background-color: rgba(0, 0, 0, 0.5); }
+
+/*
+ * Buttons icons
+ */
+.trumbowyg-button-pane li button {
+  display: block;
+  position: relative;
+  text-indent: -9999px;
+  width: 35px;
+  height: 35px;
+  overflow: hidden;
+  background: transparent url("data:image/png;base64,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") no-repeat;
+  border: none;
+  cursor: pointer;
+  -webkit-transition: background-color 0.15s, background-image 0.15s, opacity 0.15s;
+          transition: background-color 0.15s, background-image 0.15s, opacity 0.15s;
+  /* English and others */ }
+  .trumbowyg-button-pane li button.trumbowyg-viewHTML-button {
+    background-position: 5px -570px; }
+  .trumbowyg-button-pane li button.trumbowyg-formatting-button {
+    background-position: 5px -120px; }
+  .trumbowyg-button-pane li button.trumbowyg-bold-button, .trumbowyg-button-pane li button.trumbowyg-strong-button {
+    background-position: 5px -45px; }
+  .trumbowyg-button-pane li button.trumbowyg-italic-button, .trumbowyg-button-pane li button.trumbowyg-em-button {
+    background-position: 5px -270px; }
+  .trumbowyg-button-pane li button.trumbowyg-underline-button {
+    background-position: 5px -495px; }
+  .trumbowyg-button-pane li button.trumbowyg-strikethrough-button, .trumbowyg-button-pane li button.trumbowyg-del-button {
+    background-position: 5px -470px; }
+  .trumbowyg-button-pane li button.trumbowyg-link-button {
+    background-position: 5px -345px; }
+  .trumbowyg-button-pane li button.trumbowyg-insertImage-button {
+    background-position: 5px -245px; }
+  .trumbowyg-button-pane li button.trumbowyg-justifyLeft-button {
+    background-position: 5px -320px; }
+  .trumbowyg-button-pane li button.trumbowyg-justifyCenter-button {
+    background-position: 5px -70px; }
+  .trumbowyg-button-pane li button.trumbowyg-justifyRight-button {
+    background-position: 5px -420px; }
+  .trumbowyg-button-pane li button.trumbowyg-justifyFull-button {
+    background-position: 5px 5px; }
+  .trumbowyg-button-pane li button.trumbowyg-unorderedList-button {
+    background-position: 5px -520px; }
+  .trumbowyg-button-pane li button.trumbowyg-orderedList-button {
+    background-position: 5px -370px; }
+  .trumbowyg-button-pane li button.trumbowyg-horizontalRule-button {
+    background-position: 5px -220px; }
+  .trumbowyg-button-pane li button.trumbowyg-removeformat-button {
+    background-position: 5px -395px; }
+  .trumbowyg-button-pane li button.trumbowyg-fullscreen-button {
+    background-position: 5px -170px; }
+  .trumbowyg-button-pane li button.trumbowyg-close-button {
+    background-position: 5px -95px; }
+
+.trumbowyg-fullscreen .trumbowyg-button-pane li button.trumbowyg-fullscreen-button {
+  background-position: 5px -145px; }
+
+.trumbowyg-button-pane li:first-child button {
+  margin-left: 6px; }
+.trumbowyg-button-pane li:last-child button {
+  margin-right: 6px; }
+
+/* French */
+.trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-bold-button, .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-strong-button {
+  background-position: 5px -195px; }
+.trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-underline-button {
+  background-position: 5px -445px; }
+.trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-strikethrough-button, .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-del-button {
+  background-position: 5px -295px; }
+
+.trumbowyg-black {
+  /* French */ }
+  .trumbowyg-black .trumbowyg-button-pane li button {
+    background-image: url("../images/icons-white.png");
+    /* English and others */ }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-viewHTML-button {
+      background-position: 5px -570px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-formatting-button {
+      background-position: 5px -120px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-bold-button, .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-strong-button {
+      background-position: 5px -45px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-italic-button, .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-em-button {
+      background-position: 5px -270px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-underline-button {
+      background-position: 5px -495px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-strikethrough-button, .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-del-button {
+      background-position: 5px -470px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-link-button {
+      background-position: 5px -345px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-insertImage-button {
+      background-position: 5px -245px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-justifyLeft-button {
+      background-position: 5px -320px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-justifyCenter-button {
+      background-position: 5px -70px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-justifyRight-button {
+      background-position: 5px -420px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-justifyFull-button {
+      background-position: 5px 5px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-unorderedList-button {
+      background-position: 5px -520px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-orderedList-button {
+      background-position: 5px -370px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-horizontalRule-button {
+      background-position: 5px -220px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-removeformat-button {
+      background-position: 5px -395px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-fullscreen-button {
+      background-position: 5px -170px; }
+    .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-close-button {
+      background-position: 5px -95px; }
+  .trumbowyg-black .trumbowyg-fullscreen .trumbowyg-button-pane li button.trumbowyg-fullscreen-button {
+    background-position: 5px -145px; }
+  .trumbowyg-black .trumbowyg-button-pane li:first-child button {
+    margin-left: 6px; }
+  .trumbowyg-black .trumbowyg-button-pane li:last-child button {
+    margin-right: 6px; }
+  .trumbowyg-black .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-bold-button, .trumbowyg-black .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-strong-button {
+    background-position: 5px -195px; }
+  .trumbowyg-black .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-underline-button {
+    background-position: 5px -445px; }
+  .trumbowyg-black .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-strikethrough-button, .trumbowyg-black .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-del-button {
+    background-position: 5px -295px; }
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 4/3), only screen and (min-device-pixel-ratio: 1.3), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  /* French */
+  /* Black theme */
+  .trumbowyg-button-pane li button {
+    -webkit-background-size: 25px 600px !important;
+            background-size: 25px 600px !important;
+    background-image: url("../images/icons-black-2x.png") !important;
+    /* English and others */ }
+    .trumbowyg-button-pane li button.trumbowyg-viewHTML-button {
+      background-position: 5px -570px; }
+    .trumbowyg-button-pane li button.trumbowyg-formatting-button {
+      background-position: 5px -120px; }
+    .trumbowyg-button-pane li button.trumbowyg-bold-button, .trumbowyg-button-pane li button.trumbowyg-strong-button {
+      background-position: 5px -45px; }
+    .trumbowyg-button-pane li button.trumbowyg-italic-button, .trumbowyg-button-pane li button.trumbowyg-em-button {
+      background-position: 5px -270px; }
+    .trumbowyg-button-pane li button.trumbowyg-underline-button {
+      background-position: 5px -495px; }
+    .trumbowyg-button-pane li button.trumbowyg-strikethrough-button, .trumbowyg-button-pane li button.trumbowyg-del-button {
+      background-position: 5px -470px; }
+    .trumbowyg-button-pane li button.trumbowyg-link-button {
+      background-position: 5px -345px; }
+    .trumbowyg-button-pane li button.trumbowyg-insertImage-button {
+      background-position: 5px -245px; }
+    .trumbowyg-button-pane li button.trumbowyg-justifyLeft-button {
+      background-position: 5px -320px; }
+    .trumbowyg-button-pane li button.trumbowyg-justifyCenter-button {
+      background-position: 5px -70px; }
+    .trumbowyg-button-pane li button.trumbowyg-justifyRight-button {
+      background-position: 5px -420px; }
+    .trumbowyg-button-pane li button.trumbowyg-justifyFull-button {
+      background-position: 5px 5px; }
+    .trumbowyg-button-pane li button.trumbowyg-unorderedList-button {
+      background-position: 5px -520px; }
+    .trumbowyg-button-pane li button.trumbowyg-orderedList-button {
+      background-position: 5px -370px; }
+    .trumbowyg-button-pane li button.trumbowyg-horizontalRule-button {
+      background-position: 5px -220px; }
+    .trumbowyg-button-pane li button.trumbowyg-removeformat-button {
+      background-position: 5px -395px; }
+    .trumbowyg-button-pane li button.trumbowyg-fullscreen-button {
+      background-position: 5px -170px; }
+    .trumbowyg-button-pane li button.trumbowyg-close-button {
+      background-position: 5px -95px; }
+  .trumbowyg-fullscreen .trumbowyg-button-pane li a.trumbowyg-fullscreen-button {
+    background-position: 5px -145px; }
+  .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-bold-button, .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-strong-button {
+    background-position: 5px -195px; }
+  .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-underline-button {
+    background-position: 5px -445px; }
+  .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-strikethrough-button, .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-del-button {
+    background-position: 5px -295px; }
+  .trumbowyg-black {
+    /* French */ }
+    .trumbowyg-black .trumbowyg-button-pane li button {
+      -webkit-background-size: 25px 600px !important;
+              background-size: 25px 600px !important;
+      background-image: url("../images/icons-white-2x.png") !important;
+      /* English and others */ }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-viewHTML-button {
+        background-position: 5px -570px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-formatting-button {
+        background-position: 5px -120px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-bold-button, .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-strong-button {
+        background-position: 5px -45px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-italic-button, .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-em-button {
+        background-position: 5px -270px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-underline-button {
+        background-position: 5px -495px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-strikethrough-button, .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-del-button {
+        background-position: 5px -470px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-link-button {
+        background-position: 5px -345px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-insertImage-button {
+        background-position: 5px -245px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-justifyLeft-button {
+        background-position: 5px -320px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-justifyCenter-button {
+        background-position: 5px -70px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-justifyRight-button {
+        background-position: 5px -420px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-justifyFull-button {
+        background-position: 5px 5px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-unorderedList-button {
+        background-position: 5px -520px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-orderedList-button {
+        background-position: 5px -370px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-horizontalRule-button {
+        background-position: 5px -220px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-removeformat-button {
+        background-position: 5px -395px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-fullscreen-button {
+        background-position: 5px -170px; }
+      .trumbowyg-black .trumbowyg-button-pane li button.trumbowyg-close-button {
+        background-position: 5px -95px; }
+    .trumbowyg-black .trumbowyg-fullscreen .trumbowyg-button-pane li a.trumbowyg-fullscreen-button {
+      background-position: 5px -145px; }
+    .trumbowyg-black .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-bold-button, .trumbowyg-black .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-strong-button {
+      background-position: 5px -195px; }
+    .trumbowyg-black .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-underline-button {
+      background-position: 5px -445px; }
+    .trumbowyg-black .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-strikethrough-button, .trumbowyg-black .trumbowyg-fr .trumbowyg-button-pane li button.trumbowyg-del-button {
+      background-position: 5px -295px; } }

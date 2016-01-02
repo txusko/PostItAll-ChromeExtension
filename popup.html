@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+<link href="css/bootstrap-switch.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<style> body { margin: 10px 0px; min-width:180px; min-height:165px; } </style>
+</head>
+<body>
+
+<div class="container-fluid" id="idContanier" style="display:none;">
+	<div class="row">
+		<div class="col-md-12">
+			<div id="menu">
+				<div><input type="checkbox" name="state" id="idState" data-off-color="danger" data-on-color="success" data-size="mini" data-on-text="Running" data-off-text="Paused" data-label-text="State"></div>
+				<hr >
+				<div id="add-postit" class="menuitem page-option" i18n="new_note"></div>
+				<div id="view-postit" class="menuitem page-option" i18n="view_notes"></div>
+				<div id="hide-postit" class="menuitem page-option" i18n="hide_notes"></div>
+				<div id="delete-postit" class="menuitem page-option" i18n="delete_all_notes"></div>
+				<hr class="page-option">
+				<div id="add-postit-dashboard" class="menuitem" i18n="new_note_dashboard"></div>
+				<div id="dashboard" class="menuitem" i18n="my_dashboard"></div>
+				<hr>
+				<div id="notelist" class="menuitem" i18n="my_notelist"></div>
+				<div id="idSettings" class="menuitem" i18n="menu_settings"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-switch.min.js"></script>
+<script src="js/asyncTracking.js"></script>
+<script src="js/functions.js"></script>
+<script src="js/popup.js"></script>
+
+</body>
+</html>

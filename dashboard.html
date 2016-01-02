@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Post It All - Dashboard">
+    <meta name="author" content="Javi Filella">
+    <link rel="icon" href="img/icono_16.png">
+
+    <title>Post It All! Sticky notes for the web | Dashboard</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="dashboard/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <link href="css/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/trumbowyg.css">
+    <link rel="stylesheet" href="css/jquery.minicolors.css">
+    <link rel="stylesheet" href="css/jquery.postitall.css">
+    <link rel="stylesheet" href="css/jquery.postitall.fontstyles.css">
+
+    <!-- Custom styles for this template -->
+    <link href="dashboard/css/cover.css" rel="stylesheet">
+  </head>
+
+  <body id="idPage" style="display:none;">
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand"><a href="http://postitall.txusko.com" class="nav-link">Post It All</a> - <small> Dashboard</small></h3>
+              <nav class="nav nav-masthead">
+                <a class="nav-link" href="#" id="idNew"><i class="fa fa-sticky-note"></i> New note</a>
+                &nbsp;&nbsp;&nbsp;
+                <!-- Split button -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary btn-sm">More options</button>
+                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="#" id="idShow"><i class="fa fa-eye"></i> Show all notes</a>
+                        <a class="dropdown-item" href="#" id="idHide"><i class="fa fa-eye-slash"></i> Hide all notes</a>
+                        <a class="dropdown-item" href="#" id="idDelete"><i class="fa fa-trash"></i> Delete all notes</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/options.html#tabs-3"><i class="fa fa-list"></i> Note list</a>
+                        <a class="dropdown-item" href="/options.html"><i class="fa fa-gear"></i> General settings</a>
+                    </div>
+                </div>
+
+              </nav>
+            </div>
+          </div>
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p>&copy; 2015 <a href="http://postitall.txusko.com">Post It All!</a> by <a href="https://about.me/txusko">Javi Filella</a>.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="dashboard/dist/js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui-1.10.1.min.js"></script>
+    <script src="js/trumbowyg.js"></script>
+    <script src="js/jquery.minicolors.js"></script>
+    <script src="js/jquery.postitall.js"></script>
+    <script src="js/jquery.postitall.chromeManager.js"></script>
+    <script src="js/functions.js"></script>
+    <script src="js/loadpostits.js"></script>
+
+    <script src="dashboard/js/app.js"></script>
+
+  </body>
+</html>

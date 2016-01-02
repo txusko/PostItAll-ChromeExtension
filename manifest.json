@@ -1,0 +1,60 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_extName__",
+  "short_name": "__MSG_extName__",
+  "version": "0.0.0.6",
+  "default_locale": "en",
+  "description": "__MSG_extDescription__",
+  "icons": {
+    "16": "img/icono_16.png",
+    "48": "img/icono_64.png",
+    "128": "img/icono_128.png",
+    "256": "img/icono_256.png",
+    "256_off": "img/icono_256_off.png"
+  },
+  "browser_action": {
+      "default_title": "__MSG_extName__",
+      "default_icon": "img/icono_256.png",
+      "default_popup": "popup.html",
+      "scripts": ["js/jquery.min.js","js/functions.js","js/popup.js","js/loadpostits.js"]
+  },
+  "author": "Javi Filella",
+  "homepage_url": "http://postitall.txusko.com/",
+  "background": {
+    "scripts": [
+      "js/jquery.min.js",
+      "js/jquery-ui-1.10.1.min.js",
+      "js/jquery.htmlclean.js",
+      "js/trumbowyg.js",
+      "js/jquery.minicolors.js",
+      "js/jquery.postitall.chromeManager.js",
+      "js/jquery.postitall.js",
+      "js/functions.js",
+      "js/background.js"
+    ],
+    "persistent": false
+  },
+  "content_scripts": [{
+    "run_at": "document_end",
+    "js": ["js/contentscript.js"],
+    "matches": ["http://*/*","https://*/*","file://*"],
+    "all_frames": true
+  }],
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "activeTab",
+    "tabs",
+    "contextMenus",
+    "*://*/*",
+    "<all_urls>"
+  ],
+  "options_page": "options.html",
+  "web_accessible_resources": [
+    "images/*.*",
+    "css/*.css",
+    "js/*.js",
+    "fonts/*.woff2"
+  ]
+}

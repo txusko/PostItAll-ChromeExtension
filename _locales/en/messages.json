@@ -1,0 +1,386 @@
+{
+  "extName":  {
+    "message": "Post It All : Sticky notes",
+    "description": "Post It All!"
+  },
+  "extDescription": {
+    "message": "Add sticky notes to your favorite web pages.",
+    "description": "Save notes in your visited pages."
+  },
+  "title": {
+    "message": "Add sticky notes to your favorite web pages.",
+    "description": "Add sticky notes in your visited pages."
+  },
+  "description": {
+    "message": "This extension will add and restore sticky notes in your favorite web pages.",
+    "description": "This extension will add and restore sticky notes in the pages you visit."
+  },
+  "menu_settings": {
+    "message": "General settings",
+    "description": "General settings"
+  },
+  "menu_features": {
+    "message": "Note features",
+    "description": "Global note features"
+  },
+  "menu_config": {
+    "message": "Note configuration",
+    "description": "Note configuration"
+  },
+  "menu_list": {
+    "message": "Note list",
+    "description": "Note list"
+  },
+  "menu_about": {
+    "message": "About Post It All!",
+    "description": "About Post It All!"
+  },
+  "menu_pause": {
+    "message": "Pause Post It All!",
+    "description": "Pause Post It All!"
+  },
+  "delete_all_config": {
+    "message": "Delete all configuration and reset to factory defaults",
+    "description": "Delete all configuration and reset to factory defaults"
+  },
+  "yes": {
+    "message": "Yes",
+    "description": "Yes"
+  },
+  "no": {
+    "message": "No",
+    "description": "No"
+  },
+  "reset_default": {
+    "message": "Reset to default",
+    "description": "Reset to default"
+  },
+  "delete_all": {
+    "message": "Delete all",
+    "description": "Delete all"
+  },
+  "get": {
+    "message": "Add",
+    "description": "get"
+  },
+  "view": {
+    "message": "View",
+    "description": "view"
+  },
+  "view_notes": {
+    "message": "View all notes",
+    "description": "View all notes"
+  },
+  "hide": {
+    "message": "Hide",
+    "description": "Hide"
+  },
+  "hide_notes": {
+    "message": "Hide all notes",
+    "description": "Hide all notes"
+  },
+  "viewhide_notes": {
+    "message": "View/Hide all notes",
+    "description": "View/Hide all notes"
+  },
+  "share": {
+    "message": "Share",
+    "description": "Share"
+  },
+  "share_note": {
+    "message": "Share note",
+    "description": "Share note"
+  },
+  "share_notes": {
+    "message": "Share all notes",
+    "description": "Share all notes"
+  },
+  "close": {
+    "message": "Close",
+    "description": "Close"
+  },
+  "more_info": {
+    "message": "More info at",
+    "description": "More info at"
+  },
+  "source_code": {
+    "message": "Source code available on github",
+    "description": "Source code available on github"
+  },
+  "developed_by": {
+    "message": "Developed by",
+    "description": "Developed by"
+  },
+  "version": {
+    "message": "Version",
+    "description": "Version"
+  },
+  "options": {
+    "message": "Options for ",
+    "description": "Options for "
+  },
+  "placeholder_default":{
+    "message":"Default",
+    "description":"Default"
+  },
+  "running":{
+    "message":"Running",
+    "description":"Running"
+  },
+  "paused":{
+    "message":"Paused",
+    "description":"Paused"
+  },
+  "state":{
+    "message":"State",
+    "description":"State"
+  },
+  "bug_report":{
+    "message":"Bug report",
+    "description":"Bug report"
+  },
+  "delete_allquestion":{
+    "message":"Do you want to delete all and reset configuration to factory defaults? Note that the notes will not be removed. This action cannot be undone",
+    "description":"Do you want to delete all and reset configuration to factory defaults? Note that the notes will not be removed. This action cannot be undone"
+  },
+  "delete_notesquestion":{
+    "message":"Do you want to delete the notes of all domains? This action cannot be undone",
+    "description":"Do you want to delete the notes of all domains? This action cannot be undone"
+  },
+  "delete_domainquestion":{
+    "message":"Do you want to delete the notes of this domain? This action cannot be undone",
+    "description":"Do you want to delete the notes of all domains? This action cannot be undone"
+  },
+  "add_demo_note": {
+      "message": "Add demo note",
+      "description": "Add demo note"
+  },
+  "autoload_enabled": {
+      "message": "Automatic load of your notes",
+      "description": "Automatic load of your notes"
+  },
+  "visibility": {
+      "message": "Visibility",
+      "description": "Visibility"
+  },
+  "visibility_domain": {
+      "message": "Filtered by subdomain (Show all the notes created in the current subdomain)",
+      "description": "Filtered by subdomain (Show all the notes created in the current subdomain)"
+  },
+  "visibility_page": {
+      "message": "Filtered by subdomain and page (Show only the notes created in the current subdomain and page)",
+      "description": "Filtered by subdomain and page (Show only the notes created in the current subdomain and page)"
+  },
+  "visibility_all": {
+      "message": "No filter (Show all notes everywhere)",
+      "description": "No filter (Show all notes everywhere)"
+  },
+  "tray_icon_menu": {
+      "message": "Tray icon action",
+      "description": "Tray icon action"
+  },
+  "menu": {
+      "message": "Show contextual menu",
+      "description": "Menu"
+  },
+  "new_note": {
+      "message": "New note",
+      "description": "New note"
+  },
+  "new_note_dashboard": {
+      "message": "New note in dashboard",
+      "description": "New note in dashboard"
+  },
+  "note_features": {
+      "message": "Enabled features in notes",
+      "description": "Enabled features in notes"
+  },
+  "changeOptions": {
+      "message": "Allow change note options",
+      "description": "Enable style change"
+  },
+  "allowBlock": {
+      "message": "Allow blocking",
+      "description": "Allow blocking notes"
+  },
+  "allowMinimize": {
+      "message": "Allow minimize",
+      "description": "Allow minimize notes"
+  },
+  "allowExpand": {
+      "message": "Allow expand",
+      "description": "Allow expand notes"
+  },
+  "allowFix": {
+      "message": "Allow fixing",
+      "description": "Allow fixing notes"
+  },
+  "hideToolbar": {
+      "message": "Hide toolbar when mouse is outside the note",
+      "description": "Automatic hide of the notes toolbar"
+  },
+  "addNew": {
+      "message": "Allow copying note",
+      "description": "Allow copying note"
+  },
+  "askOnDelete": {
+      "message": "Ask for confirmation before delete a note",
+      "description": "Ask for confirmation before delete a note"
+  },
+  "showInfo": {
+      "message": "Show info icon",
+      "description": "Show info icon"
+  },
+  "allowPasteHtml": {
+      "message": "Allow paste html content",
+      "description": "Allow paste html content"
+  },
+  "htmlEditor": {
+      "message": "Html editor (trumbowyg)",
+      "description": "Html editor"
+  },
+  "autoPosition": {
+      "message": "Relative note position on screen resize",
+      "description": "Relative note position on screen resize"
+  },
+  "resizable": {
+      "message": "Resizable note",
+      "description": "Resizable note"
+  },
+  "disableAll": {
+      "message": "Enable / Disable all",
+      "description": "Enable / Disable all"
+  },
+  "addArrow": {
+      "message": "Add arrow",
+      "description": "Add arrow"
+  },
+  "arrowOptions": {
+      "message": "Show arrow options on",
+      "description": "Show arrow options on"
+  },
+  "posArrow_front": {
+      "message": "Front (Arrows in the cardinal points of the note)",
+      "description": "Front (Arrows in the cardinal points of the note)"
+  },
+  "posArrow_back": {
+      "message": "Back (Dropdown select in the \"Options panel\")",
+      "description": "Back (Select option in the back. \"Allow change note options\" must be enabled)"
+  },
+  "posArrow_both": {
+      "message": "Front (Arrows in the cardinal points of the note) and Back (Dropdown select in the \"Options panel\")",
+      "description": "Both (Front and Back)"
+  },
+  "default_design": {
+      "message": "Default design on new notes",
+      "description": "Default design on new notes"
+  },
+  "note_size": {
+      "message": "Note size",
+      "description": "Note size"
+  },
+  "smaller": {
+      "message": "Smaller",
+      "description": "Smaller"
+  },
+  "small": {
+      "message": "Small",
+      "description": "Small"
+  },
+  "small_square": {
+      "message": "Small square",
+      "description": "Small square"
+  },
+  "medium": {
+      "message": "Medium",
+      "description": "Medium"
+  },
+  "medium_square": {
+      "message": "Medium square",
+      "description": "Medium square"
+  },
+  "large": {
+      "message": "Large",
+      "description": "Large"
+  },
+  "large_square": {
+      "message": "Large square",
+      "description": "Large square"
+  },
+  "big": {
+      "message": "Big",
+      "description": "Large"
+  },
+  "big_square": {
+      "message": "Big square",
+      "description": "Big square"
+  },
+  "larger": {
+      "message": "Larger",
+      "description": "Larger"
+  },
+  "x_large": {
+      "message": "X-Large",
+      "description": "X-Large"
+  },
+  "custom": {
+      "message": "Custom",
+      "description": "Custom"
+  },
+  "custom_width": {
+      "message": "Custom width",
+      "description": "Custom width"
+  },
+  "custom_height": {
+      "message": "Custom height",
+      "description": "Custom height"
+  },
+  "randomcolor_enabled": {
+      "message": "Random color",
+      "description": "Random color"
+  },
+  "background_color": {
+      "message": "Background color",
+      "description": "Background color:"
+  },
+  "tresd_style": {
+      "message": "Note in 3d style",
+      "description": "Note in 3d style"
+  },
+  "text_color": {
+      "message": "Text color",
+      "description": "Text color"
+  },
+  "text_shadow": {
+      "message": "Text shadow",
+      "description": "Text shadow"
+  },
+  "font_family": {
+      "message": "Font family",
+      "description": "Font family"
+  },
+  "font_size": {
+      "message": "Font size",
+      "description": "Font size"
+  },
+  "fixed_position": {
+      "message": "Fixed position",
+      "description": "Fixed position"
+  },
+  "delete_all_notes": {
+    "message": "Delete all notes",
+    "description": "Delete all notes"
+  },
+  "my_dashboard": {
+    "message": "View dashboard",
+    "description": "My dashboard"
+  },
+  "my_notelist": {
+    "message": "Note list",
+    "description": "My note list"
+  },
+  "addHidden": {
+    "message": "The note can be hidden",
+    "description": "The note can be hidden"
+  }
+}
