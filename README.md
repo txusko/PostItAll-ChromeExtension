@@ -9,11 +9,19 @@ All notes are stored by using the Chrome Storage API. There are some advantages 
 
 * **Chrome extension:**  https://chrome.google.com/webstore/detail/post-it-all-sticky-notes/ifbdckgghfmehefajfoichlhcdiibkoc 
 * **More info at:**  http://postitall.txusko.com/extension.html 
-* **jQuery plugin:**  https://github.com/txusko/PostItAll 
 
 **** 
 This is the an alpha release, so it will probably have some bugs. If you find some of them, create an issue on github, or send me an email. Be patient, I will fix it as soon as I can. 
 ****
 
+## jQuery plugin
+
+Extension for add sticky notes to the pages you visit.
+
+**More info:** http://postitall.txusko.com/plugin.html
+
+**Github repository:** https://github.com/txusko/PostItAll
+
+****
 Javi Filella
 postitall@txusko.com
