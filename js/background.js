@@ -62,7 +62,6 @@ backgroundPage._OnUpdated = function(tabid, changeinfo, tab) {
                 } else if(xhr.status == 200) {
                     //Restore storage options
                     abm._Restore(function() {
-                        //console.log('backgroundPage._OnUpdated call backgroundPage._Init', changeinfo.status);
                         backgroundPage._Init(tab);
                     });
                 }
@@ -100,7 +99,7 @@ backgroundPage._Init = function(tab) {
         chrome.tabs.insertCSS(tab.id, {file: "css/trumbowyg.css"});
         chrome.tabs.insertCSS(tab.id, {file: "css/trumbowyg.smallicons.css"});
         chrome.tabs.insertCSS(tab.id, {file: "css/jquery.minicolors.css"});
-        chrome.tabs.insertCSS(tab.id, {file: "css/jquery.postitall.fontstyles.css"});
+        //chrome.tabs.insertCSS(tab.id, {file: "css/jquery.postitall.fontstyles.css"});
         chrome.tabs.insertCSS(tab.id, {file: "css/jquery.postitall.css"});
 
         chrome.tabs.executeScript(tab.id, { file: "js/jquery-ui-1.10.1.min.js" }, function() {
@@ -353,7 +352,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 if(chrome.runtime.lastError !== undefined) { console.log('Error checkLoaded', chrome.runtime.lastError); return; }
                 if(tab && functs.checkUrl(tab.url) && tab.url.indexOf('http') === 0) {
                     if(chrome.runtime.lastError !== undefined) { console.log('Error checkLoaded', chrome.runtime.lastError); return; }
-                    chrome.tabs.executeScript(tab.id, { code: "checkLoaded();" });
+                    setTimeout(function() { chrome.tabs.executeScript(tab.id, { code: "checkLoaded();" }) }, 250);
                     backgroundPage._GetNumberOfPostits();
                 }
                 backgroundPage._SetEnv(tab.windowId);

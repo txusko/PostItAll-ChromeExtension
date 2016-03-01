@@ -2,11 +2,15 @@
 $.fn.postitall.defaults.features.savable = true;
 
 function initPostits(enabledFeatures, style, postit) {
-	$.PostItAll.changeConfig('global', enabledFeatures);
-	$.fn.postitall.defaults.style = style;
-	$.fn.postitall.defaults.height = postit.height;
-	$.fn.postitall.defaults.width = postit.width;
-	$.fn.postitall.defaults.flags.fixed = (postit.position == "fixed") ? true : false;
+	setTimeout(function() {
+		if ($.PostItAll) {
+			$.PostItAll.changeConfig('global', enabledFeatures);
+			$.fn.postitall.defaults.style = style;
+			$.fn.postitall.defaults.height = postit.height;
+			$.fn.postitall.defaults.width = postit.width;
+			$.fn.postitall.defaults.flags.fixed = (postit.position == "fixed") ? true : false;
+		}
+	}, 500);
 }
 
 function checkLoaded() {
@@ -93,25 +97,29 @@ function loadPostitPosition(description, posX, posY) {
 //Load postits
 var loaded = false;
 function loadPostits(index) {
-	$.PostItAll.load(function() {
-		//On load done
-		lengthPostits();
-	}, {
-		onCreated : function() {
-			//On created
-			lengthPostits();
-		},
-		onChange : function() {
-			//On change
-			getScreenShoot();
-		},
-		onDelete : function() {
-			//On delete
-			lengthPostits();
-			getScreenShoot();
+	setTimeout(function() {
+		if ($.PostItAll) {
+			$.PostItAll.load(function() {
+				//On load done
+				lengthPostits();
+			}, {
+				onCreated : function() {
+					//On created
+					lengthPostits();
+				},
+				onChange : function() {
+					//On change
+					getScreenShoot();
+				},
+				onDelete : function() {
+					//On delete
+					lengthPostits();
+					getScreenShoot();
+				}
+			}, index);
+			loaded = true;
 		}
-	}, index);
-	loaded = true;
+	}, 500);
 }
 //hide
 function hidePostits() {
