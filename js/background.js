@@ -40,12 +40,8 @@ var mousePosition = null;
 backgroundPage._OnUpdated = function(tabid, changeinfo, tab) {
 
     //UserId
-    chrome.storage.sync.get('userId', function(items) {
-        userId = items.userId;
-        if (!userId) {
-            userId = functs.guid();
-            chrome.storage.sync.set({userId: userId});
-        }
+    functs.getUserId(function(tmpUserId) {
+        userId = tmpUserId;
     });
 
     //Check for completed requests
@@ -67,21 +63,21 @@ backgroundPage._OnUpdated = function(tabid, changeinfo, tab) {
                 }
             }
         }
-        //Activar en producció per comprobar la URL
+        //Check url (on production)
         xhr.send(null);
     }
 }
 
 backgroundPage._GetNumberOfPostits = function() {
-  chrome.tabs.getSelected(null,function(tab) {
-    if(chrome.runtime.lastError !== undefined) { console.log('Error checkLoaded', chrome.runtime.lastError); return; }
-    if (tab && abm.state && functs.checkUrl(tab.url)) {
-        setTimeout(function(){
-            chrome.browserAction.setBadgeText({text: ""});
-            chrome.tabs.executeScript(tab.id, { code: "lengthPostits();" });
-        }, 500);
-    }
-  });
+    chrome.tabs.getSelected(null,function(tab) {
+        chrome.browserAction.setBadgeText({text: ""});
+        if(chrome.runtime.lastError !== undefined) { console.log('Error checkLoaded', chrome.runtime.lastError); return; }
+        if (tab && abm.state && functs.checkUrl(tab.url)) {
+            setTimeout(function(){
+                chrome.tabs.executeScript(tab.id, { code: "lengthPostits();" });
+            }, 500);
+        }
+    });
 }
 
 backgroundPage._Init = function(tab) {
@@ -96,6 +92,7 @@ backgroundPage._Init = function(tab) {
         if(chrome.runtime.lastError !== undefined) { console.log('Error loading PIA', chrome.runtime.lastError); return; }
         //console.log('jquery loaded!');
         chrome.tabs.insertCSS(tab.id, {file: "css/jquery-ui-1.10.0.custom.css"});
+        chrome.tabs.insertCSS(tab.id, {file: "css/jquery-ui-timepicker-addon.min.css"});
         chrome.tabs.insertCSS(tab.id, {file: "css/trumbowyg.css"});
         chrome.tabs.insertCSS(tab.id, {file: "css/trumbowyg.smallicons.css"});
         chrome.tabs.insertCSS(tab.id, {file: "css/jquery.minicolors.css"});
@@ -103,6 +100,7 @@ backgroundPage._Init = function(tab) {
         chrome.tabs.insertCSS(tab.id, {file: "css/jquery.postitall.css"});
 
         chrome.tabs.executeScript(tab.id, { file: "js/jquery-ui-1.10.1.min.js" }, function() {
+            chrome.tabs.executeScript(tab.id, { file: "js/jquery-ui-timepicker-addon.min.js" });
             chrome.tabs.executeScript(tab.id, { file: "js/trumbowyg.js" }, function() {
                 //console.log('jquery ui loaded!');
                 chrome.tabs.executeScript(tab.id, { file: "js/jquery.htmlclean.js" }, function() {
@@ -139,11 +137,11 @@ backgroundPage._LoadAll = function(url) {
     abm._Restore(function() {
         abm.sendMessage('init');
         if(abm.autoloadEnabled) {
-            //console.log('_LoadAll abm.autoloadEnabled', abm.autoloadEnabled);
             var id = parseInt(functs.getUrlParameter('highlightNote', url), 10);
-
-            if(id !== NaN) {
+            if(!isNaN(id)) {
                 abm.sendMessage('load', id);
+            } else {
+                abm.sendMessage('show', '');
             }
         } else {
             console.log('Autoload disabled!');
@@ -177,7 +175,7 @@ backgroundPage.captureScreenShot = function(){
             var varvalue = localStorage.getItem(varname);
             if(varvalue != null) {
                 varvalue = JSON.parse(varvalue);
-            } else {
+            } else {
                 varvalue = [];
             }
             //Remove previos screenshot if it exists
@@ -259,7 +257,7 @@ backgroundPage._SetContextMenuActions = function() {
         var content = "";
         if(e.menuItemId == "idContextMenuPIA1" || e.menuItemId == "idContextMenuPIA2") {
             content = "&nbsp;";
-        } else {
+        } else {
             if (e.selectionText) {
                 content = e.selectionText.replace(/'/g,"\\'");
             }
@@ -295,215 +293,33 @@ chrome.runtime.onInstalled.addListener(function (object) {
     backgroundPage._SetContextMenu(1, 'New blank note', ['page', 'selection']);
     backgroundPage._SetContextMenu(2, 'New blank note in dashboard', ['page', 'selection']);
     backgroundPage._SetContextMenuActions();
+
+    return;
+
+    // Check whether new version is installed
+    var visitUrl = "";
+    var thisVersion = chrome.runtime.getManifest().version;
+    if(object.reason == "install") {
+        console.log("This is a first install " + thisVersion + "!");
+        //visitUrl = "http://postitall.txusko.com/extension/changelog.php?userId="+userId+"&previous="+previousVersion+"&current="+thisVersion;
+        visitUrl = chrome.extension.getURL("options.html#tabs-5");
+    } else if(object.reason == "update") {
+        var previousVersion = object.previousVersion;
+        if(functs.versionCompare(thisVersion, previousVersion) > 0) {
+            console.log("Updated from " + previousVersion + " to " + thisVersion + "!");
+            //visitUrl = "http://postitall.txusko.com/extension/changelog.php?userId="+userId+"&previous="+previousVersion+"&current="+thisVersion;
+            visitUrl = "http://localhost/~txusko/PostItAll/extension/changelog.php?userId="+userId+"&previous="+previousVersion+"&current="+thisVersion;
+        } else {
+            console.log("Not updated! Previous (" + previousVersion + ") Current (" + thisVersion + ")");
+            visitUrl = "http://localhost/~txusko/PostItAll/extension/changelog.php?userId="+userId+"&previous="+previousVersion+"&current="+thisVersion;
+        }
+    }
+    if(visitUrl !== "") {
+        chrome.tabs.create({url: visitUrl});
+    }
 });
 
 //Get messages
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-
-    if(!abm.state) return;
-
-    //console.log('chrome.runtime.onMessage.addListener request', request);
-
-    var description = request.description;
-    if(description === undefined) {
-        description = "";
-    }
-
-    var byPassCode = "loadPostit('"+description+"');";
-    var dashUrl = "dashboard.html?userId="+userId;
-    if((request.type == "new2" || request.type == "new_dashboard") && mousePosition != null) {
-        byPassCode = "loadPostit('"+description+"', '"+mousePosition.posX+"', '" + mousePosition.posY + "');"
-        dashUrl += "&posX="+mousePosition.posX+"&posY=" + mousePosition.posY;
-    }
-    if(description)
-        dashUrl += "&desc="+description;
-
-    function createPostItOnBg(tabId, info, tab){
-        if (info.status == "complete") {
-            setTimeout(function(){
-                console.log(byPassCode);
-                chrome.tabs.executeScript(tabId, { code: byPassCode }, function() {
-                    console.log('New postit created on background.js 2');
-                    chrome.tabs.onUpdated.removeListener(createPostItOnBg);
-                    backgroundPage._GetNumberOfPostits();
-                });
-            },2000);
-        }
-    }
-
-    switch(request.type) {
-        case "init":
-            chrome.tabs.getSelected(null,function(tab) {
-                if(functs.checkUrl(tab.url) && tab.url.indexOf('http') === 0) {
-                    abm.enabledFeatures.savable = true;
-                    var execCode = "var enabledFeatures = " + JSON.stringify(abm.enabledFeatures) + "; ";
-                    execCode += "var style = " + JSON.stringify(abm.style) + "; var postit = " + JSON.stringify(abm.postit) + "; ";
-                    execCode += "initPostits(enabledFeatures, style, postit);";
-                    if(chrome.runtime.lastError !== undefined) { console.log('Error loading PIA', chrome.runtime.lastError); return; }
-                    chrome.tabs.executeScript(tab.id, { code: execCode }, function() {
-                        //console.log('Initialized features ob background.js');
-                    });
-                }
-            });
-        break;
-        case "checkLoaded":
-            chrome.tabs.getSelected(null,function(tab) {
-                //Reload postits
-                if(chrome.runtime.lastError !== undefined) { console.log('Error checkLoaded', chrome.runtime.lastError); return; }
-                if(tab && functs.checkUrl(tab.url) && tab.url.indexOf('http') === 0) {
-                    if(chrome.runtime.lastError !== undefined) { console.log('Error checkLoaded', chrome.runtime.lastError); return; }
-                    setTimeout(function() { chrome.tabs.executeScript(tab.id, { code: "checkLoaded();" }) }, 250);
-                    backgroundPage._GetNumberOfPostits();
-                }
-                backgroundPage._SetEnv(tab.windowId);
-            });
-        break;
-        case "new":
-        case "new2":
-            chrome.tabs.getSelected(null,function(tab) {
-                //if(functs.checkUrl(tab.url)) {
-                    //if(functs.checkUrl(tab.url) && tab.url.indexOf('http') === 0) {
-                    if(functs.getUniqueId(tab.url)) {
-                        //console.log('New postit created on background.js',byPassCode);
-                        chrome.tabs.executeScript(tab.id, { code: byPassCode }, function() {
-                            //console.log('New postit created on background.js',byPassCode);
-                            backgroundPage._GetNumberOfPostits();
-                        });
-                    } else {
-                        //console.log('create on new page for userId', userId);
-                        //chrome.tabs.update(tab.id, {url: "http://postitall.txusko.com/extension/?userId=" +userId}, function(info) {
-                        chrome.tabs.update(tab.id, {url: dashUrl}, function(info) {
-                            console.log(info);
-                            //chrome.tabs.onUpdated.addListener(createPostItOnBg);
-                        });
-                    }
-                //}
-            });
-        break;
-        case "new_dashboard":
-            chrome.tabs.getSelected(null,function(tab) {
-                if(functs.checkUrl(tab.url)) {
-                    chrome.tabs.executeScript({
-                      code: "window.getSelection().toString();"
-                    }, function(selection) {
-                        if(!description && selection !== undefined) dashUrl = dashUrl + "&desc=" + selection;
-                        chrome.tabs.update(tab.id, {url: dashUrl}, function(info) {
-                            //console.log(info);
-                        });
-                    });
-                } else {
-                    if(!description) dashUrl = dashUrl + "&desc=&nbsp;";
-                    chrome.tabs.update(tab.id, {url: dashUrl}, function(info) {
-                        //console.log(info);
-                    });
-                }
-            });
-        break;
-        case "load":
-            chrome.tabs.getSelected(null,function(tab) {
-                if(tab.url.indexOf('http') === 0) {
-                    //console.log("loadPostits('" + request.description + "');");
-                    chrome.tabs.executeScript(tab.id, { code: "loadPostits('" + request.description + "');" }, function() {
-                        //console.log('All postits loaded on background.js');
-                        //backgroundPage._GetNumberOfPostits();
-                    });
-                }
-            });
-        break;
-        case "hide":
-            chrome.tabs.getSelected(null,function(tab) {
-                chrome.tabs.executeScript(tab.id, { code: "hidePostits();" }, function() {
-                    //console.log('All postits hiden on background.js');
-                    backgroundPage._GetNumberOfPostits();
-                    abm._HiddenNotes = true;
-                });
-            });
-        break;
-        case "viewhide":
-            chrome.tabs.getSelected(null,function(tab) {
-                chrome.tabs.executeScript(tab.id, { code: "viewhidePostits();" }, function() {
-                    backgroundPage._GetNumberOfPostits();
-                });
-            });
-        break;
-        case "show":
-            chrome.tabs.getSelected(null,function(tab) {
-                chrome.tabs.executeScript(tab.id, { code: "showPostits();" }, function() {
-                    //console.log('All postits hiden on background.js');
-                    backgroundPage._GetNumberOfPostits();
-                    abm._HiddenNotes = true;
-                });
-            });
-        break;
-        case "dashboard":
-            chrome.tabs.getSelected(null,function(tab) {
-                //chrome.tabs.create({url: "http://postitall.txusko.com/extension/?userId=" +userId});
-                //chrome.tabs.update(tab.id, {url: "http://postitall.txusko.com/extension/?userId=" +userId});
-                chrome.tabs.update(tab.id, {url: "dashboard.html?userId=" +userId});
-            });
-        break;
-        case "delete":
-            chrome.tabs.getSelected(null,function(tab) {
-                chrome.tabs.executeScript(tab.id, { code: "deletePostits();" }, function() {
-                    //console.log('All postits deleted on background.js');
-                    backgroundPage._GetNumberOfPostits();
-                });
-            });
-        break;
-
-        case "length":
-            backgroundPage._GetNumberOfPostits();
-        break;
-
-        case "badge":
-            //console.log('... ' + request.description);
-            chrome.browserAction.setBadgeText({text: '' + request.description});
-        break;
-
-        case "screenshot":
-            backgroundPage.captureScreenShot();
-            return true;
-        break;
-
-        case "share":
-            chrome.tabs.getSelected(null,function(tab) {
-                /*chrome.tabs.executeScript(tab.id, { code: "sharePostits();" }, function() {
-                    console.log('share');
-                });*/
-                chrome.tabs.captureVisibleTab(null, function(img) {
-                    var xhr = new XMLHttpRequest(), formData = new FormData();
-                    formData.append("img", img);
-                    xhr.open("POST", "http://localhost/PostItAll/share.php", true);
-                    xhr.send(formData);
-                    //console.log(img);
-                });
-            });
-        break;
-
-        case "mouseup":
-            mousePosition = request.point;
-        break;
-
-        case "alert":
-            chrome.tabs.getSelected(null,function(tab) {
-                if(request.description != "") {
-                    //chrome.tabs.executeScript(tab.id, { code: 'alert("'+request.description+'");' }, function() {
-                        //console.log('Alert on background.js', request.description);
-                        alert(request.description);
-                    //});
-                }
-            });
-        break;
-
-        case "reload":
-            //Get selected tab
-            /*chrome.tabs.getSelected(null,function(tab) {
-                chrome.tabs.reload(tab.id);
-                if(abm.state)
-                    backgroundPage._GetNumberOfPostits();
-            });*/
-            backgroundPage._ReloadAll();
-        break;
-    }
-    return true;
+    abm._OnMessage(request, sender, sendResponse);
 });

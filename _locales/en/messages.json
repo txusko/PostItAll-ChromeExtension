@@ -228,8 +228,12 @@
       "description": "Ask for confirmation before delete a note"
   },
   "showInfo": {
-      "message": "Show info icon",
-      "description": "Show info icon"
+      "message": "Show note info",
+      "description": "Show note info"
+  },
+  "showMeta": {
+      "message": "Show meta-data info",
+      "description": "Show meta-data info"
   },
   "allowPasteHtml": {
       "message": "Allow paste html content",

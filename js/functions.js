@@ -64,10 +64,11 @@ var defaults = {
     askOnDelete     : false,         //Confirmation before note remove
     addArrow        : 'back',        //Add arrow to notes : none, front, back, all
     showInfo        : true,
+    showMeta        : true,
     pasteHtml       : false,         //Allow paste html in contenteditor
     htmlEditor      : false,         //Html editor (trumbowyg)
     autoPosition    : true,         //Automatic reposition of the notes when user resize screen
-    hidden          : false,         //Hidden note
+    hidden          : true,         //Hidden note
   }
 }
 
@@ -105,7 +106,7 @@ abm.initState = function(message, callback) {
     chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[256]});
   } else {
     $("[name='state']").bootstrapSwitch();
-    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons["256_off"]});
+    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[257]});
   }
   //Action
   $('#idState').on('switchChange.bootstrapSwitch', function(event, state) {
@@ -113,7 +114,7 @@ abm.initState = function(message, callback) {
     if(state) {
       chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[256]});
     } else {
-      chrome.browserAction.setIcon({path:chrome.app.getDetails().icons["256_off"]});
+      chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[257]});
     }
     console.log('Save state');
     //Save
@@ -142,10 +143,243 @@ abm.initState = function(message, callback) {
 }
 
 abm.sendMessage = function(message, description, callback) {
-  chrome.extension.sendMessage({
-    type: message,
-    description: description
-  });
+    var chromeVersion = window.navigator.userAgent.match(/Chrom(?:e|ium)\/([0-9\.]+)/)[1];
+    var fixBugVersion = "50.0.0000.00";
+    if(functs.versionCompare(chromeVersion, fixBugVersion) > 0) {
+        abm._OnMessage({ type: message, description: description });
+    } else {
+        chrome.extension.sendMessage({ type: message, description: description });
+    }
+    if(callback != null) callback();
+}
+
+abm._OnMessage = function(request, sender, sendResponse) {
+
+    //console.log('chrome.runtime.onMessage.addListener request', request);
+    if(!abm.state) return;
+
+    //UserId
+    var userId = "";
+    functs.getUserId(function(tmpUserId) {
+        userId = tmpUserId;
+    });
+
+    var description = request.description;
+    if(description === undefined) {
+        description = "";
+    }
+
+    var byPassCode = "loadPostit('"+description+"');";
+    var dashUrl = "dashboard.html?userId="+userId;
+    if((request.type == "new2" || request.type == "new_dashboard") && mousePosition != null) {
+        byPassCode = "loadPostit('"+description+"', '"+mousePosition.posX+"', '" + mousePosition.posY + "');"
+        dashUrl += "&posX="+mousePosition.posX+"&posY=" + mousePosition.posY;
+    }
+    if(description)
+        dashUrl += "&desc="+description;
+
+    function createPostItOnBg(tabId, info, tab){
+        if (info.status == "complete") {
+            setTimeout(function(){
+                console.log(byPassCode);
+                chrome.tabs.executeScript(tabId, { code: byPassCode }, function() {
+                    console.log('New postit created on background.js 2');
+                    chrome.tabs.onUpdated.removeListener(createPostItOnBg);
+                    backgroundPage._GetNumberOfPostits();
+                });
+            },2000);
+        }
+    }
+    
+    switch(request.type) {
+        case "init":
+            chrome.tabs.getSelected(null,function(tab) {
+                if(functs.checkUrl(tab.url) && tab.url.indexOf('http') === 0) {
+                    abm.enabledFeatures.savable = true;
+                    var execCode = "var enabledFeatures = " + JSON.stringify(abm.enabledFeatures) + "; ";
+                    execCode += "var style = " + JSON.stringify(abm.style) + "; var postit = " + JSON.stringify(abm.postit) + "; ";
+                    execCode += "initPostits(enabledFeatures, style, postit);";
+                    if(chrome.runtime.lastError !== undefined) { console.log('Error loading PIA', chrome.runtime.lastError); return; }
+                    chrome.tabs.executeScript(tab.id, { code: execCode }, function() {
+                        //console.log('Initialized features ob background.js');
+                    });
+                }
+            });
+        break;
+        case "checkLoaded":
+            chrome.tabs.getSelected(null,function(tab) {
+                chrome.browserAction.setBadgeText({text: ""});
+                //Reload postits
+                if(chrome.runtime.lastError !== undefined) { console.log('Error checkLoaded', chrome.runtime.lastError); return; }
+                if(tab && functs.checkUrl(tab.url) && tab.url.indexOf('http') === 0) {
+                    if(chrome.runtime.lastError !== undefined) { console.log('Error checkLoaded', chrome.runtime.lastError); return; }
+                    setTimeout(function() { chrome.tabs.executeScript(tab.id, { code: "checkLoaded();" }) }, 250);
+                    backgroundPage._GetNumberOfPostits();
+                }
+                backgroundPage._SetEnv(tab.windowId);
+            });
+        break;
+        case "new":
+        case "new2":
+            chrome.tabs.getSelected(null,function(tab) {
+                //if(functs.checkUrl(tab.url)) {
+                    //if(functs.checkUrl(tab.url) && tab.url.indexOf('http') === 0) {
+                    if(functs.getUniqueId(tab.url)) {
+                        //console.log('New postit created on background.js',byPassCode);
+                        chrome.tabs.executeScript(tab.id, { code: byPassCode }, function() {
+                            //console.log('New postit created on background.js',byPassCode);
+                            backgroundPage._GetNumberOfPostits();
+                        });
+                    } else {
+                        //console.log('create on new page for userId', userId);
+                        //chrome.tabs.update(tab.id, {url: "http://postitall.txusko.com/extension/?userId=" +userId}, function(info) {
+                        chrome.tabs.update(tab.id, {url: dashUrl}, function(info) {
+                            console.log(info);
+                            //chrome.tabs.onUpdated.addListener(createPostItOnBg);
+                        });
+                    }
+                //}
+            });
+        break;
+        case "new_dashboard":
+            chrome.tabs.getSelected(null,function(tab) {
+                if(functs.checkUrl(tab.url)) {
+                    chrome.tabs.executeScript({
+                      code: "window.getSelection().toString();"
+                    }, function(selection) {
+                        if(!description && selection !== undefined) dashUrl = dashUrl + "&desc=" + selection;
+                        chrome.tabs.update(tab.id, {url: dashUrl}, function(info) {
+                            //console.log(info);
+                        });
+                    });
+                } else {
+                    if(!description) dashUrl = dashUrl + "&desc=&nbsp;";
+                    chrome.tabs.update(tab.id, {url: dashUrl}, function(info) {
+                        //console.log(info);
+                    });
+                }
+            });
+        break;
+        case "load":
+            chrome.tabs.getSelected(null,function(tab) {
+                if(tab.url.indexOf('http') === 0) {
+                    //console.log("loadPostits('" + request.description + "');");
+                    chrome.tabs.executeScript(tab.id, { code: "loadPostits('" + request.description + "');" }, function() {
+                        //console.log('All postits loaded on background.js');
+                        //backgroundPage._GetNumberOfPostits();
+                    });
+                }
+            });
+        break;
+        case "hide":
+            chrome.tabs.getSelected(null,function(tab) {
+                chrome.tabs.executeScript(tab.id, { code: "hidePostits();" }, function() {
+                    //console.log('All postits hiden on background.js');
+                    backgroundPage._GetNumberOfPostits();
+                    abm._HiddenNotes = true;
+                });
+            });
+        break;
+        case "viewhide":
+            chrome.tabs.getSelected(null,function(tab) {
+                chrome.tabs.executeScript(tab.id, { code: "viewhidePostits();" }, function() {
+                    backgroundPage._GetNumberOfPostits();
+                });
+            });
+        break;
+        case "show":
+            chrome.tabs.getSelected(null,function(tab) {
+                chrome.tabs.executeScript(tab.id, { code: "showPostits();" }, function() {
+                    //console.log('All postits hiden on background.js');
+                    backgroundPage._GetNumberOfPostits();
+                    abm._HiddenNotes = true;
+                });
+            });
+        break;
+        case "dashboard":
+            chrome.tabs.getSelected(null,function(tab) {
+                //chrome.tabs.create({url: "http://postitall.txusko.com/extension/?userId=" +userId});
+                //chrome.tabs.update(tab.id, {url: "http://postitall.txusko.com/extension/?userId=" +userId});
+                chrome.tabs.update(tab.id, {url: "dashboard.html?userId=" +userId});
+            });
+        break;
+        case "delete":
+            chrome.tabs.getSelected(null,function(tab) {
+                chrome.tabs.executeScript(tab.id, { code: "deletePostits();" }, function() {
+                    //console.log('All postits deleted on background.js');
+                    backgroundPage._GetNumberOfPostits();
+                });
+            });
+        break;
+
+        case "length":
+            backgroundPage._GetNumberOfPostits();
+        break;
+
+        case "badge":
+            //console.log('... ' + request.description);
+            chrome.browserAction.setBadgeText({text: '' + request.description});
+        break;
+
+        case "screenshot":
+            backgroundPage.captureScreenShot();
+            return true;
+        break;
+
+        case "share":
+            chrome.tabs.getSelected(null,function(tab) {
+                /*chrome.tabs.executeScript(tab.id, { code: "sharePostits();" }, function() {
+                    console.log('share');
+                });*/
+                chrome.tabs.captureVisibleTab(null, function(img) {
+                    var xhr = new XMLHttpRequest(), formData = new FormData();
+                    formData.append("img", img);
+                    xhr.open("POST", "http://localhost/PostItAll/share.php", true);
+                    xhr.send(formData);
+                    //console.log(img);
+                });
+            });
+        break;
+
+        case "mouseup":
+            mousePosition = request.point;
+        break;
+
+        case "alert":
+            chrome.tabs.getSelected(null,function(tab) {
+                if(request.description != "") {
+                    //chrome.tabs.executeScript(tab.id, { code: 'alert("'+request.description+'");' }, function() {
+                        //console.log('Alert on background.js', request.description);
+                        alert(request.description);
+                    //});
+                }
+            });
+        break;
+
+        case "reload":
+            //Get selected tab
+            /*chrome.tabs.getSelected(null,function(tab) {
+                chrome.tabs.reload(tab.id);
+                if(abm.state)
+                    backgroundPage._GetNumberOfPostits();
+            });*/
+            backgroundPage._ReloadAll();
+        break;
+    }
+    return true;
+}
+
+functs.getUserId = function(callback) {
+    var userId = "";
+    //UserId
+    chrome.storage.sync.get('userId', function(items) {
+        userId = items.userId;
+        if (!userId) {
+            userId = functs.guid();
+            chrome.storage.sync.set({userId: userId});
+        }
+        callback(userId);
+    });
 }
 
 //Format date
@@ -229,17 +463,64 @@ functs.delay = (function(){
   };
 })();
 
+functs.versionCompare = function (v1, v2, options) {
+    var lexicographical = options && options.lexicographical,
+        zeroExtend = options && options.zeroExtend,
+        v1parts = v1.split('.'),
+        v2parts = v2.split('.');
+
+    function isValidPart(x) {
+        return (lexicographical ? /^\d+[A-Za-z]*$/ : /^\d+$/).test(x);
+    }
+
+    if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {
+        return NaN;
+    }
+
+    if (zeroExtend) {
+        while (v1parts.length < v2parts.length) v1parts.push("0");
+        while (v2parts.length < v1parts.length) v2parts.push("0");
+    }
+
+    if (!lexicographical) {
+        v1parts = v1parts.map(Number);
+        v2parts = v2parts.map(Number);
+    }
+
+    for (var i = 0; i < v1parts.length; ++i) {
+        if (v2parts.length == i) {
+            return 1;
+        }
+
+        if (v1parts[i] == v2parts[i]) {
+            continue;
+        }
+        else if (v1parts[i] > v2parts[i]) {
+            return 1;
+        }
+        else {
+            return -1;
+        }
+    }
+
+    if (v1parts.length != v2parts.length) {
+        return -1;
+    }
+
+    return 0;
+}
+
 abm.setIcon = function(state, changeEnableOption) {
   if(changeEnableOption === undefined) {
     changeEnableOption = false;
   }
   if(state) {
-    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons["256"]});
+    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[256]});
     if(changeEnableOption)
       chrome.browserAction.enable();
     //chrome.browserAction.setPopup({popup: "popup.html"});
   } else {
-    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons["256_off"]});
+    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[257]});
     chrome.browserAction.setBadgeText({text: ""});
     if(changeEnableOption)
       chrome.browserAction.disable();

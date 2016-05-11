@@ -391,6 +391,11 @@ optionsPage.settingsTab = function() {
         abm.enabledFeatures.showInfo = state;
         saveFeatures();
     });
+    //Show meta-data icon
+    optionsPage.switchCheckBox("idShowMeta", "showMeta", abm.enabledFeatures.showMeta, function(state) {
+        abm.enabledFeatures.showMeta = state;
+        saveFeatures();
+    });
     //Ask on delete?
     optionsPage.switchCheckBox("idAskOnDelete", "askOnDelete", abm.enabledFeatures.askOnDelete, function(state) {
         abm.enabledFeatures.askOnDelete = state;
@@ -500,15 +505,13 @@ optionsPage.settingsTab = function() {
 }
 
 optionsPage.listTab = function() {
-    var userId = "";
+
     //UserId
-    chrome.storage.sync.get('userId', function(items) {
-        userId = items.userId;
-        if (!userId) {
-            userId = functs.guid();
-            chrome.storage.sync.set({userId: userId});
-        }
+    var userId = "";
+    functs.getUserId(function(tmpUserId) {
+        userId = tmpUserId;
     });
+
     //Note list
     var loadNoteList = function() {
         $('#idNoteList').html("");
