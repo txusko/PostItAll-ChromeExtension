@@ -43,13 +43,13 @@ textarea {
 }
 
 /* POPUP */
-#menu{
+.menu{
 	font:menu;
 	color:black;
 	cursor:default;
 }
 
-#menu hr {
+.menu hr {
 	margin-top: 8px;
 	margin-bottom: 8px;
 }
@@ -78,14 +78,14 @@ textarea {
 	border-width:7px;
 	padding: 6px;
 	background: #dddddd;
-	border: 1px solid #aaaaaa;
+	border: 1px solid #555aaa;
 	border-radius: 6px;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
 }
 
 .menuitem.disabled {
-     color: #ccc;
+     color: #555;
 }
 .menuitem.disabled:hover {
 	border: 1px solid transparent;
@@ -100,3 +100,77 @@ textarea {
 	width: 12px;
 	height: 12px;
 }
+
+/*.PIApostit div.PIAeditable {  margin: auto; }*/
+
+.parallelogram { -webkit-transform: skew(10deg); -moz-transform: skew(10deg); -o-transform: skew(10deg); }
+
+
+.arrowleft, .arrowright, .arrowup, .arrowdown { font-size: 1.8em; font-family: 'Shadows Into Light'; line-height: 1.2em; }
+.arrowleft {
+	-webkit-clip-path: polygon(40% 0%, 40% 20%, 100% 20%, 100% 80%, 40% 80%, 40% 100%, 0% 50%);
+	clip-path: polygon(40% 0%, 40% 20%, 100% 20%, 100% 80%, 40% 80%, 40% 100%, 0% 50%);
+}
+.arrowright {
+	-webkit-clip-path: polygon(0% 20%, 0% 80%, 60% 80%, 60% 100%, 100% 50%, 60% 0%, 60% 20%);
+	clip-path: polygon(0% 20%, 0% 80%, 60% 80%, 60% 100%, 100% 50%, 60% 0%, 60% 20%);
+}
+.arrowup {
+	-webkit-clip-path: polygon(0 40%, 50% 0, 100% 40%, 80% 40%, 80% 100%, 20% 100%, 20% 40%);
+	clip-path: polygon(0 40%, 50% 0, 100% 40%, 80% 40%, 80% 100%, 20% 100%, 20% 40%);
+}
+.arrowdown {
+	-webkit-clip-path: polygon(0 60%, 50% 100%, 100% 60%, 20% 60%, 20% 0, 80% 0, 80% 60%);
+	clip-path: polygon(0 80%, 50% 100%, 100% 80%, 80% 80%, 80% 0, 20% 0, 20% 80%);
+}
+.arrowleft:hover, .arrowright:hover, .arrowup:hover, .arrowdown:hover { -webkit-clip-path: none; clip-path: none; }
+
+/*.parallelogram .PIAeditable { -webkit-clip-path: polygon(40% 0%, 40% 20%, 100% 20%, 100% 80%, 40% 80%, 40% 100%, 0% 50%);
+clip-path: polygon(40% 0%, 40% 20%, 100% 20%, 100% 80%, 40% 80%, 40% 100%, 0% 50%);}*/
+
+.circle { -moz-border-radius: 50%; -webkit-border-radius: 50%; border-radius: 50%;  background-color: : yellow; color: green; text-align: center; }
+.circle.PIApostit.PIAeditable {  margin: auto; width:75%; }
+.circle.PIAeditable {
+	-webkit-clip-path: ellipse(50% 50% at 50% 50%);
+	clip-path: ellipse(50% 50% at 50% 50%);
+	/*top: -28px;left: -4px;
+	width: 100%; height: 100%;*/
+	height: 80%;
+}
+.circle.arrow_box_top:after { top: -38px; bottom:auto; }
+.circle.arrow_box_right:after { right: -36px; left: auto; }
+.circle.arrow_box_bottom:after { bottom: -38px; top: auto; }
+.circle.arrow_box_left:after { left: -36px; right: auto; }
+
+/*.talkbubble { -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; background-color: yellow; }
+.talkbubble:before { content:""; position: absolute; right: 100%; top: 26px; width: 0; height: 0; border-top: 13px solid transparent; border-right: 26px solid yellow; border-bottom: 13px solid transparent; }*/
+
+.talkbubbleright, .talkbubbleleft { -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; border: 8px solid #555; font-family: 'Bangers'; background-color: : yellow; font-size: 2.5em; }
+
+.talkbubbleleft.arrow_box_top:before { border-color: transparent transparent transparent transparent; }
+.talkbubbleleft.arrow_box_top:after { content: ' '; position: absolute; width: 0; height: 0; left: auto; right: 40px; top: -40px; border: 20px solid; border-color: transparent #555 #555 transparent }
+.talkbubbleleft.arrow_box_right:before { border-color: transparent transparent transparent transparent; }
+.talkbubbleleft.arrow_box_right:after { content: ' '; position: absolute; width: 0; height: 0; left: auto; right: -40px; bottom: 40px; top: auto; border: 20px solid; border-color: transparent transparent #555 #555; }
+.talkbubbleleft.arrow_box_bottom:before { border-color: transparent transparent transparent transparent; }
+.talkbubbleleft.arrow_box_bottom:after { content: ' '; position: absolute; width: 0; height: 0; right: auto; left: 30px; bottom: -40px; border: 20px solid; border-color: #555 transparent transparent #555; }
+.talkbubbleleft.arrow_box_left:before { border-color: transparent transparent transparent transparent; }
+.talkbubbleleft.arrow_box_left:after { content: ' '; position: absolute; width: 0; height: 0; left: -40px; right: auto; top: 40px; bottom: auto; border: 20px solid; border-color: #555 #555 transparent transparent; }
+
+.talkbubbleright.arrow_box_top:before { border-color: transparent transparent transparent transparent; }
+.talkbubbleright.arrow_box_top:after { content: ' '; position: absolute; width: 0; height: 0; right: auto; left: 40px; top: -40px; border: 20px solid; border-color: transparent transparent #555 #555; }
+.talkbubbleright.arrow_box_right:before { border-color: transparent transparent transparent transparent; }
+.talkbubbleright.arrow_box_right:after { content: ' '; position: absolute; width: 0; height: 0; left: auto; right: -40px; top: 40px; bottom: auto; border: 20px solid; border-color: #555 transparent transparent #555; }
+.talkbubbleright.arrow_box_bottom:before { border-color: transparent transparent transparent transparent; }
+.talkbubbleright.arrow_box_bottom:after { content: ' '; position: absolute; width: 0; height: 0; left: auto; right: 30px; bottom: -40px; border: 20px solid; border-color: #555 #555 transparent transparent; }
+.talkbubbleright.arrow_box_left:before { border-color: transparent transparent transparent transparent; }
+.talkbubbleright.arrow_box_left:after { content: ' '; position: absolute; width: 0; height: 0; left: -40px; right: auto; bottom: 40px; top: auto; border: 20px solid; border-color: transparent #555 #555 transparent; }
+
+.tv { border-radius: 50% / 10%; text-align: center; text-indent: .1em; font-size: 1.8em; font-family: 'Shadows Into Light'; background-color: : yellow; color: green; }
+.tv:before { content: ''; position: absolute; top: 10%; bottom: 10%; right: -5%; left: -5%; background: inherit; border-radius: 5% / 50%; }
+/*.tv { position:absolute; border-radius: 50% / 10%; text-align: center; text-indent: .1em; border-top: 8px solid #555; border-bottom: 8px solid #555; }
+.tv:before { content: ''; position: absolute; top: 5%; bottom: 5%; right: -5%; left: -5%; background: inherit; border-radius: 5% / 50%; border-left: 8px solid #555;border-right: 8px solid #555; }*/
+.tv .PIAIconTopToolbar { margin: 10px 5px 0px 5px; }
+.tv .PIApanel .PIAfront { height: 95%;}
+.tv .ui-resizable-se { bottom: 16px; }
+.tv .PIAcontent div { padding: 0px; vertical-align: middle; }
+.tv .PIAIconBottomToolbar { bottom: 18px; }

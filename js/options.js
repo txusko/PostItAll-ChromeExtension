@@ -82,6 +82,7 @@ optionsPage.settingsTab = function() {
             abm.enabledFeatures.savable = false;
             $.PostItAll.changeConfig('global', abm.enabledFeatures);
             $.fn.postitall.defaults.style = abm.style;
+            $.fn.postitall.defaults.cssclases = abm.cssclases;
             $.PostItAll.new({
                 content: content,
                 posY: e.pageY,
@@ -158,9 +159,11 @@ optionsPage.settingsTab = function() {
             "postit": abm.postit
         }, function() {
             abm._Restore(function() {
-                //console.log(abm.postit.height);
+                console.log(abm.postit);
                 $.fn.postitall.defaults.height = abm.postit.height;
+                $.fn.postitall.defaults.minHeight = abm.postit.minHeight;
                 $.fn.postitall.defaults.width = abm.postit.width;
+                $.fn.postitall.defaults.minWidth = abm.postit.minWidth;
                 $.fn.postitall.defaults.position = abm.postit.position;
                 //Delete and show again
                 reloadNotes();
@@ -251,6 +254,10 @@ optionsPage.settingsTab = function() {
         $('#idOptCusW').hide();
         $('#idOptCusH').hide();
         switch(noteSize) {
+            case 'smallest':
+                abm.postit.width = 136;
+                abm.postit.height = 136;
+            break;
             case 'small':
                 abm.postit.width = 160;
                 abm.postit.height = 200;
@@ -295,7 +302,9 @@ optionsPage.settingsTab = function() {
             console.log('Saved abm.postit.width & height',abm.postit);
         });
     });
-    if(abm.postit.width == 160 && abm.postit.height == 200) {
+    if(abm.postit.width == 136 && abm.postit.height == 136) {
+        $('#idNoteSize').val("smallest");
+    } else if(abm.postit.width == 160 && abm.postit.height == 200) {
         $('#idNoteSize').val("small");
     } else if(abm.postit.width == 200 && abm.postit.height == 200) {
         $('#idNoteSize').val("small_square");
@@ -318,8 +327,8 @@ optionsPage.settingsTab = function() {
 
     $('#idNoteWidth').change(function() {
         var newVal = parseInt($(this).val(), 10);
-        if(isNaN(newVal) || newVal < $.fn.postitall.defaults.minWidth) {
-            newVal = $.fn.postitall.defaults.minWidth;
+        if(isNaN(newVal) || newVal < abm.postit.minWidth) {
+            newVal = abm.postit.minWidth;
         } else if(isNaN(newVal) || newVal > 640) {
             newVal = 640;
         }
@@ -331,8 +340,8 @@ optionsPage.settingsTab = function() {
     });
     $('#idNoteHeight').change(function() {
         var newVal = parseInt($(this).val(), 10);
-        if(isNaN(newVal) || newVal < $.fn.postitall.defaults.minHeight) {
-            newVal = $.fn.postitall.defaults.minHeight;
+        if(isNaN(newVal) || newVal < abm.postit.minHeight) {
+            newVal = abm.postit.minHeight;
         } else if(isNaN(newVal) || newVal > 640) {
             newVal = 640;
         }
@@ -394,6 +403,11 @@ optionsPage.settingsTab = function() {
     //Show meta-data icon
     optionsPage.switchCheckBox("idShowMeta", "showMeta", abm.enabledFeatures.showMeta, function(state) {
         abm.enabledFeatures.showMeta = state;
+        saveFeatures();
+    });
+    //Show meta-data icon
+    optionsPage.switchCheckBox("idExportNote", "exportNote", abm.enabledFeatures.exportNote, function(state) {
+        abm.enabledFeatures.exportNote = state;
         saveFeatures();
     });
     //Ask on delete?
@@ -502,6 +516,24 @@ optionsPage.settingsTab = function() {
         });
     });
 
+    //Note class
+    //console.log(abm.cssclases.note);
+    if(abm.cssclases.note)
+        $('#idCustomStyle').val(abm.cssclases.note);
+    $('#idCustomStyle').change(function() {
+        console.log('cssclases.note', $(this).val());
+        abm.cssclases.note = $(this).val();
+
+        chrome.storage.sync.set({
+            "cssclases": abm.cssclases
+        }, function() {
+            abm._Restore(function() {
+                $.fn.postitall.defaults.cssclases = abm.cssclases;
+                //Delete and show again
+                reloadNotes();
+            });
+        });
+    });
 }
 
 optionsPage.listTab = function() {
@@ -593,8 +625,9 @@ optionsPage.listTab = function() {
 
             //console.log('loadTable', loadTable);
 
-            var addHighLightNote = function(index, url) {
-                return url + (url.indexOf('?') < 0 ? '?' : '&') + "highlightNote=" + index;
+            var addHighLightNote = function(index, url, params) {
+                return url + (url.indexOf('?') < 0 ? '?' : '&') + "highlightNote=" + index
+                    + ((params !== undefined && params !== "") ? "&" + params : "");
             }
 
             var deleteScreenshot = [];
@@ -634,13 +667,13 @@ optionsPage.listTab = function() {
                                 txtContent = txtContent.substring(0,40) + "...";
                             var d = new Date(note.created);
                             //Screenshots
-                            notes += "<li><a href='"+addHighLightNote(note.id, note.domain+note.page)+"' target=_blank>" + txtContent + "</a><ul><li>Page: "+note.page+"</li><li>Created on: " + d.toLocaleDateString() + " (" + d.toLocaleTimeString() + ")</li></ul></li>";
+                            notes += "<li><a href='"+addHighLightNote(note.id, note.domain+note.page, note.pageParams)+"' target=_blank>" + txtContent + "</a><ul><li>Page: "+note.page+"</li><li>Created on: " + d.toLocaleDateString() + " (" + d.toLocaleTimeString() + ")</li></ul></li>";
                             //Table
                             divContentTable += "<tr>";
                             divContentTable += "<td>"+d.toLocaleDateString()+" (" + d.toLocaleTimeString() + ")</td>";
                             divContentTable += "<td><a href='"+note.domain+"' target=_blank>"+screenshots[i].domain+"</a></td>";
                             divContentTable += "<td><a href='"+note.domain+note.page+"' target=_blank>"+note.page+"</td>";
-                            divContentTable += "<td><a href='"+addHighLightNote(note.id, note.domain+note.page)+"' target=_blank>" + txtContent + "</a></td>";
+                            divContentTable += "<td><a href='"+addHighLightNote(note.id, note.domain+note.page, note.pageParams)+"' target=_blank>" + txtContent + "</a></td>";
                             divContentTable += "</tr>";
                         }
                         notes += "</ol>";
@@ -768,9 +801,18 @@ optionsPage.listTab = function() {
 
     $('#idDeleteNotes').click(function() {
         if(confirm(translate('delete_notesquestion'))) {
-            $.PostItAll.destroy(false, false, true);
+            $.PostItAll.clearStorage();
             setTimeout(function() { loadNoteList(); }, 500);
         }
+    });
+
+    $('#idExportNotes').click(function() {
+        $.PostItAll.export("all");
+    });
+    $('#idImportNotes').click(function() {
+        $.PostItAll.import(false, function(obj) {
+            functs.delay(function() { location.href = location.pathname + "#tabs-3"; location.reload(); }, 500);
+        });
     });
 }
 

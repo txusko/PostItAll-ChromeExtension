@@ -35,10 +35,51 @@ var defaults = {
   trayIconMenu: true,               //true -> menu, false -> new note
   _HiddenNotes: false,
   postit: {
-    height          : 200,          //height
-    width           : 160,          //width
+    height          : 136,          //height
+    width           : 136,          //width
+    minHeight       : 136,
+    minWidth        : 136,
     position        : 'absolute',   //absolute or fixed
   },
+  cssclases : {
+      note                : 'note', //Default note style
+      withTextShadowWhite : 'withTextShadowWhite', //Note with text-shadow for dark fonts (default)
+      withTextShadowBlack : 'withTextShadowBlack', //Note with text-shadow for light fonts (default)
+      withoutTextShadow   : 'withoutTextShadow', //Note without text-shadows
+      withBoxShadow       : 'withBoxShadow', //Note with box-shadow
+      withoutBoxShadow    : 'withoutBoxShadow', //Note without box-shadow
+      icons : { //Icon generic clases and set
+          icon            : 'PIAicon', //Set for all icons
+          iconRight       : 'PIAiconright', //Set for the last top-right icon
+          iconLeft        : 'PIAiconleft', //Set for all left icons (top or bottom)
+          iconBottom      : 'PIAiconbottom', //Set for all bottom icons (left or right)
+          topToolbar      : 'PIAIconTopToolbar', //Set for bottom toolbar (contains all botton icons)
+          bottomToolbar   : 'PIAIconBottomToolbar', //Set for bottom toolbar (contains all botton icons)
+          close           : 'PIAclose', //Close icon (back panels)
+          config          : 'PIAconfig', //Config icon (top-right)
+          hide            : 'PIAhide', //Hide icon (top-left)
+          minimize        : 'PIAminimize', //Minimize icon (top-left)
+          maximize        : 'PIAmaximize', //Restore/Collapse icon (top-left)
+          expand          : 'PIAexpand', //Expand icon (top-left)
+          blocked         : 'PIAblocked', //Non blocked icon (top-right)
+          blockedOn       : 'PIAblocked2', //Blocked icon (top-right)
+          delete          : 'PIAdelete', //Delete icon (top-right)
+          info            : 'PIAinfoIcon', //Info icon (bottom-left)
+          copy            : 'PIAnew', //Copy icon (bottom-left)
+          fixed           : 'PIAfixed', //Non fixed icon (top-left)
+          fixedOn         : 'PIAfixed2', //Fixed icon (top-left)
+          export          : 'PIAexport', //Export icon (bottom-left)
+      },
+      arrows  : { //Default arrow : none
+          arrow   : 'arrow_box', //Set in all arrows
+          none    : '', //Without arrow
+          top     : 'arrow_box_top', //Top arrow
+          right   : 'arrow_box_right', //Right arrow
+          bottom  : 'arrow_box_bottom', //Bottom arrow
+          left    : 'arrow_box_left' //Left arrow
+      }
+  },
+  useCssProperties : true,
   style : {
     tresd           : true,         //General style in 3d format
     backgroundcolor : '#FFFC7F',    //Background color in new postits when randomColor = false
@@ -65,6 +106,7 @@ var defaults = {
     addArrow        : 'back',        //Add arrow to notes : none, front, back, all
     showInfo        : true,
     showMeta        : true,
+    exportNote      : true,
     pasteHtml       : false,         //Allow paste html in contenteditor
     htmlEditor      : false,         //Html editor (trumbowyg)
     autoPosition    : true,         //Automatic reposition of the notes when user resize screen
@@ -87,6 +129,7 @@ abm._Restore = function(callback) {
     abm.autoloadEnabled = retVal.autoloadEnabled;
     abm.trayIconMenu = retVal.trayIconMenu;
     abm.postit = retVal.postit;
+    abm.cssclases = retVal.cssclases;
     abm.style = retVal.style;
     abm.enabledFeatures = retVal.enabledFeatures;
     //Localize
@@ -103,18 +146,21 @@ abm.initState = function(message, callback) {
   $('#idState').attr("data-label-text", translate("state"));
   if(abm.state) {
     $("[name='state']").bootstrapSwitch('state', true, true);
-    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[256]});
+    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[19]});
+
   } else {
     $("[name='state']").bootstrapSwitch();
-    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[257]});
+    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[20]});
+    chrome.browserAction.setBadgeText({text: ""});
   }
   //Action
   $('#idState').on('switchChange.bootstrapSwitch', function(event, state) {
     //Change icon
     if(state) {
-      chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[256]});
+      chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[19]});
     } else {
-      chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[257]});
+      chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[20]});
+      chrome.browserAction.setBadgeText({text: ""});
     }
     console.log('Save state');
     //Save
@@ -171,7 +217,7 @@ abm._OnMessage = function(request, sender, sendResponse) {
 
     var byPassCode = "loadPostit('"+description+"');";
     var dashUrl = "dashboard.html?userId="+userId;
-    if((request.type == "new2" || request.type == "new_dashboard") && mousePosition != null) {
+    if((request.type == "new2" || request.type == "newdashboard") && mousePosition != null) {
         byPassCode = "loadPostit('"+description+"', '"+mousePosition.posX+"', '" + mousePosition.posY + "');"
         dashUrl += "&posX="+mousePosition.posX+"&posY=" + mousePosition.posY;
     }
@@ -190,15 +236,17 @@ abm._OnMessage = function(request, sender, sendResponse) {
             },2000);
         }
     }
-    
+
     switch(request.type) {
         case "init":
             chrome.tabs.getSelected(null,function(tab) {
                 if(functs.checkUrl(tab.url) && tab.url.indexOf('http') === 0) {
                     abm.enabledFeatures.savable = true;
                     var execCode = "var enabledFeatures = " + JSON.stringify(abm.enabledFeatures) + "; ";
-                    execCode += "var style = " + JSON.stringify(abm.style) + "; var postit = " + JSON.stringify(abm.postit) + "; ";
-                    execCode += "initPostits(enabledFeatures, style, postit);";
+                    execCode += " var style = " + JSON.stringify(abm.style) + ";";
+                    execCode += " var cssclases = " + JSON.stringify(abm.cssclases) + ";";
+                    execCode += " var postit = " + JSON.stringify(abm.postit) + "; ";
+                    execCode += " initPostits(enabledFeatures, style, cssclases, postit);";
                     if(chrome.runtime.lastError !== undefined) { console.log('Error loading PIA', chrome.runtime.lastError); return; }
                     chrome.tabs.executeScript(tab.id, { code: execCode }, function() {
                         //console.log('Initialized features ob background.js');
@@ -221,13 +269,28 @@ abm._OnMessage = function(request, sender, sendResponse) {
         break;
         case "new":
         case "new2":
+        case "new_circle":
+        case "new_tv":
+        case "new_talkbubbleright":
+        case "new_talkbubbleleft":
+        case "new_parallelogram":
+        case "new_arrowright":
+        case "new_arrowleft":
+        case "new_arrowup":
+        case "new_arrowdown":
             chrome.tabs.getSelected(null,function(tab) {
                 //if(functs.checkUrl(tab.url)) {
                     //if(functs.checkUrl(tab.url) && tab.url.indexOf('http') === 0) {
                     if(functs.getUniqueId(tab.url)) {
-                        //console.log('New postit created on background.js',byPassCode);
+                        //Custom clases
+                        if (request.type.substring(0, 4) == "new_")
+                        {
+                            var cssName = request.type.substring(4);
+                            byPassCode = "loadPostit('"+description+"', undefined, undefined, '"+cssName+"');"
+                        }
+                        console.log(request.type.substring(0, 4), request.type.substring(4));
+                        //Execute script
                         chrome.tabs.executeScript(tab.id, { code: byPassCode }, function() {
-                            //console.log('New postit created on background.js',byPassCode);
                             backgroundPage._GetNumberOfPostits();
                         });
                     } else {
@@ -241,7 +304,7 @@ abm._OnMessage = function(request, sender, sendResponse) {
                 //}
             });
         break;
-        case "new_dashboard":
+        case "newdashboard":
             chrome.tabs.getSelected(null,function(tab) {
                 if(functs.checkUrl(tab.url)) {
                     chrome.tabs.executeScript({
@@ -287,15 +350,39 @@ abm._OnMessage = function(request, sender, sendResponse) {
                 });
             });
         break;
-        case "show":
+
+        //Export all notes in page
+        case "export":
             chrome.tabs.getSelected(null,function(tab) {
-                chrome.tabs.executeScript(tab.id, { code: "showPostits();" }, function() {
-                    //console.log('All postits hiden on background.js');
-                    backgroundPage._GetNumberOfPostits();
-                    abm._HiddenNotes = true;
+                chrome.tabs.executeScript(tab.id, { code: "exportPostits();" }, function() {
+                    console.log('All notes exported!');
                 });
             });
         break;
+
+        //Import notes
+        case "import":
+            chrome.tabs.getSelected(null,function(tab) {
+                chrome.tabs.executeScript(tab.id, { code: "importPostits();" }, function() {
+                    console.log('All notes imported!');
+                });
+            });
+        break;
+
+        case "show":
+            chrome.tabs.getSelected(null,function(tab) {
+                chrome.tabs.executeScript(tab.id, { code: "showPostits();" }, function() {
+                    let e = chrome.runtime.lastError;
+                    if(e === undefined){
+                        //console.log('All postits hiden on background.js');
+                        backgroundPage._GetNumberOfPostits();
+                        abm._HiddenNotes = true;
+                    }
+
+                });
+            });
+        break;
+
         case "dashboard":
             chrome.tabs.getSelected(null,function(tab) {
                 //chrome.tabs.create({url: "http://postitall.txusko.com/extension/?userId=" +userId});
@@ -364,6 +451,15 @@ abm._OnMessage = function(request, sender, sendResponse) {
                     backgroundPage._GetNumberOfPostits();
             });*/
             backgroundPage._ReloadAll();
+        break;
+
+        case "refresh":
+            chrome.tabs.getSelected(null,function(tab) {
+                chrome.tabs.executeScript(tab.id, { code: "refreshPostits();" }, function() {
+                    console.log('Refresh notes ...');
+                    //backgroundPage._GetNumberOfPostits();
+                });
+            });
         break;
     }
     return true;
@@ -515,12 +611,12 @@ abm.setIcon = function(state, changeEnableOption) {
     changeEnableOption = false;
   }
   if(state) {
-    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[256]});
+    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[19]});
     if(changeEnableOption)
       chrome.browserAction.enable();
     //chrome.browserAction.setPopup({popup: "popup.html"});
   } else {
-    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[257]});
+    chrome.browserAction.setIcon({path:chrome.app.getDetails().icons[20]});
     chrome.browserAction.setBadgeText({text: ""});
     if(changeEnableOption)
       chrome.browserAction.disable();

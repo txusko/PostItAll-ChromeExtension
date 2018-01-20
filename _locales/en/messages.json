@@ -79,6 +79,18 @@
     "message": "Hide all notes",
     "description": "Hide all notes"
   },
+  "export_notes": {
+    "message": "Export all notes",
+    "description": "Export all notes"
+  },
+  "import_notes": {
+    "message": "Import notes",
+    "description": "Import notes"
+  },
+  "import_export": {
+    "message": "Import/Export notes",
+    "description": "Import/Export notes"
+  },
   "viewhide_notes": {
     "message": "View/Hide all notes",
     "description": "View/Hide all notes"
@@ -98,6 +110,10 @@
   "close": {
     "message": "Close",
     "description": "Close"
+  },
+  "back": {
+    "message": "Back",
+    "description": "Back"
   },
   "more_info": {
     "message": "More info at",
@@ -187,9 +203,21 @@
       "message": "New note",
       "description": "New note"
   },
+  "new_note_custom": {
+      "message": "New customized note",
+      "description": "New customized note"
+  },
   "new_note_dashboard": {
       "message": "New note in dashboard",
       "description": "New note in dashboard"
+  },
+  "submenu_title_custom": {
+    "message": "<b>Customized notes</b><br/>(Experimental shapes)",
+    "description": "Customized notes"
+  },
+  "note_options": {
+    "message": "Note options",
+    "description": "Note options"
   },
   "note_features": {
       "message": "Enabled features in notes",
@@ -234,6 +262,10 @@
   "showMeta": {
       "message": "Show meta-data info",
       "description": "Show meta-data info"
+  },
+  "exportNote": {
+      "message": "Show export note icon",
+      "description": "Show export note icon"
   },
   "allowPasteHtml": {
       "message": "Allow paste html content",
@@ -283,6 +315,10 @@
       "message": "Note size",
       "description": "Note size"
   },
+  "smallest": {
+      "message": "Smallest",
+      "description": "Smallest"
+  },
   "smaller": {
       "message": "Smaller",
       "description": "Smaller"
@@ -327,6 +363,50 @@
       "message": "X-Large",
       "description": "X-Large"
   },
+  "none": {
+      "message": "None",
+      "description": "None"
+  },
+  "parallelogram": {
+      "message": "Parallelogram",
+      "description": "Parallelogram"
+  },
+  "circle": {
+      "message": "Circle",
+      "description": "Circle"
+  },
+  "talkbubble": {
+      "message": "Talkbubble",
+      "description": "Talkbubble"
+  },
+  "talkbubble1": {
+      "message": "Talkbubble 1 (arrows in buttom-right)",
+      "description": "Talkbubble 1"
+  },
+  "talkbubble2": {
+      "message": "Talkbubble 2 (arrows in top-left)",
+      "description": "Talkbubble 2"
+  },
+  "arrow_right": {
+      "message": "Arrow to right",
+      "description": "Right arrow"
+  },
+  "arrow_left": {
+      "message": "Arrow to left",
+      "description": "Left arrow"
+  },
+  "arrow_up": {
+      "message": "Arrow to up",
+      "description": "Up arrow"
+  },
+  "arrow_down": {
+      "message": "Arrow to down",
+      "description": "Down arrow"
+  },
+  "tv": {
+      "message": "T.V.",
+      "description": "TV"
+  },
   "custom": {
       "message": "Custom",
       "description": "Custom"
@@ -359,6 +439,10 @@
       "message": "Text shadow",
       "description": "Text shadow"
   },
+  "custom_style": {
+      "message": "Custom style",
+      "description": "Custom style"
+  },
   "font_family": {
       "message": "Font family",
       "description": "Font family"
@@ -386,5 +470,9 @@
   "addHidden": {
     "message": "The note can be hidden",
     "description": "The note can be hidden"
+  },
+  "info_screenshots": {
+    "message": "* The domain screenshots will be automatically taken each time you visit a page with a note within or when you create a new one.",
+    "description": "* The domain screenshots will be automatically taken each time you visit a page with a note within or when you create a new one."
   }
 }

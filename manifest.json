@@ -2,15 +2,15 @@
   "manifest_version": 2,
   "name": "__MSG_extName__",
   "short_name": "__MSG_extName__",
-  "version": "0.0.1.0",
+  "version": "0.0.1.1",
   "default_locale": "en",
   "description": "__MSG_extDescription__",
   "icons": {
-    "16": "img/icono_16.png",
-    "48": "img/icono_64.png",
-    "128": "img/icono_128.png",
-    "256": "img/icono_256.png",
-    "257": "img/icono_256_off.png"
+    "19": "img/icono_19.png",
+    "20": "img/icono_19_off.png",
+    "38": "img/icono_38.png",
+    "39": "img/icono_38_off.png",
+    "256": "img/icono_256.png"
   },
   "browser_action": {
       "default_title": "__MSG_extName__",
@@ -37,7 +37,7 @@
   "content_scripts": [{
     "run_at": "document_end",
     "js": ["js/contentscript.js"],
-    "css": ["css/jquery.postitall.fontstyles.css"],
+    "css": ["css/jquery.postitall.fontstyles.css", "css/app.css"],
     "matches": ["http://*/*","https://*/*","file://*"],
     "all_frames": true
   }],

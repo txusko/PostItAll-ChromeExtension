@@ -34,7 +34,8 @@ $(document).ready(function() {
     abm._Restore(function() {
         //console.log('Restore', abm);
         abm.enabledFeatures.savable = true;
-        initPostits(abm.enabledFeatures, abm.style, abm.postit);
+        console.log(abm.cssclases);
+        initPostits(abm.enabledFeatures, abm.style, abm.cssclases, abm.postit);
         if(highlight)
             loadPostits(highlight)
         else

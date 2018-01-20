@@ -1,13 +1,16 @@
 //Postit vars
 $.fn.postitall.defaults.features.savable = true;
 
-function initPostits(enabledFeatures, style, postit) {
+function initPostits(enabledFeatures, style, cssclases, postit) {
 	setTimeout(function() {
 		if ($.PostItAll) {
 			$.PostItAll.changeConfig('global', enabledFeatures);
 			$.fn.postitall.defaults.style = style;
+			$.fn.postitall.defaults.cssclases = cssclases;
 			$.fn.postitall.defaults.height = postit.height;
 			$.fn.postitall.defaults.width = postit.width;
+			$.fn.postitall.defaults.minHeight = postit.minHeight;
+			$.fn.postitall.defaults.minWidth = postit.minWidth;
 			$.fn.postitall.defaults.flags.fixed = (postit.position == "fixed") ? true : false;
 		}
 	}, 500);
@@ -22,9 +25,9 @@ function checkLoaded() {
 }
 
 //Create a postit
-function loadPostit(description, posY, posX) {
+function loadPostit(description, posY, posX, customClass) {
 	//console.log('loadPostit',description, posX, posY);
-	var postit
+	var postit;
 	if(description === undefined) {
 		description = "";
 	}
@@ -70,12 +73,14 @@ function loadPostit(description, posY, posX) {
 		//console.log('onChange');
 		getScreenShoot();
 	};
-	//console.log(postit, $.fn.postitall.defaults);
+
+	if (customClass !== undefined)
+		postit.cssclases = { note: customClass };
+
 	$.PostItAll.new(description, postit);
 	$.PostItAll.save();
 }
 function loadPostitPosition(description, posX, posY) {
-	//console.log('loadPostitPosition', description, posX, posY);
 	$.PostItAll.new(description, {
 		width: 'auto',
 		posX: posX,
@@ -145,10 +150,30 @@ function viewhidePostits() {
 		}
 	}
 }
+
+//Export loaded notes
+function exportPostits() {
+	$.PostItAll.export("loaded");
+}
+
+//Import notes
+function importPostits() {
+	$.PostItAll.import(true, function() {
+		delay(function() {
+			lengthPostits();
+		}, 1000);
+	});
+}
+
 //Delete all
 function deletePostits() {
 	if(confirm('Do you want to remove all notes?\n\n*This action cannot be undone!'))
 		$.PostItAll.destroy(false, true, true, getUrl(window.location.href));
+}
+//Refresh notes
+function refreshPostits() {
+	//$('.PIApostit').hide();
+	//$('.PIApostit').show();
 }
 //Number of postits
 function lengthPostits() {

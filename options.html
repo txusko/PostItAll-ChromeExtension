@@ -105,7 +105,7 @@
                                 <div class="form-group">
 							    	<label for="idAllowFix" class="col-sm-4 control-label" i18n="allowFix"></label>
 							    	<div class="col-sm-8">
-                                        <div class="PIAfixed PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+                                        <div class="PIAfixed PIAicon" style="display:block;margin: 8px 12px 4px 0px;float:left;"></div>
 								    	<input type="checkbox" name="allowFix" class="feature" id="idAllowFix" data-on-text="Yes" data-off-text="No">
 								    </div>
 							    </div>
@@ -113,7 +113,7 @@
                                 <div class="form-group">
 							    	<label for="idHidden" class="col-sm-4 control-label" i18n="addHidden"></label>
 							    	<div class="col-sm-8">
-                                        <div class="PIAhide PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+                                        <div class="PIAhide PIAicon" style="display:block;margin: 8px 12px 4px 0px;float:left;"></div>
 								    	<input type="checkbox" name="addHidden" class="feature" id="idHidden" data-on-text="Yes" data-off-text="No">
 								    </div>
 							    </div>
@@ -121,7 +121,7 @@
                                 <div class="form-group">
 							    	<label for="idAllowMinimize" class="col-sm-4 control-label" i18n="allowMinimize"></label>
 							    	<div class="col-sm-8">
-                                        <div class="PIAminimize PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+                                        <div class="PIAminimize PIAicon" style="display:block;margin: 8px 12px 4px 0px;float:left;"></div>
 								    	<input type="checkbox" name="allowMinimize" class="feature" id="idAllowMinimize" data-on-text="Yes" data-off-text="No">
 								    </div>
 							    </div>
@@ -129,7 +129,7 @@
 							    <div class="form-group">
 							    	<label for="idAllowExpand" class="col-sm-4 control-label" i18n="allowExpand"></label>
 							    	<div class="col-sm-8">
-                                        <div class="PIAexpand PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+                                        <div class="PIAexpand PIAicon" style="display:block;margin: 8px 12px 4px 0px;float:left;"></div>
 								    	<input type="checkbox" name="allowExpand" class="feature" id="idAllowExpand" data-on-text="Yes" data-off-text="No">
 								    </div>
 							    </div>
@@ -153,7 +153,7 @@
                                 <div class="form-group">
 							    	<label for="idShowInfo" class="col-sm-4 control-label" i18n="showInfo"></label>
 							    	<div class="col-sm-8">
-                                        <div class="PIAinfoIcon PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+                                        <div class="PIAinfoIcon PIAicon" style="display:block;margin: 8px 12px 4px 0px;float:left;"></div>
 								    	<input type="checkbox" name="showInfo" class="feature" id="idShowInfo" data-on-text="Yes" data-off-text="No">
 								    </div>
 							    </div>
@@ -161,15 +161,23 @@
                                 <div class="form-group">
 							    	<label for="idShowMeta" class="col-sm-4 control-label" i18n="showMeta"></label>
 							    	<div class="col-sm-8">
-                                        <div class="PIAinfoIcon PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+                                        <div class="PIAinfoIcon PIAicon" style="display:block;margin: 8px 12px 4px 0px;float:left;"></div>
 								    	<input type="checkbox" name="showMeta" class="feature" id="idShowMeta" data-on-text="Yes" data-off-text="No">
+								    </div>
+							    </div>
+
+                                <div class="form-group">
+							    	<label for="idExportNote" class="col-sm-4 control-label" i18n="exportNote"></label>
+							    	<div class="col-sm-8">
+                                        <div class="PIAexport PIAicon" style="display:block;margin: 8px 12px 4px 0px;float:left;"></div>
+								    	<input type="checkbox" name="exportNote" class="feature" id="idExportNote" data-on-text="Yes" data-off-text="No">
 								    </div>
 							    </div>
 
                                 <div class="form-group">
 							    	<label for="idAddNew" class="col-sm-4 control-label" i18n="addNew"></label>
 							    	<div class="col-sm-8">
-                                        <div class="PIAnew PIAicon" style="display:block;margin: 8px 12px 4px 0px;"></div>
+                                        <div class="PIAnew PIAicon" style="display:block;margin: 8px 12px 4px 0px;float:left;"></div>
 								    	<input type="checkbox" name="addNew" class="feature" id="idAddNew" data-on-text="Yes" data-off-text="No">
 								    </div>
 							    </div>
@@ -261,6 +269,7 @@
 							<label class="col-sm-2 control-label" for="idNoteSize" i18n="note_size"></label>
                             <div class="col-sm-10">
 								<select id="idNoteSize" name="noteSize" class="form-control">
+                                    <option value="smallest" i18n="smallest"></option>
 									<option value="small" i18n="small"></option>
                                     <option value="small_square" i18n="small_square"></option>
 									<option value="medium" i18n="medium"></option>
@@ -347,6 +356,24 @@
                                 <input id="idTextShadow" type="checkbox" name="textShadow">
                             </div>
 						</div>
+
+                        <div class="form-group">
+							<label class="col-sm-2 control-label" for="idCustomStyle" i18n="custom_style"></label>
+                            <div class="col-sm-10">
+                                <select id="idCustomStyle" name="CustomStyle" class="form-control">
+                                    <option value="" i18n="none"></option>
+                                    <option value="talkbubbleleft" i18n="talkbubble1"></option>
+                                    <option value="talkbubbleright" i18n="talkbubble2"></option>
+                                    <option value="tv" i18n="tv"></option>
+                                    <option value="circle" i18n="circle"></option>
+                                    <option value="parallelogram" i18n="parallelogram"></option>
+                                    <option value="arrowright" i18n="arrow_right"></option>
+                                    <option value="arrowleft" i18n="arrow_left"></option>
+                                    <option value="arrowup" i18n="arrow_up"></option>
+                                    <option value="arrowdown" i18n="arrow_down"></option>
+								</select>
+                            </div>
+						</div>
 					</div>
 
                 </div>
@@ -355,7 +382,11 @@
             <div role="tabpanel" class="tab-pane fade" id="tabs-3">
                 <div class="form-group" id="list" style="margin-top:0px;">
                     <div class="pull-right">
-                        <button name="deleteNotes" id="idDeleteNotes" class="btn btn-danger" i18n="delete_all_notes"></button>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button name="exportNotes" id="idExportNotes" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-export"></span> <span i18n="export_notes"></span></button>
+                            <button name="importNotes" id="idImportNotes" class="btn btn-default"><span class="glyphicon glyphicon glyphicon-import"></span> <span i18n="import_notes"></span></button>
+                        </div>
+                        <button name="deleteNotes" id="idDeleteNotes" class="btn btn-danger"><span class="glyphicon glyphicon glyphicon-trash"></span> <span i18n="delete_all_notes"></span></button>
                     </div>
                     <h3 style="margin-top:0px;padding-top:0px;">
                         <span i18n="menu_list"></span>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -366,7 +397,7 @@
                     </h3>
                     <hr/>
                     <div id="idNoteList"></div>
-                    <p class="text-muted">* The screenshots of your domains will be catured automatically when you visit a page with a note or when you create a new note.</p>
+                    <p class="text-muted" i18n="info_screenshots"></p>
                 </div>
             </div>
 

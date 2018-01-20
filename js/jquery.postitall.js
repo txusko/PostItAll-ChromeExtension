@@ -28,6 +28,7 @@
 *
 */
 
+
 //Delay repetitive actions
 var delay = (function(){
   var timer = 0;
@@ -37,7 +38,7 @@ var delay = (function(){
   };
 })();
 
-(function ($, $localStorage) {
+;(function ($, $localStorage, window, document, undefined ) {
     "use strict";
 
     // Debug
@@ -71,6 +72,45 @@ var delay = (function(){
         dat.setTime(dat.getTime() + (seconds*1000));
         return dat;
     };
+    Date.prototype.toFormat = function (f) {
+        var nm = this.getMonthName();
+        var nd = this.getDayName();
+        f = f.replace(/yyyy/g, this.getFullYear());
+        f = f.replace(/yy/g, String(this.getFullYear()).substr(2,2));
+        f = f.replace(/MMM/g, nm.substr(0,3).toUpperCase());
+        f = f.replace(/Mmm/g, nm.substr(0,3));
+        f = f.replace(/MM\*/g, nm.toUpperCase());
+        f = f.replace(/Mm\*/g, nm);
+        f = f.replace(/mm/g, String(this.getMonth()+1).padLeft('0',2));
+        f = f.replace(/DDD/g, nd.substr(0,3).toUpperCase());
+        f = f.replace(/Ddd/g, nd.substr(0,3));
+        f = f.replace(/DD\*/g, nd.toUpperCase());
+        f = f.replace(/Dd\*/g, nd);
+        f = f.replace(/dd/g, String(this.getDate()).padLeft('0',2));
+        f = f.replace(/d\*/g, this.getDate());
+        return f;
+    };
+    Date.prototype.getMonthName = function () {
+        return this.toLocaleString().replace(/[^a-z]/gi,'');
+    };
+    //n.b. this is sooo not i18n safe :)
+    Date.prototype.getDayName = function () {
+        switch(this.getDay())
+        {
+        	case 0: return 'Sunday';
+        	case 1: return 'Monday';
+        	case 2: return 'Tuesday';
+        	case 3: return 'Wednesday';
+        	case 4: return 'Thursday';
+        	case 5: return 'Friday';
+        	case 6: return 'Saturday';
+        }
+    };
+    String.prototype.padLeft = function (value, size) {
+        var x = this;
+        while (x.length < size) {x = value + x;}
+        return x;
+    };
 
     // PLUGIN Public methods
     $.extend($.fn, {
@@ -97,7 +137,6 @@ var delay = (function(){
                 // Get/set options on the fly
                 case 'options':
                     // Setter
-                    //console.log('options', elem.length, data);
                     var obj = undefined;
                     elem.each(function (i, e) {
                         if($(e).hasClass('PIApostit')) {
@@ -201,7 +240,6 @@ var delay = (function(){
                                 posY = $(this).offset().top;
                             }
                             $.extend(data, { posX: posX, posY: posY }, true);
-                            //console.log('create', i, e);
                             $.PostItAll.new('', data, $(e), callback);
                         });
                     } else {
@@ -212,6 +250,46 @@ var delay = (function(){
             }
         }
     });
+
+    //Css clases
+    $.fn.postitall.cssclases = {
+        note                : 'note', //Default note style
+        withTextShadowWhite : 'withTextShadowWhite', //Note with text-shadow for dark fonts (default)
+        withTextShadowBlack : 'withTextShadowBlack', //Note with text-shadow for light fonts (default)
+        withoutTextShadow   : 'withoutTextShadow', //Note without text-shadows
+        withBoxShadow       : 'withBoxShadow', //Note with box-shadow
+        withoutBoxShadow    : 'withoutBoxShadow', //Note without box-shadow
+        icons : { //Icon generic clases and set
+            icon            : 'PIAicon', //Set for all icons
+            iconRight       : 'PIAiconright', //Set for the last top-right icon
+            iconLeft        : 'PIAiconleft', //Set for all left icons (top or bottom)
+            iconBottom      : 'PIAiconbottom', //Set for all bottom icons (left or right)
+            topToolbar      : 'PIAIconTopToolbar', //Set for bottom toolbar (contains all botton icons)
+            bottomToolbar   : 'PIAIconBottomToolbar', //Set for bottom toolbar (contains all botton icons)
+            close           : 'PIAclose', //Close icon (back panels)
+            config          : 'PIAconfig', //Config icon (top-right)
+            hide            : 'PIAhide', //Hide icon (top-left)
+            minimize        : 'PIAminimize', //Minimize icon (top-left)
+            maximize        : 'PIAmaximize', //Restore/Collapse icon (top-left)
+            expand          : 'PIAexpand', //Expand icon (top-left)
+            blocked         : 'PIAblocked', //Non blocked icon (top-right)
+            blockedOn       : 'PIAblocked2', //Blocked icon (top-right)
+            delete          : 'PIAdelete', //Delete icon (top-right)
+            info            : 'PIAinfoIcon', //Info icon (bottom-left)
+            copy            : 'PIAnew', //Copy icon (bottom-left)
+            fixed           : 'PIAfixed', //Non fixed icon (top-left)
+            fixedOn         : 'PIAfixed2', //Fixed icon (top-left)
+            export          : 'PIAexport', //Export icon (bottom-left)
+        },
+        arrows  : { //Default arrow : none
+            arrow   : 'arrow_box', //Set in all arrows
+            none    : '', //Without arrow
+            top     : 'arrow_box_top', //Top arrow
+            right   : 'arrow_box_right', //Right arrow
+            bottom  : 'arrow_box_bottom', //Bottom arrow
+            left    : 'arrow_box_left' //Left arrow
+        }
+    };
 
     //Global vars : enable and disable features and change the notes behaviour
     $.fn.postitall.globals = {
@@ -240,7 +318,8 @@ var delay = (function(){
         autoPosition    : true,         //Automatic reposition of the notes when user resize screen
         addArrow        : 'back',       //Add arrow to notes : none, front, back, all
         askOnHide       : true,         //Show configuration hideUntil back-panel (getBackPanelHideUntil)
-        hideUntil       : null          //Note will be hidden since that datetime
+        hideUntil       : null,         //Note will be hidden since that datetime
+        exportNote      : true          //Note can be exported
     };
 
     //Copy of the original global configuration
@@ -253,6 +332,7 @@ var delay = (function(){
         created         : Date.now(),               //Creation date
         domain          : window.location.origin,   //Domain in the url
         page            : window.location.pathname, //Page in the url
+        pageParams      : (window.location.search !== null && window.location.search !== "") ? window.location.search.substr(1) : "",
         osname          : navigator.appVersion,     //Browser informtion & OS name,
         content         : '',                       //Content of the note (text or html)
         position        : 'absolute',               //Position relative, fixed or absolute
@@ -270,10 +350,13 @@ var delay = (function(){
             backgroundcolor : '#FFFA3C',            //Background color in new postits when randomColor = false
             textcolor       : '#333333',            //Text color
             textshadow      : true,                 //Shadow in the text
-            fontfamily      : 'Open Sans',            //Default font
-            fontsize        : 'medium',              //Default font size
+            fontfamily      : 'Open Sans',                   //Default font
+            fontsize        : 'medium',                   //Default font size
             arrow           : 'none',               //Default arrow : none, top, right, bottom, left
         },
+        useCssProperties : true,                         //false: use only css properties; true: css properties & legacy "style" properties
+        //css clases
+        cssclases : $.extend({}, $.fn.postitall.cssclases, true),
         //Enable / Disable features
         features : $.extend({}, $.fn.postitall.globals, true),
         //Note flags
@@ -287,8 +370,8 @@ var delay = (function(){
         },
         //Attach the note to al html element
         attachedTo : {
-            element         : '',                   //Where to attach
-            position        : 'right',              //Position relative to elemente : top, right, bottom or left
+            element         : '',                   //Where to attach (string or object / '#idObject' or $('#idObject'))
+            position        : 'right',              //Position relative to elemente : top,right,bottom,left or combinations (top left, right bottom, ...)
             fixed           : true,                 //Fix note to element when resize screen
             arrow           : true,                 //Show an arrow in the inverse position
         },
@@ -326,41 +409,138 @@ var delay = (function(){
     };
 
     //Copy of the original note configuration
-    $.fn.postitall.defaultscopy = $.extend({}, $.fn.postitall.defaults, true);
-    $.fn.postitall.defaultscopy.style = $.extend({}, $.fn.postitall.defaults.style, true);
-    $.fn.postitall.defaultscopy.features = $.extend({}, $.fn.postitall.defaults.features, true);
-    $.fn.postitall.defaultscopy.flags = $.extend({}, $.fn.postitall.defaults.flags, true);
-    $.fn.postitall.defaultscopy.attachedTo = $.extend({}, $.fn.postitall.defaults.attachedTo, true);
+    $.fn.postitall.defaultscopy = $.extend({}, $.fn.postitall.defaults);
+    $.fn.postitall.defaultscopy.style = $.extend({}, $.fn.postitall.defaults.style);
+    $.fn.postitall.defaultscopy.cssclases = $.extend({}, $.fn.postitall.defaults.cssclases);
+    $.fn.postitall.defaultscopy.features = $.extend({}, $.fn.postitall.defaults.features);
+    $.fn.postitall.defaultscopy.flags = $.extend({}, $.fn.postitall.defaults.flags);
+    $.fn.postitall.defaultscopy.attachedTo = $.extend({}, $.fn.postitall.defaults.attachedTo);
 
     //Global functions
     jQuery.PostItAll = {
+
+        //Initialize environement
+        __initialize : function() {
+
+            //The notes
+            if($('#the_notes').length <= 0) {
+                $('<div id="the_notes"></div>').appendTo($('body'));
+            }
+
+            //The ligths
+            if($('#the_lights').length <= 0) {
+                $('<div id="the_lights"><div id="the_lights_close"></div></div>').appendTo($('body'));
+                $('#the_lights').click(function() {
+                    var note = new PostItAll();
+                    note.switchOnLights();
+                });
+            }
+
+            //Upload note
+            if($('#the_imports').length <= 0) {
+                //Import file
+                var importFile = function() {
+                    //Check support
+                    if (!window.FileReader) {
+                        console.log('Browser do not support FileReader.')
+                        return;
+                    }
+                    //Get file
+                    var input = $('#idImportFile').get(0);
+                    if (input.files.length) {
+                        //Get text
+                        var textFile = input.files[0];
+                        if(textFile.size > 0 && textFile.type == "text/plain") {
+                            //Create a new FileReader & read content
+                            var reader = new FileReader();
+                            reader.readAsText(textFile);
+                            $(reader).on('load', function(e) {
+                                //Text readed
+                                var file = e.target.result,results;
+                                if (file && file.length) {
+                                    //Check object
+                                    var obj = JSON.parse(file);
+                                    if(typeof obj === 'object') {
+                                        //create new note
+                                        var newNote = function(obj, resetDomainPage, callback) {
+                                            delete obj.id; //reset id
+                                            if (resetDomainPage)
+                                            {
+                                                delete obj.domain;
+                                                delete obj.page;
+                                            }
+                                            $.PostItAll.new(obj, callback);
+                                        }
+                                        if(obj.id !== undefined) {
+                                            //One note
+                                            newNote(obj, $('#idImportFile').data("resetDomainPage"), $('#idImportFile').data("callback")(obj));
+                                        } else if($(obj).length > 0) {
+                                            //Various notes
+                                            $(obj).each(function(n1,obj2) {
+                                                if(obj2.id !== undefined) {
+                                                    setTimeout(function() {
+                                                        newNote(obj2, $('#idImportFile').data("resetDomainPage"), $('#idImportFile').data("callback")(obj2));
+                                                    }, 250 + ( n1 * 250 ));
+                                                }
+                                            });
+                                        } else {
+                                            alert('No notes to import');
+                                        }
+                                    } else {
+                                        alert('Invalid file content');
+                                    }
+                                }
+                            });
+                        } else {
+                            alert('The file is empty or is not a text file.');
+                        }
+                    } else {
+                        alert('Please upload a file before continuing.')
+                    }
+                };
+                //The imports
+                var updString = $("<div />", { 'the_imports': '', 'style' : 'display:none;' });
+                //Input fle
+                var impFile = $('<input />', { id : "idImportFile", type : "file", name : "files" }).on("change", function () {
+                    $('#idImportUpload').click();
+                    $('#idImportFile').val("");
+                });
+                //Input button
+                var impBut = $('<button />', { id : "idImportUpload", type : "file", name : "files" }).on("click", importFile);
+                updString.append(impFile).append(impBut).prependTo($('body'));
+            }
+        },
 
         //Change configuration : type (global, note), opt (object)
         changeConfig : function(type, opt) {
             if(typeof type === 'string') {
                 if(type == "global") {
                     if(typeof opt === 'object')
-                        $.extend($.fn.postitall.globals, opt, true);
+                        $.fn.postitall.globals = $.extend({}, $.fn.postitall.globals, opt);
                     return $.fn.postitall.globals;
                 } else if(type == "note") {
                     if(typeof opt === 'object') {
                         if(opt.style !== undefined) {
-                            $.extend($.fn.postitall.defaults.style, opt.style, true);
+                            $.fn.postitall.defaults.style = $.extend({}, $.fn.postitall.defaults.style, opt.style);
                             delete opt.style;
                         }
+                        if(opt.cssclases !== undefined) {
+                            $.fn.postitall.defaults.cssclases = $.extend({}, $.fn.postitall.defaults.cssclases, opt.cssclases);
+                            delete opt.cssclases;
+                        }
                         if(opt.features !== undefined) {
-                            $.extend($.fn.postitall.defaults.features, opt.features, true);
+                            $.fn.postitall.defaults.features = $.extend({}, $.fn.postitall.defaults.features, opt.features);
                             delete opt.features;
                         }
                         if(opt.flags !== undefined) {
-                            $.extend($.fn.postitall.defaults.flags, opt.flags, true);
+                            $.fn.postitall.defaults.flags = $.extend({}, $.fn.postitall.defaults.flags, opt.flags);
                             delete opt.flags;
                         }
                         if(opt.attachedTo !== undefined) {
-                            $.extend($.fn.postitall.defaults.attachedTo, opt.attachedTo, true);
+                            $.fn.postitall.defaults.attachedTo = $.extend({}, $.fn.postitall.defaults.attachedTo, opt.attachedTo);
                             delete opt.attachedTo;
                         }
-                        $.extend($.fn.postitall.defaults, opt, true);
+                        $.fn.postitall.defaults = $.extend({}, $.fn.postitall.defaults, opt);
                     }
                     return $.fn.postitall.defaults;
                 }
@@ -430,27 +610,37 @@ var delay = (function(){
                 ok = true;
             }
 
+
+
             //Position
             var optPos = {};
             optPos.posX = parseInt(window.pageXOffset, 10);
             optPos.posY = parseInt(window.pageYOffset, 10);
             optPos.use = false;
 
-            //console.log('init opt', $.fn.postitall.defaults);
             if(opt === undefined) {
+                //Extend properties
                 opt = $.extend(true, {}, $.fn.postitall.defaults);
+                //Position
                 opt.posX = optPos.posX;
                 opt.posY = optPos.posY;
                 optPos.use = true;
             } else {
+                //Position
                 if(opt.posX === undefined && opt.posX === undefined) {
                     opt.posX = optPos.posX;
                     opt.posY = optPos.posY;
                     optPos.use = true;
                 }
-                opt = $.extend(true, {}, $.fn.postitall.defaults, opt);
+                //Meta-data
+                var defaults = $.extend({}, $.fn.postitall.defaults, true);
+                if(opt.meta !== undefined) defaults.meta = $.extend({}, opt.meta);
+
+                //Extend properties
+                opt = $.extend(true, {}, defaults, opt);
             }
 
+            //Type of position for the note
             if(opt.position == "relative" || opt.position == "fixed") {
                 if(!optPos.use) {
                     opt.posX = parseInt(opt.posX, 10) + parseInt(optPos.posX, 10);
@@ -462,6 +652,7 @@ var delay = (function(){
                 opt.position = "absolute";
             }
 
+            //Set final position
             if(optPos.use) {
                 opt.posX = optPos.posX + parseInt($.fn.postitall.defaults.posX, 10);
                 opt.posY = optPos.posY + parseInt($.fn.postitall.defaults.posX, 10);
@@ -471,21 +662,10 @@ var delay = (function(){
 
             //New note object
             var note = new PostItAll();
-
-            //Add content
-            if($('#the_notes').length <= 0) {
-                $('<div id="the_notes"></div>').appendTo($('body'));
-            }
-            if($('#the_lights').length <= 0) {
-                $('<div id="the_lights"><div id="the_lights_close"></div></div>').appendTo($('body'));
-                $('#the_lights').click(function() {
-                    note.switchOnLights();
-                });
-            }
             if(obj === undefined) {
                 obj = $('<div />', {
                     html: (content !== undefined ? content : '')
-                });
+                }).hide();
             } else {
                 var oldObj = obj;
                 $(oldObj).attr('PIA-original', '1');
@@ -500,10 +680,10 @@ var delay = (function(){
                 //Random bg & textcolor
                 if($.fn.postitall.globals.randomColor && opts.features.randomColor) {
                     if(opts.style.backgroundcolor === $.fn.postitall.defaults.style.backgroundcolor) {
-                        opts.style.backgroundcolor = note.getRandomColor();
+                        opts.style.backgroundcolor = note.getRandomColor(opts);
                     }
                     if(opts.style.textcolor === $.fn.postitall.defaults.style.textcolor) {
-                        opts.style.textcolor = note.getTextColor(opts.style.backgroundcolor);
+                        opts.style.textcolor = note.getTextColor(opts);
                     }
                     opts.features.randomColor = false;
                 }
@@ -512,7 +692,12 @@ var delay = (function(){
 
             //Check if we have the id
             var options = opt;
-            //console.log('options', options);
+
+            //Check noteClass
+            //if(options.cssclases.note !== "" && !note.selectorExists(options.cssclases.note)) {
+            //    options.cssclases.note = "";
+            //}
+
             if(options.id !== "") {
                 //Random bg & textcolor
                 options = randCol(options);
@@ -520,7 +705,6 @@ var delay = (function(){
                 setTimeout(function() { note.init(obj, options); if(callback !== undefined) callback($.fn.postitall.globals.prefix + options.id, options, obj[0]); }, 100);
             } else {
                 //Get new id
-                //console.log('paso');
                 note.getIndex(($.fn.postitall.globals.savable || options.features.savable), function(index) {
                     //Id
                     options.id = index;
@@ -574,11 +758,14 @@ var delay = (function(){
             }
         },
 
-        getNotes : function(callback) {
+        //Get all notes
+        getNotes : function(callback, filtered) {
           var len = -1;
           var iteration = 0;
           var finded = false;
           var notes = [];
+          if(typeof filtered === 'undefined')
+            filtered = $.fn.postitall.globals.filter;
           storageManager.getlength(function(len) {
               if(!len) {
                   if(typeof callback === 'function') callback(notes);
@@ -588,9 +775,9 @@ var delay = (function(){
                   storageManager.key(i, function(key) {
                       storageManager.getByKey(key, function(o) {
                           if (o != null) {
-                              if($.fn.postitall.globals.filter == "domain")
+                              if(filtered == "domain")
                                   finded = (o.domain === window.location.origin);
-                              else if($.fn.postitall.globals.filter == "page")
+                              else if(filtered == "page")
                                   finded = (o.domain === window.location.origin && o.page === window.location.pathname);
                               else
                                   finded = true;
@@ -611,15 +798,14 @@ var delay = (function(){
 
         //Load all (from storage)
         load : function(callback, callbacks, highlight) {
-          var len = -1;
-          var iteration = 0;
-          $.PostItAll.getNotes(function(notes) {
+            var len = -1;
+            var iteration = 0;
+            $.PostItAll.getNotes(function(notes) {
                 if(notes.length > 0) {
                     len = notes.length;
                     $(notes).each(function(i,o) {
                         if($($.fn.postitall.globals.prefix + o.id).length <= 0) {
                             if(typeof callbacks === 'object') {
-                                //console.log(callbacks);
                                 if(callbacks.onCreated !== undefined) {
                                     o.onCreated = callbacks.onCreated;
                                 }
@@ -642,7 +828,6 @@ var delay = (function(){
                             if(o.flags !== undefined) {
                                 o.flags.highlight = false;
                                 if(highlight !== undefined && o.id == highlight) {
-                                    //console.log('highlight note', highlight);
                                     o.flags.highlight = true;
                                 }
                             }
@@ -721,7 +906,6 @@ var delay = (function(){
             //TODO : Revisar
             if(delStorage && delDomain !== "" && delDomain !== undefined) { //&& $.fn.postitall.globals.savable
                 //Storage notes
-                console.log('clearStorage',delDomain);
                 $.PostItAll.clearStorage(delDomain);
             }
         },
@@ -739,6 +923,72 @@ var delay = (function(){
                     if(callback !== undefined) callback();
                 });
             }
+        },
+
+        //Import note
+        import : function(resetDomainPage, callback) {
+            if(resetDomainPage === undefined) {
+                resetDomainPage = true;
+            }
+            $('#idImportFile').data("resetDomainPage", resetDomainPage);
+            $('#idImportFile').data("callback", callback);
+            $('#idImportFile').trigger('click');
+        },
+
+        //Export note
+        export : function(opt) {
+            var obj = null;
+            if(typeof opt === 'undefined') {
+                opt = "loaded";
+            }
+            if(typeof opt === 'string') {
+                switch(opt) {
+                    case "all":
+                    case "domain":
+                    case "page":
+                        obj = [];
+                        $.PostItAll.getNotes(function(notes) {
+                            if(notes.length > 0) {
+                                $(notes).each(function(i,o) {
+                                    //var obj2 = $.PostItAll.options($.fn.postitall.globals.prefix + o.id);
+                                    obj.push(o);
+                                });
+                            }
+                        }, opt);
+                        break;
+                    case "loaded":
+                        obj = [];
+                        $('.PIApostit').each(function(i,e) {
+                            var obj2 = $.PostItAll.options($.fn.postitall.globals.prefix + $(e).data('PIA-id'));
+                            obj.push(obj2);
+                        });
+                        break;
+                    default:
+                        //Get options
+                        obj = $.PostItAll.options($.fn.postitall.globals.prefix + opt);
+                        break;
+                }
+
+                setTimeout(function() {
+                    if(obj != null && (obj.id !== undefined || obj.length > 0)) {
+                        var dat = new Date();
+                        //Create element
+                        var element = document.createElement('a');
+                        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj)));
+                        element.setAttribute('download', dat.toFormat("yyyymmdd") + $.fn.postitall.globals.prefix + opt + '.txt');
+                        element.style.display = 'none';
+                        //Append element to body
+                        document.body.appendChild(element);
+                        //Trigger download
+                        element.click();
+                        //Remove temporal element
+                        document.body.removeChild(element);
+                    } else {
+                        alert('No notes to export');
+                        console.log(obj);
+                    }
+                }, 250);
+            }
         }
     };
 
@@ -752,6 +1002,7 @@ var delay = (function(){
 
         // Initialize elements
         init : function(obj, opt) {
+
             //Default options
             this.options = $.extend({}, $.fn.postitall.defaults);
             //Set options
@@ -759,6 +1010,7 @@ var delay = (function(){
                 opt = {};
             }
             this.setOptions(opt);
+
             // Do nothing if already initialized
             if (obj.data('PIA-initialized') || $($.fn.postitall.globals.prefix + opt.id).length > 0) {
                 return;
@@ -769,9 +1021,6 @@ var delay = (function(){
             //obj id
             obj.attr('id', $.fn.postitall.globals.prefix.substring(1) + opt.id);
 
-            //console.log('init');
-            this.attachedTo();
-
             //create stuff
             var newObj = this.create(obj);
             //Set on resize action
@@ -781,157 +1030,232 @@ var delay = (function(){
             return newObj;
         },
 
+        //Attach the note to a dom object
         attachedTo : function(options) {
             var t = this;
             var data = options;
             if(data === undefined) {
                 data = t.options;
             }
+            var id = data.id;
+            var obj = $($.fn.postitall.globals.prefix + id);
+
+            //Recovers object selector (http://stackoverflow.com/questions/2420970/how-can-i-get-selector-from-jquery-object/14093425#14093425)
+            var get_selector = function (element) {
+                var $el = element;
+                var id = $el.attr("id");
+                if (id) { //"should" only be one of these if theres an ID
+                    return "#"+ id;
+                }
+                var selector = $el.parents()
+                            .map(function() { return this.tagName; })
+                            .get().reverse().join(" ");
+                if (selector) {
+                    selector += " "+ $el[0].nodeName;
+                }
+                var classNames = $el.attr("class");
+                if (classNames) {
+                    selector += "." + $.trim(classNames).replace(/\s/gi, ".");
+                }
+                var name = $el.attr('name');
+                if (name) {
+                    selector += "[name='" + name + "']";
+                }
+                if (!name){
+                    var index = $el.index();
+                    if (index) {
+                        index = index + 1;
+                        selector += ":nth-child(" + index + ")";
+                    }
+                }
+                return selector;
+            };
 
             //Position relative to a dom object
             if(data.attachedTo === undefined || typeof data.attachedTo !== 'object') data.attachedTo = { };
-            if(data.attachedTo.element !== undefined && data.attachedTo.element !== "") {
-                if($(''+data.attachedTo.element).length > 0) {
 
-                    var objToAttach = $(''+data.attachedTo.element).first();
-                    var objWidth = objToAttach.width() + parseInt(objToAttach.css('padding-left'),10) + parseInt(objToAttach.css('padding-right'),10);
-                    objWidth += parseInt(objToAttach.css('margin-left'),10) + parseInt(objToAttach.css('margin-right'),10);
-                    var objHeight = objToAttach.height() + parseInt(objToAttach.css('padding-top'),10) + parseInt(objToAttach.css('padding-bottom'),10);
-                    objHeight += parseInt(objToAttach.css('margin-top'),10) + parseInt(objToAttach.css('margin-bottom'),10);
-
-                    var position = {};
-                    //console.log('fixed?',this.elementOrParentIsFixed(data.attachedTo.element), $(window).width());
-                    if(this.elementOrParentIsFixed(data.attachedTo.element))
-                        position = objToAttach.position();
-                    else
-                        position = objToAttach.offset();
-
-                    if(data.attachedTo.arrow === undefined)
-                        data.attachedTo.arrow = true;
-
-                    if(data.attachedTo.position === undefined || data.attachedTo.position === "")
-                        data.attachedTo.position = "right middle";
-                    var tmpPos = data.attachedTo.position.split(" ");
-                    var pos1 = tmpPos[0], pos2 = tmpPos[1];
-                    switch(pos1) {
-                        case 'top':
-                            data.posY = position.top - data.height - 30;
-                            if(pos2 == "left") {
-                                data.posX = (position.left + (objWidth * 0.1)) - (data.width / 2);
-                            } else if(pos2 == "right") {
-                                data.posX = (position.left + (objWidth - (objWidth * 0.1))) - (data.width / 2);
-                            } else {
-                                data.posX = (position.left + (objWidth / 2)) - (data.width / 2);
-                            }
-                            if(data.attachedTo.arrow) {
-                                data.style.arrow = "bottom";
-                            }
-                        break;
-                        case 'right':
-                        default:
-                            data.posX = position.left + objWidth + 30;
-                            if(pos2 == "top") {
-                                data.posY = (position.top + (objHeight * 0.1)) - (data.height / 2);
-                            } else if(pos2 == "bottom") {
-                                data.posY = (position.top + (objHeight - (objHeight * 0.1))) - (data.height / 2);
-                            } else {
-                                data.posY = (position.top + (objHeight / 2)) - (data.height / 2);
-                            }
-                            if(data.attachedTo.arrow) {
-                                data.style.arrow = "left";
-                            }
-                        break;
-                        case 'bottom':
-                            data.posY = position.top + objHeight + 30;
-                            if(pos2 == "left") {
-                                data.posX = (position.left + (objWidth * 0.1)) - (data.width / 2);
-                            } else if(pos2 == "right") {
-                                data.posX = (position.left + (objWidth - (objWidth * 0.1))) - (data.width / 2);
-                            } else {
-                                data.posX = (position.left + (objWidth / 2)) - (data.width / 2);
-                            }
-                            if(data.attachedTo.arrow) {
-                                data.style.arrow = "top";
-                            }
-                        break;
-                        case 'left':
-                            data.posX = position.left - data.width - 30;
-                            if(pos2 == "top") {
-                                data.posY = (position.top + (objHeight * 0.1)) - (data.height / 2);
-                            } else if(pos2 == "bottom") {
-                                data.posY = (position.top + (objHeight - (objHeight * 0.1))) - (data.height / 2);
-                            } else {
-                                data.posY = (position.top + (objHeight / 2)) - (data.height / 2);
-                            }
-
-                            if(data.attachedTo.arrow) {
-                                data.style.arrow = "right";
-                            }
-                        break;
+            //Dom object to attach (mandatory)
+            var objToAttach
+            if(data.attachedTo.element !== undefined) {
+                //DOM object
+                if(typeof data.attachedTo.element === 'object') {
+                    //Get object selector
+                    data.attachedTo.element = get_selector(data.attachedTo.element);
+                }
+                //String object
+                if(typeof data.attachedTo.element === 'string' && data.attachedTo.element !== "") {
+                    if($(''+data.attachedTo.element).length > 0) {
+                        objToAttach = $(''+data.attachedTo.element).first();
+                    } else {
+                        console.log('Object to attach not found in DOM.');
+                        return;
                     }
-                    //console.log('new pos:', data.posX, data.posY, objWidth, objHeight, position);
+                } else {
+                    console.log('Incorrect object to attach. Define a jQuery object or a DOM selector for the element property.');
+                    return;
+                }
+            } else {
+                return;
+            }
 
-                    //Breakpoints / responsive behaviour (https://github.com/txusko/PostItAll/issues/11)
-                    if(pos1 === "left" || pos1 === "right") {
-                        if(data.posX < 0) {
-                            data.posX = position.left + 30;
-                            if(data.attachedTo.arrow) {
-                                data.style.arrow = "left";
-                            }
-                        } else if(data.posX > $(window).width()) {
-                            data.posX = (position.left + objWidth) - data.width - 30;
-                            if(data.attachedTo.arrow) {
-                                data.style.arrow = "right";
-                            }
-                        }
-                    }
-                    if(pos1 === "top" || pos1 === "bottom") {
-                        var scrollPosition = self.pageYOffset || document.documentElement.scrollTop  || document.body.scrollTop;
-                        if(data.posY < scrollPosition) {
-                            data.posY = position.top + 30;
-                            if(data.attachedTo.arrow) {
-                                data.style.arrow = "top";
-                            }
-                        } else if((data.posY + data.height) > (scrollPosition + $(window).height())) {
-                            data.posY = (position.top + objHeight) - data.height - 30;
-                            if(data.attachedTo.arrow) {
-                                data.style.arrow = "bottom";
-                            }
-                        }
-                    }
+            var position = {};
+            if(this.elementOrParentIsFixed(data.attachedTo.element))
+                position = objToAttach.position();
+            else
+                position = objToAttach.offset();
 
-                    if($($.fn.postitall.globals.prefix + data.id).length > 0) {
-                        $($.fn.postitall.globals.prefix + data.id).css({
-                            'top': data.posY,
-                            'left': data.posX
-                        });
+            if(data.attachedTo.arrow === undefined)
+                data.attachedTo.arrow = true;
+
+            if(data.attachedTo.position === undefined || data.attachedTo.position === "")
+                data.attachedTo.position = "right middle";
+            var tmpPos = data.attachedTo.position.split(" ");
+            var pos1 = tmpPos[0], pos2 = tmpPos[1];
+            var objWidth = objToAttach.width() + parseInt(objToAttach.css('padding-left'),10) + parseInt(objToAttach.css('padding-right'),10);
+            var objHeight = objToAttach.height() + parseInt(objToAttach.css('padding-top'),10) + parseInt(objToAttach.css('padding-bottom'),10);
+            var noteWidth = parseInt(obj.width(), 10) + parseInt(obj.css('padding-left'),10) + parseInt(obj.css('padding-right'),10);
+            var noteHeight = parseInt(obj.height(), 10) + parseInt(obj.css('padding-top'),10) + parseInt(obj.css('padding-bottom'),10);
+            var arrowWidth = 20;
+            if(data.useCssProperties && data.cssclases.note !== "" && data.cssclases.note !== $.fn.postitall.defaults.cssclases.note) {
+                if(!isNaN(parseInt(t.getCssClassProperty(data.cssclases.note, "border-width"))))
+                    arrowWidth += parseInt(t.getCssClassProperty(data.cssclases.note, "border-width"),10);
+            }
+
+            //Breakpoints / responsive behaviour (https://github.com/txusko/PostItAll/issues/11)
+            var fixVertical = function(callback) {
+                var scrollPosition = self.pageYOffset || document.documentElement.scrollTop  || document.body.scrollTop;
+                if(data.posY < scrollPosition) {
+                    data.posY = position.top + arrowWidth;
+                    if(data.attachedTo.arrow && data.style.arrow != "top") {
+                        data.style.arrow = "top";
+                        t.hideArrow(data.id, data);
+                    }
+                    if(callback != null) setTimeout(function() { callback(); }, 100);
+                } else if((data.posY + data.height) > (scrollPosition + $(window).height())) {
+                    data.posY = position.top + objHeight - noteHeight - arrowWidth;
+                    if(data.attachedTo.arrow && data.style.arrow != "bottom") {
+                        data.style.arrow = "bottom";
+                        t.hideArrow(data.id, data);
+                    }
+                    if(callback != null) setTimeout(function() { callback(); }, 100);
+                }
+            };
+            var fixHorizontal = function(callback) {
+                var dataPosX = data.posX;
+                if(pos1 == "right")
+                    dataPosX = dataPosX + noteWidth;
+                if(dataPosX < 0) {
+                    data.posX = position.left + arrowWidth;
+                    if(data.attachedTo.arrow && data.style.arrow != "left") {
+                        data.style.arrow = "left";
+                        t.hideArrow(data.id, data);
+                    }
+                    if(callback != null) setTimeout(function() { callback(); }, 100);
+                } else if(dataPosX > $(window).width()) {
+                    data.posX = (position.left + objWidth) - data.width - arrowWidth - getScrollWidth();
+                    if(data.attachedTo.arrow && data.style.arrow != "right") {
+                        data.style.arrow = "right";
+                        t.hideArrow(data.id, data);
+                    }
+                    if(callback != null) setTimeout(function() { callback(); }, 100);
+                }
+            };
+
+            var getScrollWidth = function() {
+                var outer = $('<div>').css({visibility: 'hidden', width: 94, overflow: 'scroll'}).appendTo('body');
+                var widthWithScroll = $('<div>').css({width: '100%'}).appendTo(outer).outerWidth();
+                outer.remove();
+                return 100 - widthWithScroll;
+            }
+
+            var updateNote = function() {
+                if($($.fn.postitall.globals.prefix + data.id).length > 0) {
+                    $($.fn.postitall.globals.prefix + data.id).animate({
+                        'top': data.posY,
+                        'left': data.posX
+                    }, 200, function() {
                         if(data.style.arrow != "none") {
-                            t.hideArrow();
-                            t.showArrow();
-                            //$($.fn.postitall.globals.prefix + data.id).css("overflow", "").css("resize", "");
+                            t.showArrow(data.id, data);
                         }
-                    }
-
-                    //this.setOptions(data);
-                    if(data.attachedTo.fixed === undefined)
-                        data.attachedTo.fixed = true;
-                    if(data.attachedTo.fixed) {
-                        //data.features.toolbar = false;
-                        //this.hoverOptions();
-                        /*if(!data.flags.blocked && $($.fn.postitall.globals.prefix + data.id).length > 0) {
-                            $('#pia_blocked_' + data.id).click();
-                        } else {
-                            data.flags.blocked = true;
-                        }*/
-
-                        //if($($.fn.postitall.globals.prefix + data.id).length > 0) {
-                            //$($.fn.postitall.globals.prefix + data.id).find('.PIAicon').hide();
-                        //}
-                        //data.features.draggable = false;
-                        //data.features.resizable = false;
-                    }
+                    });
                 }
             }
+
+            switch(pos1) {
+                case 'top':
+                    data.posY = position.top - noteHeight - arrowWidth;
+                    if(pos2 == "left") {
+                        data.posX = (position.left + (objWidth * 0.1)) - (data.width / 2);
+                    } else if(pos2 == "right") {
+                        data.posX = (position.left + (objWidth - (objWidth * 0.1))) - (data.width / 2);
+                    } else {
+                        data.posX = (position.left + (objWidth / 2)) - (data.width / 2);
+                    }
+                    if(data.attachedTo.arrow && data.style.arrow != "bottom") {
+                        data.style.arrow = "bottom";
+                        t.hideArrow(data.id, data);
+                    }
+                break;
+                case 'right':
+                default:
+                    data.posX = position.left + objWidth + arrowWidth;
+                    if(pos2 == "top") {
+                        data.posY = (position.top + (objHeight * 0.1)) - (data.height / 2);
+                    } else if(pos2 == "bottom") {
+                        data.posY = (position.top + (objHeight - (objHeight * 0.1))) - (data.height / 2);
+                    } else {
+                        data.posY = (position.top + (objHeight / 2)) - (data.height / 2);
+                    }
+                    if(data.attachedTo.arrow && data.style.arrow != "left") {
+                        data.style.arrow = "left";
+                        t.hideArrow(data.id, data);
+                    }
+                break;
+                case 'bottom':
+                    data.posY = position.top + objHeight + arrowWidth;
+                    if(pos2 == "left") {
+                        data.posX = (position.left + (objWidth * 0.1)) - (data.width / 2);
+                    } else if(pos2 == "right") {
+                        data.posX = (position.left + (objWidth - (objWidth * 0.1))) - (data.width / 2);
+                    } else {
+                        data.posX = (position.left + (objWidth / 2)) - (data.width / 2);
+                    }
+                    if(data.attachedTo.arrow && data.style.arrow != "top") {
+                        data.style.arrow = "top";
+                        t.hideArrow(data.id, data);
+                    }
+                break;
+                case 'left':
+                    data.posX = position.left - noteWidth - arrowWidth;
+                    if(pos2 == "top") {
+                        data.posY = (position.top + (objHeight * 0.1)) - (data.height / 2);
+                    } else if(pos2 == "bottom") {
+                        data.posY = (position.top + (objHeight - (objHeight * 0.1))) - (data.height / 2);
+                    } else {
+                        data.posY = (position.top + (objHeight / 2)) - (data.height / 2);
+                    }
+
+                    if(data.attachedTo.arrow && data.style.arrow != "right") {
+                        data.style.arrow = "right";
+                        t.hideArrow(data.id, data);
+                    }
+                break;
+            }
+
+            if(pos1 === "left" || pos1 === "right") {
+                fixHorizontal(function() {
+                    fixVertical();
+                });
+            } else if(pos1 === "top" || pos1 === "bottom") {
+                fixVertical(function() {
+                    fixHorizontal();
+                });
+            }
+
+            if(data.attachedTo.fixed === undefined)
+                data.attachedTo.fixed = true;
+
+            setTimeout(function() { updateNote(); }, 200);
         },
 
         //Save object
@@ -939,7 +1263,6 @@ var delay = (function(){
             var options = obj.data('PIA-options');
             if(!$.fn.postitall.globals.savable && !options.features.savable)
                 return;
-            //console.log('save', options);
             options.features.savable = true;
             this.saveOptions(options, callback);
         },
@@ -948,9 +1271,7 @@ var delay = (function(){
         saveOptions : function(options, callback) {
             if(options === undefined)
                 options = this.options;
-            //console.log('saveOptions', options.posX, options.posY, options.width, options.height);
             if ($.fn.postitall.globals.savable || options.features.savable) {
-                //console.log(options);
                 storageManager.add(options, function(error) {
                     if(error != "") {
                         if(callback != null) callback(error);
@@ -966,21 +1287,14 @@ var delay = (function(){
         //Destroy and remove
         destroy : function(obj, callOnDelete) {
 
-            //Swith on lights
-            //this.switchOnLights();
-            //this.disableKeyboardNav();
-
-            //console.log(obj);
             if(obj === undefined)
                 obj = $($.fn.postitall.globals.prefix + this.options.id);
             if(callOnDelete === undefined)
                 callOnDelete = true;
 
             var options = obj.data('PIA-options');
-            //console.log(this,options, obj);
             var id = options.id;
 
-            //console.log('destroy', id, $.fn.postitall.globals.savable, options.features.savable);
             //Remove from localstorage
             if ($.fn.postitall.globals.savable || options.features.savable) {
                 if(options.features.savable) {
@@ -1007,20 +1321,18 @@ var delay = (function(){
         remove : function(options) {
             //hide object
             var id = options.id;
-            //console.log('remove', id);
+
             $($.fn.postitall.globals.prefix + id).removeData('PIA-id')
                 .removeData('PIA-initialized')
                 .removeData('PIA-settings')
                 .animate({
-                          opacity: 0,
-                          height: 0
-                        }, function() {
-                            $(this).remove();
-                        });
-                /*.hide("slow", function () {
-                    $(this).remove();
-                });*/
-            $(window).off('resize');
+                      opacity: 0,
+                      height: 0
+                    }, function() {
+                        $(this).remove();
+                    });
+            if(this.length <= 0)
+                $(window).off('resize');
         },
 
         hide : function(id) {
@@ -1070,7 +1382,6 @@ var delay = (function(){
             if($.fn.postitall.globals.addArrow == "none" && options.features == "none") {
                 return;
             }
-            //console.log('arrowChangeOption', options.style.arrow, value);
             //Get new position
             if(options.style.arrow == value || value == 'none') {
                 //If this position is the same as before, remove arrow and show selectors
@@ -1086,58 +1397,67 @@ var delay = (function(){
             //Change options arrow select
             $('#idAddArrow_'+index).val(options.style.arrow);
 
-            this.hideArrow();
-            this.showArrow();
+            this.hideArrow(index, options);
+            this.showArrow(index, options);
             this.saveOptions(options);
             return options;
         },
 
         //Hide arrow & icons
-        hideArrow : function() {
+        hideArrow : function(ind, opt) {
             var index = this.options.id;
+            if(ind !== undefined)
+                index = ind;
+            var options = this.options;
+            if(opt !== undefined)
+                options = opt;
             //Remove previous arrow
-            $($.fn.postitall.globals.prefix + index).removeClass('arrow_box_top arrow_box_right arrow_box_bottom arrow_box_left', 1000, "easeInElastic");
+            var allClases = options.cssclases.arrows.top + ' ' + options.cssclases.arrows.right + ' ' + options.cssclases.arrows.bottom + ' ' + options.cssclases.arrows.left;
+            $($.fn.postitall.globals.prefix + index).removeClass(allClases, 1000, "easeInElastic");
             $($.fn.postitall.globals.prefix + index).find('.icon_box').hide();
             if(!$.ui) $($.fn.postitall.globals.prefix + index).css('overflow', 'hidden').css('resize', 'both');
-            //console.log('hide');
         },
 
         //Show arrow and icons
-        showArrow : function(index, options) {
+        showArrow : function(ind, opt) {
             var index = this.options.id;
+            if(ind !== undefined)
+                index = ind;
             var options = this.options;
+            if(opt !== undefined)
+                options = opt;
+
             //Add arrow
             switch(options.style.arrow) {
                 case 'top':
-                    $($.fn.postitall.globals.prefix + index).addClass('arrow_box_top', 1000, "easeInElastic").css('overflow', '').css('resize', '');
+                    $($.fn.postitall.globals.prefix + index).addClass(options.cssclases.arrows.top, 1000, "easeInElastic").css('overflow', '').css('resize', '');
                 break;
                 case 'right':
-                    $($.fn.postitall.globals.prefix + index).addClass('arrow_box_right', 1000, "easeInElastic").css('overflow', '').css('resize', '');
+                    $($.fn.postitall.globals.prefix + index).addClass(options.cssclases.arrows.right, 1000, "easeInElastic").css('overflow', '').css('resize', '');
                 break;
                 case 'bottom':
-                    $($.fn.postitall.globals.prefix + index).addClass('arrow_box_bottom', 1000, "easeInElastic").css('overflow', '').css('resize', '');
+                    $($.fn.postitall.globals.prefix + index).addClass(options.cssclases.arrows.bottom, 1000, "easeInElastic").css('overflow', '').css('resize', '');
                 break;
                 case 'left':
-                    $($.fn.postitall.globals.prefix + index).addClass('arrow_box_left', 1000, "easeInElastic").css('overflow', '').css('resize', '');
+                    $($.fn.postitall.globals.prefix + index).addClass(options.cssclases.arrows.left, 1000, "easeInElastic").css('overflow', '').css('resize', '');
                 break;
             }
-            //console.log('options.style.arrow',options.style.arrow);
             if(options.style.arrow == 'none')
                 $($.fn.postitall.globals.prefix + index).find('.icon_box').show();
             var icon = $($.fn.postitall.globals.prefix + index).find('div[data-value="'+options.style.arrow+'"]');
             icon.show();
             icon.find('span').hide();
-            //console.log('show');
         },
 
         //Autoresize note
         autoresize : function() {
+            var t = this;
             var id = this.options.id;
             var options = this.options;
             var obj = $($.fn.postitall.globals.prefix + id);
             if(options.flags.minimized || options.flags.expand)
                 return;
-            var toolBarHeight = parseInt(obj.find('.PIAtoolbar').height(), 10);
+            var toolBarHeight = parseInt(obj.find('.' + options.cssclases.icons.topToolbar).height(), 10);
             var contentHeight = parseInt(obj.find('.PIAeditable').height(), 10) + toolBarHeight,
                 posX = obj.css('left'),
                 posY = obj.css('top'),
@@ -1148,22 +1468,21 @@ var delay = (function(){
             if(isNaN(htmlEditorBarHeight) || htmlEditorBarHeight <= 30) {
                 htmlEditorBarHeight = 35;
             }
-            //console.log('divHeight',divHeight,'contentHeight',contentHeight);
+
             if(contentHeight > divHeight - 30) {
                 divHeight = contentHeight + htmlEditorBarHeight;
             } else if(contentHeight > options.minHeight) {
                 //Comment this line if we want to preserve user height
                 divHeight = contentHeight + htmlEditorBarHeight;
             }
-            //console.log('newHeight',divHeight);
             options.height = divHeight;
-            //obj.animate({ 'height': divHeight }, 250);
             obj.css('height', divHeight);
-            //console.log('auto', divWidth);
             options.width = divWidth;
 
-            if(options.attachedTo.element !== "" && options.attachedTo.fixed)
-                this.attachedTo();
+            if(!$( "#pia_editable_" + id ).is(':focus')) {
+                if(options.attachedTo.element !== "" && options.attachedTo.fixed)
+                    t.attachedTo();
+            }
         },
 
         //Get next note Id
@@ -1177,16 +1496,12 @@ var delay = (function(){
             var content = "";
             var paso = false;
             storageManager.getlength(function(len) {
-                //console.log('getIndex.len', len);
                 var loadedItems = $('.PIApostit').length;
                 var items = len + loadedItems + 1;
-                //console.log('getIndex.items', items);
                 for(var i = 1; i <= items; i++) {
                     (function(i) {
                         storageManager.get(i, function(content) {
-                            //console.log('getIndex.get', paso, i, content);
                             if(!paso && (content == null || content == "") && $( "#idPostIt_" + i ).length <= 0) {
-                                //console.log('nou index', i);
                                 paso = true;
                             }
                             if(callback != null && (paso || i >= items)) {
@@ -1217,7 +1532,6 @@ var delay = (function(){
             });
             /*jslint unparam: false*/
             if (save) {
-                //console.log('setOptions save', t.options);
                 this.saveOptions(t.options);
             }
         },
@@ -1277,7 +1591,7 @@ var delay = (function(){
             if($.fn.postitall.globals.resizable && $.ui) $($.fn.postitall.globals.prefix + id).resizable("disable");
             if($.fn.postitall.globals.draggable && $.ui) {
                 setTimeout(function() {
-                    $($.fn.postitall.globals.prefix + id).draggable({disabled: true});
+                    $($.fn.postitall.globals.prefix + id).draggable({disabled: true}).removeClass("ui-state-disabled");
                 }, 500);
             }
             //$(this).parent().parent().parent().parent().addClass('PIAflip');
@@ -1329,7 +1643,6 @@ var delay = (function(){
             if(id !== undefined) {
                 $($.fn.postitall.globals.prefix + id).css({
                     'z-index': 999999,
-                    'border': '1px solid rgb(236, 236, 0)',
                     'box-shadow': 'rgb(192, 195, 155) 1px 1px 10px 3px',
                 });
             }
@@ -1362,7 +1675,6 @@ var delay = (function(){
                 $("#the_lights").data('highlightedId', '');
                 $($.fn.postitall.globals.prefix + id).css({
                     'z-index': 999995,
-                    'border': '1px solid ' + $($.fn.postitall.globals.prefix + id).css('background-color'),
                     'box-shadow': '',
                 });
                 if(options.flags.expand) {
@@ -1379,7 +1691,6 @@ var delay = (function(){
                 // un-lock scroll position
                 var scrollPosition = $('html').data('scroll-position');
                 if(scrollPosition != undefined) {
-                    //console.log('unlock', scrollPosition);
                     var tmpOvf = $('html').data('previous-overflow');
                     $('html').css('overflow', (tmpOvf != "hidden") ? tmpOvf : "visible" );
                     window.scrollTo(scrollPosition[0], scrollPosition[1]);
@@ -1399,26 +1710,22 @@ var delay = (function(){
 
         //Enable keyboard actions
         enableKeyboardNav : function(callback) {
-            //console.log('enableKeyboardNav');
             this.callback = callback;
             $(document).on('keyup.keyboard', $.proxy(this.keyboardAction, this));
         },
 
         //Disable keybord actions
         disableKeyboardNav : function() {
-            //console.log('disableKeyboardNav');
             $(document).off('keyup.keyboard');
         },
 
         //Keyboard actions
         keyboardAction : function(event) {
-            //console.log('keyboardAction', event);
             var KEYCODE_ESC        = 27;
             var keycode = event.keyCode;
             var key     = String.fromCharCode(keycode).toLowerCase();
             //On keypress ESC
-            if (keycode === KEYCODE_ESC) { // || key.match(/x|o|c/)) {
-                //console.log('key press ESC');
+            if (keycode === KEYCODE_ESC) {
                 if(this.callback != undefined) this.callback();
                 this.switchOnLights();
                 this.disableKeyboardNav();
@@ -1429,7 +1736,6 @@ var delay = (function(){
         resizeAction : function(event) {
             var t = this;
             delay(function(){
-                //console.log('resizeAction', t.options.id);
                 //Lights switched off
                 var highlightedId = $("#the_lights").data('highlightedId');
                 if(highlightedId !== undefined && highlightedId !== ""){
@@ -1459,14 +1765,12 @@ var delay = (function(){
                 $('.PIApostit').each(function(i,e) {
                     obj = $($.fn.postitall.globals.prefix + $(e).data('PIA-id'));
                     options = $($.fn.postitall.globals.prefix + $(e).data('PIA-id')).data('PIA-options');
-                    //console.log(i,options,obj);
                     if(options !== undefined && options.attachedTo.element !== undefined && options.attachedTo.element !== "") {
                         //Attached elements
                         if(options.attachedTo.fixed !== undefined && options.attachedTo.fixed)
                             t.attachedTo(options);
                     } else {
                         //Floating elements
-                        //console.log('new pos for note ', i, e);
                         var noteLoc = obj.offset();
                         var screenLoc = { 'height': $(window).height(), 'width': $(window).width() };
                         var top = noteLoc.top;
@@ -1490,7 +1794,6 @@ var delay = (function(){
                     }
                     //Save
                     obj.data('PIA-options', options);
-                    //console.log('options', options);
                 });
                 //$.PostItAll.save();
             }, 100);
@@ -1511,7 +1814,6 @@ var delay = (function(){
                 'leftMinimized': leftMinimized,
             };
             this.options.oldPosition = propCss;
-            //console.log('saveOldPosition', this.options.oldPosition);
             this.setOptions(this.options, true);
         },
 
@@ -1525,57 +1827,76 @@ var delay = (function(){
             var scrollRight1 = scrollLeft1 + $(window).width();
             var scrollLeft2 = parseInt(tmpLeft, 10);
             var scrollRight2 = scrollLeft2 + parseInt(tmpWidth,10);
-            //console.log(scrollTop2,scrollTop1,scrollBottom2,scrollBottom1);
             if(scrollTop2 > scrollTop1 && scrollBottom2 < scrollBottom1 && scrollLeft2 > scrollLeft1 && scrollRight2 < scrollRight1) {
                 if(callback !== undefined) callback();
             } else {
                 $('html, body').animate({
                     scrollTop: scrollTop2 - parseInt(tmpHeight,10),
                     scrollLeft: scrollLeft2 - parseInt(tmpWidth,10)
-                }, 800, function() {
+                }, 400);
+
+                setTimeout(function() {
                     if(callback !== undefined) callback();
-                });
+                }, 500);
             }
         },
 
         //Restore note with options.oldPosition
-        restoreOldPosition : function(scrollToNote) {
+        restoreOldPosition : function(scrollToNote, callback) {
             if(scrollToNote === undefined)
                 scrollToNote = false;
 
-            //console.log('restoreOldPosition');
             var t = this;
             var options = t.options;
             var id = options.id;
-            //console.log('restoreOldPosition', options.oldPosition);
-            $($.fn.postitall.globals.prefix + id).animate({
-                'left': options.oldPosition.left,
-                'width': options.oldPosition.width,
-                'height': options.oldPosition.height,
-            }, 500, function() {
-                if(scrollToNote) {
-                    if(options.position != "fixed") {
-                        t.scrollToNotePosition(options.oldPosition.top, options.height, options.oldPosition.left, options.width);
-                    }
+            var showNote = function() {
+                if(options.oldPosition.position == "absolute") {
+                    $($.fn.postitall.globals.prefix + id).css({
+                        'top': parseInt($($.fn.postitall.globals.prefix + id).css('top'), 10) + $(document).scrollTop()
+                    });
+                } else {
+                    $($.fn.postitall.globals.prefix + id).css({
+                        'top': $($.fn.postitall.globals.prefix + id).css('top'),
+                    });
                 }
-                t.showArrow();
-                $(this).css({
-                    'position': options.oldPosition.position,
-                    'top': options.oldPosition.top,
+                $($.fn.postitall.globals.prefix + id).css({
+                    'position': 'absolute',
                     'bottom': 'auto',
                 });
-                $(this).find( ".PIAeditable" ).css('height', 'auto');
-                t.autoresize();
-                //animate resize
-                if(options.flags.blocked) {
-                    options.flags.blocked = false;
-                    t.blockNote();
-                } else {
-                    t.hoverOptions(id, true);
-                }
-                t.switchTrasparentNoteOff();
-                t.switchOnLights();
-            });
+                setTimeout(function(){
+                    $($.fn.postitall.globals.prefix + id).animate({
+                        'top': options.oldPosition.top,
+                        'left': options.oldPosition.left,
+                        'width': options.oldPosition.width,
+                        'height': options.oldPosition.height,
+                    }, 500, function() {
+                        t.showArrow(id, options);
+                        $(this).find( ".PIAeditable" ).css('height', 'auto');
+                        t.autoresize();
+                        //animate resize
+                        if(options.flags.blocked) {
+                            options.flags.blocked = false;
+                            t.blockNote();
+                        } else {
+                            t.hoverOptions(id, true);
+                        }
+                        t.switchTrasparentNoteOff();
+                        t.switchOnLights();
+
+                        if(callback !== undefined) callback();
+
+                    }).css({
+                        'position': options.oldPosition.position,
+                    });
+                }, 100);
+            };
+
+            if(scrollToNote && options.position != "fixed") {
+                t.scrollToNotePosition(options.oldPosition.top, options.height, options.oldPosition.left, options.width, showNote);
+            } else {
+                showNote();
+            }
+
         },
 
         //hide/show divList objects
@@ -1608,7 +1929,7 @@ var delay = (function(){
                 }
                 if ($.fn.postitall.globals.draggable && options.features.draggable) {
                     //draggable
-                    if ($.ui) $($.fn.postitall.globals.prefix + index).draggable("disable");
+                    if ($.ui) $($.fn.postitall.globals.prefix + index).draggable("disable").removeClass("ui-state-disabled");
                     $('#pia_toolbar_'+index).css('cursor', 'inherit');
                 }
             } else {
@@ -1630,11 +1951,11 @@ var delay = (function(){
             var index = t.options.id;
             var options = t.options;
             $('#the_lights_close').hide();
-            $('#pia_expand_' + index).removeClass('PIAexpand').addClass('PIAmaximize');
+            $('#pia_expand_' + index).removeClass(options.cssclases.icons.expand).addClass(options.cssclases.icons.minimize);
             t.hoverOptions(index, false);
             t.saveOldPosition();
             t.toogleToolbar('hide', ['idPIAIconBottom_', 'idInfo_', 'pia_config_', 'pia_fixed_', 'pia_delete_', 'pia_blocked_', 'pia_minimize_', 'pia_new_', 'pia_hidden_']);
-            t.hideArrow();
+            t.hideArrow(index, options);
             t.switchTrasparentNoteOn();
             t.switchOffLights();
             // Expand note
@@ -1664,7 +1985,7 @@ var delay = (function(){
             var options = t.options;
 
             $('#the_lights_close').show();
-            $('#pia_expand_' + index).removeClass('PIAmaximize').addClass('PIAexpand');
+            $('#pia_expand_' + index).removeClass(options.cssclases.icons.minimize).addClass(options.cssclases.icons.expand);
             $($.fn.postitall.globals.prefix + index).css('position', options.position);
             // show toolbar
             t.toogleToolbar('show', ['idPIAIconBottom_', 'idInfo_', 'pia_config_', 'pia_fixed_', 'pia_delete_', 'pia_blocked_', 'pia_minimize_', 'pia_new_', 'pia_hidden_']);
@@ -1689,7 +2010,7 @@ var delay = (function(){
             var minimize = function() {
                 t.hoverOptions(index, false);
                 $('#pia_editable_'+index).hide();
-                $('#pia_minimize_'+index).removeClass('PIAminimize').addClass('PIAmaximize');
+                $('#pia_minimize_'+index).removeClass(options.cssclases.icons.minimize).addClass(options.cssclases.icons.maximize);
                 options.flags.minimized = true;
                 //Add some start text to minimized note
                 var txtContent = " " + $('#pia_editable_'+index).text();
@@ -1697,6 +2018,7 @@ var delay = (function(){
                     txtContent = txtContent.substring(0,15) + "...";
                 var smallText = $('<div id="pia_minimized_text_'+index+'" class="PIAminimizedText" />').text(txtContent);
                 $('#pia_toolbar_'+index).append(smallText);
+                $('#pia_minimize_'+index).attr('title', 'Restore note');
                 //hide toolbar
                 t.toogleToolbar('hide', ['idPIAIconBottom_', 'idInfo_', 'pia_config_', 'pia_fixed_', 'pia_delete_', 'pia_blocked_', 'pia_expand_', 'pia_new_', 'pia_hidden_']);
 
@@ -1710,31 +2032,50 @@ var delay = (function(){
                 }
                 t.saveOldPosition();
                 //Minimize
-                $($.fn.postitall.globals.prefix + index).css({'position': 'fixed','top':'auto'}).animate({
-                    'width': (options.minWidth + 20),
-                    'height': '20px',
-                    'bottom': '0',
-                    'left': options.oldPosition.leftMinimized,
-                }, 500, function() {
-                    t.hideArrow();
-                    t.switchTrasparentNoteOn();
-                    $($.fn.postitall.globals.prefix + index).css({position:'fixed'})
+                var hideNote = function() {
+                    $($.fn.postitall.globals.prefix + index).animate({
+                        'width': (options.minWidth + 20),
+                        'height': '20px',
+                        'bottom': '0',
+                        'left': options.oldPosition.leftMinimized,
+                    }, 500, function() {
+                        t.hideArrow(index, options);
+                        t.switchTrasparentNoteOn();
+                        $($.fn.postitall.globals.prefix + index).css({position:'fixed'})
+                    }).css({
+                        'top': 'auto',
+                    });
+                };
+
+                $($.fn.postitall.globals.prefix + index).css({
+                    'position': 'fixed',
                 });
+                if(options.position == "absolute") {
+                    $($.fn.postitall.globals.prefix + index).css({
+                        'top': parseInt(options.posY, 10) - $(document).scrollTop(),
+                    });
+                }
+                setTimeout(function(){
+                    hideNote();
+                }, 100);
             };
             //maximize action (restoreOldPosition)
             var maximize = function() {
-                $('#pia_editable_'+index).show();
-                $('#pia_minimize_'+index).removeClass('PIAmaximize').addClass('PIAminimize');
-                options.flags.minimized = false;
-                // show toolbar
-                t.toogleToolbar('show', ['idPIAIconBottom_', 'idInfo_', 'pia_config_', 'pia_fixed_', 'pia_delete_', 'pia_blocked_', 'pia_expand_', 'pia_new_', 'pia_hidden_']);
-                $('#pia_minimized_text_'+index).remove();
-                //Remove draggable axis
-                if ($.fn.postitall.globals.draggable && options.features.draggable) {
-                    if ($.ui) obj.draggable({ axis: "none" });
-                }
-                t.restoreOldPosition(true);
-                t.switchTrasparentNoteOff();
+                t.restoreOldPosition(true, function() {
+                    $('#pia_editable_'+index).show();
+                    $('#pia_minimize_'+index).removeClass(options.cssclases.icons.maximize).addClass(options.cssclases.icons.minimize);
+                    options.flags.minimized = false;
+                    // show toolbar
+                    t.toogleToolbar('show', ['idPIAIconBottom_', 'idInfo_', 'pia_config_', 'pia_fixed_', 'pia_delete_', 'pia_blocked_', 'pia_expand_', 'pia_new_', 'pia_hidden_']);
+                    $('#pia_minimized_text_'+index).remove();
+                    $('#pia_minimize_'+index).attr('title', 'Minimize note');
+
+                    //Remove draggable axis
+                    if ($.fn.postitall.globals.draggable && options.features.draggable) {
+                        if ($.ui) obj.draggable({ axis: "none" });
+                    }
+                    t.switchTrasparentNoteOff();
+                });
             };
             //Action
             if(!options.flags.minimized) {
@@ -1756,14 +2097,14 @@ var delay = (function(){
             if(!$.fn.postitall.globals.blocked || !options.features.blocked)
                 return;
 
-            var ides = ['pia_config_', 'pia_fixed_', 'pia_hidden_', 'pia_delete_', 'idPIAIconBottom_', '.selectedArrow_'];
+            var ides = ['pia_config_', 'pia_fixed_', 'pia_delete_', 'idPIAIconBottom_', '.selectedArrow_'];
             if(!options.flags.expand)
                 ides.push('pia_expand_');
             if(!options.flags.minimized)
                 ides.push('pia_minimize_');
 
             if(options.flags.blocked) {
-                $('#pia_blocked_'+index.toString()).removeClass('PIAblocked2').addClass('PIAblocked');
+                $('#pia_blocked_'+index.toString()).removeClass(options.cssclases.icons.blockedOn).addClass(options.cssclases.icons.blocked).attr("title", "Block note");
                 $('#pia_editable_'+index.toString()).attr('contenteditable', true).css("cursor", "");
                 //toolbar
                 t.toogleToolbar('show', ides);
@@ -1772,7 +2113,7 @@ var delay = (function(){
                 //new state
                 options.flags.blocked = false;
             } else {
-                $('#pia_blocked_'+index.toString()).removeClass('PIAblocked').addClass('PIAblocked2');
+                $('#pia_blocked_'+index.toString()).removeClass(options.cssclases.icons.blocked).addClass(options.cssclases.icons.blockedOn).attr("title", "Unblock note");
                 $('#pia_editable_'+index.toString()).attr('contenteditable', false).css("cursor", "auto");
                 //disabel onhover actios
                 t.hoverOptions(index, false);
@@ -1792,14 +2133,14 @@ var delay = (function(){
             var options = t.options;
             var obj = $($.fn.postitall.globals.prefix + index);
             if(options.flags.fixed) {
-                $('#pia_fixed_'+index).removeClass('PIAfixed2 PIAiconFixed').addClass('PIAfixed PIAicon');
+                $('#pia_fixed_'+index).removeClass(options.cssclases.icons.fixedOn).addClass(options.cssclases.icons.fixed).attr("title", "Fix note");
                 options.position = "absolute";
                 options.posY = obj.offset().top;
                 obj.removeClass("fixed");
                 options.attachedTo.element = "";
                 options.flags.fixed = false;
             } else {
-                $('#pia_fixed_'+index).removeClass('PIAfixed PIAicon').addClass('PIAfixed2 PIAiconFixed');
+                $('#pia_fixed_'+index).removeClass(options.cssclases.icons.fixed).addClass(options.cssclases.icons.fixedOn).attr("title", "Unfix note");
                 options.position = "fixed";
                 options.posY = parseInt(options.posY, 10) - $(document).scrollTop();
                 obj.addClass("fixed");
@@ -1832,7 +2173,7 @@ var delay = (function(){
                 setTimeout(function(){
                     //Options
                     $( $.fn.postitall.globals.prefix + index ).hover(function() {
-                        $($.fn.postitall.globals.prefix + index).find('.PIAfront').find(".PIAicon, .PIAiconFixed").fadeTo(fadeInTime, 1);
+                        $($.fn.postitall.globals.prefix + index).find('.PIAfront').find("." + t.options.cssclases.icons.icon).fadeTo(fadeInTime, 1);
                         if(t.options.style.arrow === undefined || t.options.style.arrow == "none")
                             $( $.fn.postitall.globals.prefix + index).find(".icon_box").fadeTo(fadeOuTime, 1);
                         $($.fn.postitall.globals.prefix + index + ' > .ui-resizable-handle').fadeTo(fadeInTime, 1);
@@ -1840,7 +2181,7 @@ var delay = (function(){
                     }, function() {
                         setTimeout(function() {
                             if(!t.hoverState) {
-                                $($.fn.postitall.globals.prefix + index).find('.PIAfront').find(".PIAicon, .PIAiconFixed").fadeTo(fadeOuTime, 0);
+                                $($.fn.postitall.globals.prefix + index).find('.PIAfront').find("." + t.options.cssclases.icons.icon).fadeTo(fadeOuTime, 0);
                                 $($.fn.postitall.globals.prefix + index).find(".icon_box").fadeTo(fadeOuTime, 0);
                                 $($.fn.postitall.globals.prefix + index + ' > .ui-resizable-handle').fadeTo(fadeOuTime, 0);
                             }
@@ -1848,7 +2189,7 @@ var delay = (function(){
                         t.hoverState = false;
                     });
                     if(!t.hoverState) {
-                        $($.fn.postitall.globals.prefix + index).find('.PIAfront').find(".PIAicon, .PIAiconFixed").fadeTo(fadeOuTime, 0);
+                        $($.fn.postitall.globals.prefix + index).find('.PIAfront').find("." + t.options.cssclases.icons.icon).fadeTo(fadeOuTime, 0);
                         $($.fn.postitall.globals.prefix + index).find(".icon_box").fadeTo(fadeOuTime, 0);
                         $($.fn.postitall.globals.prefix + index + ' > .ui-resizable-handle').fadeTo(fadeOuTime, 0);
                     }
@@ -1858,15 +2199,79 @@ var delay = (function(){
             t.hoverState = false;
             //Options
             $( $.fn.postitall.globals.prefix + index ).unbind('mouseenter mouseleave');
-            //console.log('t.options.style.arrow',t.options.style.arrow);
             if(t.options.style.arrow === undefined || t.options.style.arrow == "none")
                 $( $.fn.postitall.globals.prefix + index).find(".icon_box").fadeTo(fadeOuTime, 1);
-            $( $.fn.postitall.globals.prefix + index).find('.PIAfront').find(".PIAicon, .PIAiconFixed").fadeTo(fadeInTime, 1);
+            $( $.fn.postitall.globals.prefix + index).find('.PIAfront').find("." + t.options.cssclases.icons.icon).fadeTo(fadeInTime, 1);
+        },
+
+        //Get value of a property of a CSS class
+        getCssClassProperty : function(cssClass, prop, reset) {
+            var val = "";
+            if(reset === undefined)
+                reset = true;
+            if(cssClass !== "") { // && this.selectorExists(cssClass)) {
+                //Create tmp element
+                var tmp = $('<div />').css({visibility: 'hidden'})
+                //Add element to body
+                tmp.appendTo('body');
+                //Reset default style
+                if(reset) tmp.hide();
+                //Add class or id
+                if(cssClass.charAt(0) === ".") {
+                    tmp.addClass(cssClass.substr(1));
+                } else if(cssClass.charAt(0) == "#") {
+                    tmp.attr('id', cssClass.substr(1));
+                } else {
+                    tmp.addClass(cssClass);
+                }
+                //Recover prop value
+                val = tmp.css(prop);
+                //Remove element
+                tmp.remove();
+            }
+            return val;
+        },
+
+        //Check if a css class exists in stylesheets
+        selectorExists : function(selector) {
+
+            var getAllSelectors = function() {
+                var ret = [];
+                for(var i = 0; i < document.styleSheets.length; i++) {
+                    try {
+                        var rules = document.styleSheets[i].rules || document.styleSheets[i].cssRules;
+                        for(var x in rules) {
+                            if(typeof rules[x].selectorText == 'string') ret.push(rules[x].selectorText);
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+                return ret;
+            };
+
+            var selectorExists = function(selector) {
+                var selectors = getAllSelectors();
+                for(var i = 0; i < selectors.length; i++) {
+                    if(selectors[i] == selector) return true;
+                }
+                return false;
+            }
+
+            var ret = selectorExists("." + selector);
+            return ret;
         },
 
         //Get a random color (if the feature is enabled, otherwhise will return default background color)
-        getRandomColor : function() {
+        getRandomColor : function(options) {
             var randomColor = "";
+            if(options.useCssProperties && options.cssclases.note !== "" && options.cssclases.note !== $.fn.postitall.defaults.cssclases.note) {
+                randomColor = this.getCssClassProperty(options.cssclases.note, "background-color");
+                if(randomColor !== "" && randomColor !== "transparent" && randomColor !== "rgba(0, 0, 0, 0)") {
+                    return this.getHexComponents(randomColor);
+                }
+            }
+
             if($.fn.postitall.globals.randomColor && $.fn.postitall.defaults.features.randomColor) {
                 //Random color
                 //var colors = ["red", "blue", "yellow", "black", "green"];
@@ -1876,6 +2281,7 @@ var delay = (function(){
                 //Default postit color
                 randomColor = $.fn.postitall.defaults.style.backgroundcolor;
             }
+
             if(randomColor.length < 7) {
                 var num = 7 - randomColor.length;
                 var ret = new Array( num + 1 ).join("0");
@@ -1885,13 +2291,18 @@ var delay = (function(){
         },
 
         //Get text color relative tot hexcolor (if the featured is enabled, otherwise will return default text color)
-        getTextColor : function(hexcolor) {
+        getTextColor : function(options) {
+            var hexcolor = options.style.backgroundcolor;
             if($.fn.postitall.globals.randomColor && $.fn.postitall.defaults.features.randomColor) {
                 //Inverse of background (hexcolor)
                 var nThreshold = 105;
                 var components = this.getRGBComponents(hexcolor);
                 var bgDelta = (components.R * 0.299) + (components.G * 0.587) + (components.B * 0.114);
                 return ((255 - bgDelta) < nThreshold) ? "#111111" : "#eeeeee";
+            } else if(options.useCssProperties && options.cssclases.note !== "" && options.cssclases.note !== $.fn.postitall.defaults.cssclases.note) {
+                var textColor = this.getCssClassProperty(options.cssclases.note, "color");
+                if(textColor !== "" && textColor !== "transparent" && textColor !== "rgba(0, 0, 0, 0)")
+                    return this.getHexComponents(textColor);
             } else {
                 //Default postit text color
                 return $.fn.postitall.defaults.style.textcolor;
@@ -1899,16 +2310,18 @@ var delay = (function(){
         },
 
         //Get css text-shadow style
-        getTextShadowStyle : function(hexcolor) {
-            //console.log(hexcolor);
+        getTextShadowStyle : function(hexcolor, cssClass) {
+            //Defined by plugin
             var nThreshold = 105;
             var components = this.getRGBComponents(hexcolor);
             var bgDelta = (components.R * 0.299) + (components.G * 0.587) + (components.B * 0.114);
-            return ((255 - bgDelta) < nThreshold) ? "tresdblack" : "tresd";
+            return ((255 - bgDelta) < nThreshold) ? cssClass.withTextShadowBlack : cssClass.withTextShadowWhite;
         },
 
         //Get rgb from an hex color
         getRGBComponents : function(color) {
+            if(color === undefined) return;
+
             var r = color.substring(1, 3);
             var g = color.substring(3, 5);
             var b = color.substring(5, 7);
@@ -1917,6 +2330,16 @@ var delay = (function(){
                G: parseInt(g, 16),
                B: parseInt(b, 16)
             };
+        },
+
+        //Get hex color from RGB
+        getHexComponents : function(rgb) {
+            if(rgb === "rgba(0, 0, 0, 0)") return ""; //No color
+            rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            function hex(x) {
+                return ("0" + parseInt(x).toString(16)).slice(-2);
+            }
+            return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
         },
 
         //Retrive unique random id (non savable notes)
@@ -1968,7 +2391,7 @@ var delay = (function(){
             }
             var toolbar = $('<div />', {
                 'id': 'pia_toolbar_' + index,
-                'class': 'PIAtoolbar',
+                'class': options.cssclases.icons.topToolbar,
                 'style': barCursor
             });
 
@@ -1984,7 +2407,8 @@ var delay = (function(){
                 if (options.features.removable) {
                     toolbar.append($('<div />', {
                         'id': 'pia_delete_' + index,
-                        'class': 'PIAdelete PIAicon'
+                        'class': options.cssclases.icons.icon + ' ' + options.cssclases.icons.iconRight + ' ' + options.cssclases.icons.delete,
+                        'css' : 'margin-right: 10px'
                     }).click(function (e) {
                         if (obj.hasClass('PIAdragged')) {
                             obj.removeClass('PIAdragged');
@@ -2005,7 +2429,8 @@ var delay = (function(){
                             }
                         }
                         e.preventDefault();
-                    }));
+                    }).attr("title", "Delete note")
+                );
                 }
             }
 
@@ -2015,7 +2440,7 @@ var delay = (function(){
                     toolbar.append(
                         $('<div />', {
                             'id': 'pia_config_' + index,
-                            'class': 'PIAconfig PIAicon'
+                            'class': options.cssclases.icons.icon + ' ' + options.cssclases.icons.iconRight + ' ' + options.cssclases.icons.config
                         }).click(function (e) {
                             if (obj.hasClass('PIAdragged')) {
                                 obj.removeClass('PIAdragged');
@@ -2030,7 +2455,7 @@ var delay = (function(){
 
                             }
                             e.preventDefault();
-                        })
+                        }).attr("title", "Configure note")
                     );
                 }
             }
@@ -2041,7 +2466,8 @@ var delay = (function(){
                     toolbar.append(
                         $('<div />', {
                             'id': 'pia_fixed_' + index,
-                            'class': 'PIAfixed' + (options.flags.fixed ? '2 PIAiconFixed' : ' PIAicon') + ' '
+                            'class': options.cssclases.icons.icon + ' ' + options.cssclases.icons.iconLeft + ' '
+                                + (options.flags.fixed ? options.cssclases.icons.fixedOn : options.cssclases.icons.fixed) + ' '
                         }).click(function (e) {
                             if (obj.hasClass('PIAdragged')) {
                                 obj.removeClass('PIAdragged');
@@ -2049,7 +2475,7 @@ var delay = (function(){
                                 t.fixNote();
                             }
                             e.preventDefault();
-                        })
+                        }).attr("title", (options.flags.fixed ? "Unfix note" : "Fix note"))
                     );
                 }
             }
@@ -2059,7 +2485,7 @@ var delay = (function(){
                 toolbar.append(
                     $('<div />', {
                         'id': 'pia_hidden_' + index,
-                        'class': 'PIAhide PIAicon'
+                        'class': options.cssclases.icons.icon + ' ' + options.cssclases.icons.iconLeft + ' ' + options.cssclases.icons.hide
                     }).click(function(e) {
                         if(obj.hasClass('PIAdragged')) {
                             obj.removeClass('PIAdragged');
@@ -2077,7 +2503,7 @@ var delay = (function(){
                             }
                         }
                         e.preventDefault();
-                    })
+                    }).attr("title", "Hide note")
                 );
             } else {
                 options.flags.hidden = false;
@@ -2088,7 +2514,8 @@ var delay = (function(){
                 toolbar.append(
                     $('<div />', {
                         'id': 'pia_minimize_' + index,
-                        'class': (options.flags.minimized ? 'PIAmaximize' : 'PIAminimize') + ' PIAicon'
+                        'class': options.cssclases.icons.icon + ' ' + options.cssclases.icons.iconLeft + ' '
+                            + (options.flags.minimized ? options.cssclases.icons.maximize : options.cssclases.icons.minimize)
                     }).click(function (e) {
                         if (obj.hasClass('PIAdragged')) {
                             obj.removeClass('PIAdragged');
@@ -2096,7 +2523,7 @@ var delay = (function(){
                             t.minimizeNote();
                         }
                         e.preventDefault();
-                    })
+                    }).attr("title", "Minimize note")
                 );
             } else {
                 options.flags.minimized = false;
@@ -2107,7 +2534,8 @@ var delay = (function(){
                 toolbar.append(
                     $('<div />', {
                         'id': 'pia_expand_' + index,
-                        'class': (options.flags.expand ? 'PIAmaximize' : 'PIAexpand') + ' PIAicon'
+                        'class': options.cssclases.icons.icon + ' ' + options.cssclases.icons.iconLeft + ' '
+                            + (options.flags.expand ? options.cssclases.icons.maximize : options.cssclases.icons.expand)
                     }).click(function (e) {
                         if (obj.hasClass('PIAdragged')) {
                             obj.removeClass('PIAdragged');
@@ -2119,7 +2547,7 @@ var delay = (function(){
                             }
                         }
                         e.preventDefault();
-                    })
+                    }).attr("title", "Maximize note")
                 );
             } else {
                 options.flags.expand = false;
@@ -2130,7 +2558,9 @@ var delay = (function(){
                 toolbar.append(
                     $('<div />', {
                         'id': 'pia_blocked_' + index,
-                        'class': 'PIAblocked' + (options.flags.blocked == true ? '2' : '') + ' PIAicon',
+                        'class': options.cssclases.icons.icon + ' ' + options.cssclases.icons.iconRight + ' '
+                            + (options.flags.blocked ? options.cssclases.icons.blockedOn : options.cssclases.icons.blocked),
+                        'css' : 'margin-right: 10px'
                     }).click(function (e) {
                         if (obj.hasClass('PIAdragged')) {
                             obj.removeClass('PIAdragged');
@@ -2138,7 +2568,7 @@ var delay = (function(){
                             t.blockNote();
                         }
                         e.preventDefault();
-                    })
+                    }).attr("title", (options.flags.blocked ? "Unblock note" : "Block note"))
                 );
             }
 
@@ -2147,8 +2577,7 @@ var delay = (function(){
                 'id': 'pia_editable_' + index,
                 'class': 'PIAeditable PIAcontent',
                 //Reset herisated contenteditable styles
-                //color:'+options.style.textcolor+';min-width:99%;
-                'style': 'width: auto;height: auto;padding: 10px;border-color: transparent;min-width:' + (options.minWidth) + 'px;box-shadow:none;min-height:' + (options.minHeight - 100) + 'px;'
+                'style': 'min-width:' + (options.minWidth) + 'px;box-shadow:none;min-height:' + (options.minHeight - 100) + 'px;'
             }).change(function (e) {
                 if(!$.fn.postitall.globals.editable || !options.features.editable) {
                     return;
@@ -2166,7 +2595,7 @@ var delay = (function(){
                                  replace(/<style[^>]*?>.*?<\/style>/gi, '').
                                  replace(/<![\s\S]*?--[ \t\n\r]*>/gi, '');
                     //htmlClean sanitize plugin
-                    if($.htmlClean !== undefined) {
+                    if($.htmlClean !== undefined && !($.fn.postitall.globals.htmlEditor && options.features.htmlEditor && $.trumbowyg)) {
                         //htmlClean plugin
                         text = $.htmlClean(text, { format: true });
                     }
@@ -2191,15 +2620,18 @@ var delay = (function(){
             }
 
             //Buttom icon toolbar
+            var addBottomToolbar = false;
+            var leftIconInToolBar = options.cssclases.icons.icon + ' ' + options.cssclases.icons.iconLeft + ' ' + options.cssclases.icons.iconBottom + ' ';
+            var bottomToolbar = $('<div />', {
+                'id': 'idPIAIconBottom_'+ index,
+                'class': options.cssclases.icons.bottomToolbar
+            });
+
             if(($.fn.postitall.globals.showInfo && options.features.showInfo)
             || ($.fn.postitall.globals.addNew && options.features.addNew)
             || ($.fn.postitall.globals.showMeta && options.features.showMeta
                 && typeof options.meta !== 'undefined' && typeof options.meta === 'object')
             ) {
-                var bottomToolbar = $('<div />', {
-                    'id': 'idPIAIconBottom_'+ index,
-                    'class': 'PIAIconBottom'
-                });
                 //Info icon (show whit showInfo or with meta)
                 if (($.fn.postitall.globals.showInfo && options.features.showInfo)
                 || ($.fn.postitall.globals.showMeta && options.features.showMeta
@@ -2208,7 +2640,7 @@ var delay = (function(){
                     var info = $('<a />', {
                         'href': '#',
                         'id': 'idInfo_'+index,
-                        'class': ' PIAicon PIAinfoIcon',
+                        'class': leftIconInToolBar + options.cssclases.icons.info,
                     }).click(function(e) {
                         if (obj.hasClass('PIAdragged')) {
                             obj.removeClass('PIAdragged');
@@ -2233,7 +2665,7 @@ var delay = (function(){
                             }
                         }
                         e.preventDefault();
-                    });
+                    }).attr("title", "View information");
                     bottomToolbar.append(info);
                 }
                 //Copy note icon
@@ -2241,7 +2673,7 @@ var delay = (function(){
                     var newNote = $('<a />', {
                         'href': '#',
                         'id': 'pia_new_' + index,
-                        'class': 'PIAnew PIAicon'
+                        'class': leftIconInToolBar + ' ' + options.cssclases.icons.copy
                     }).click(function (e) {
                         if (obj.hasClass('PIAdragged')) {
                             obj.removeClass('PIAdragged');
@@ -2255,6 +2687,7 @@ var delay = (function(){
                                 features: options.features,
                                 attachedTo: options.attachedTo,
                                 style: options.style,
+                                cssclases: options.cssclases,
                             }, function(id, options, obj) {
                                 setTimeout(function() {
                                     $('.PIApostit').css('z-index', 999995);
@@ -2263,9 +2696,33 @@ var delay = (function(){
                             });
                         }
                         e.preventDefault();
-                    });
+                    }).attr("title", "Copy note");
                     bottomToolbar.append(newNote);
                 }
+
+                addBottomToolbar = true;
+            }
+
+            //Export note
+            if($.fn.postitall.globals.exportNote && options.features.exportNote) {
+                var exportNote = $('<a />', {
+                    'href': '#',
+                    'id': 'pia_export_' + index,
+                    'class': leftIconInToolBar + ' ' + options.cssclases.icons.export
+                }).click(function (e) {
+                    if (obj.hasClass('PIAdragged')) {
+                        obj.removeClass('PIAdragged');
+                    } else {
+                        $.PostItAll.export(index);
+                    }
+                    e.preventDefault();
+                }).attr("title", "Export note");
+                bottomToolbar.append(exportNote);
+
+                addBottomToolbar = true;
+            }
+
+            if (addBottomToolbar) {
                 toolbar.prepend(bottomToolbar);
             }
 
@@ -2321,54 +2778,159 @@ var delay = (function(){
             var arrowClases = " ";
             var arrowPaso = false;
             if($.fn.postitall.globals.addArrow != "none" && options.features.addArrow != "none") {
-                arrowClases += "arrow_box";
+                arrowClases += options.cssclases.arrows.arrow + " ";
                 switch(options.style.arrow) {
                     case 'top':
-                        arrowClases += ' arrow_box_top';
+                        arrowClases += options.cssclases.arrows.top;
                         arrowPaso = true;
                     break;
                     case 'right':
-                        arrowClases += ' arrow_box_right';
+                        arrowClases += options.cssclases.arrows.right;
                         arrowPaso = true;
                     break;
                     case 'bottom':
-                        arrowClases += ' arrow_box_bottom';
+                        arrowClases += options.cssclases.arrows.bottom;
                         arrowPaso = true;
                     break;
                     case 'left':
-                        arrowClases += ' arrow_box_left';
+                        arrowClases += options.cssclases.arrows.left;
                         arrowPaso = true;
                     break;
                 }
             }
 
-            //Modify final Postit Object
-            obj.removeClass()
-                .addClass('PIApostit ' + (options.style.tresd ? ' PIApanel ' : ' PIAplainpanel ')
-                    + (options.position == "fixed" ? ' fixed ' : '') + arrowClases)
-                .css('position', options.position)
-                .css('top', options.posY)
-                .css('width', options.width + 'px')
-                .css('height', options.height + 'px')
-                .css('background-color', options.style.backgroundcolor)
-                .css('color', options.style.textcolor)
-                .css('font-family', options.style.fontfamily)
-                .css('font-size', options.style.fontsize)
-                .css('border-bottom-color', options.style.backgroundcolor)
-                .css('border-left-color', options.style.backgroundcolor)
-                .css('border-top-color', options.style.backgroundcolor)
-                .css('border-right-color', options.style.backgroundcolor);
+            //Add user class
+            var cssVal = options.cssclases.note;
 
-            if (options.right !== "") {
-                obj.css('right', options.right);
-                //options.right = "";
-            } else {
-                obj.css('left', options.posX)
+            //Modify final Postit Object
+            obj.removeClass().addClass( cssVal + ' PIApostit PIApanel ' + (options.style.tresd ? options.cssclases.withBoxShadow : options.cssclases.withoutBoxShadow)
+                + (options.position == "fixed" ? ' fixed ' : ' ') + arrowClases)
+            .css('background-color', options.style.backgroundcolor)
+            .css('color', options.style.textcolor);
+
+            //Border
+            var borderColor = options.style.backgroundcolor;
+            if (options.useCssProperties || borderColor === "") {
+                cssVal = this.getCssClassProperty(options.cssclases.note, "border-top-color");
+                var fontVal = this.getCssClassProperty(options.cssclases.note, "color");
+                if(cssVal !== "" && cssVal !== fontVal) borderColor = cssVal;
             }
-            if (options.style.textshadow) {
-                obj.addClass(t.getTextShadowStyle(options.style.textcolor));
+            obj.css('border-bottom-color', borderColor).css('border-left-color', borderColor)
+            .css('border-top-color', borderColor).css('border-right-color', borderColor);
+
+            //Font-family
+            if (options.useCssProperties || options.style.fontfamily === "") {
+                cssVal = this.getCssClassProperty(options.cssclases.note, "font-family");
+                if(cssVal !== "" && cssVal !== "static") options.style.fontfamily = cssVal;
+            }
+            obj.css('font-family', options.style.fontfamily);
+
+            //Font-size
+            if (options.useCssProperties || options.style.fontsize === "") {
+                cssVal = this.getCssClassProperty(options.cssclases.note, "font-size");
+                if(cssVal !== "" && cssVal !== "static") options.style.fontsize = cssVal;
+            }
+            obj.css('font-size', options.style.fontsize);
+
+            //Position
+            if (options.useCssProperties || options.position === "") {
+                cssVal = this.getCssClassProperty(options.cssclases.note, "position");
+                if(cssVal !== "" && cssVal !== "static") options.position = cssVal;
+            }
+            obj.css('position', options.position);
+
+            //Width
+            cssVal = options.width + "px";
+            if(options.cssclases.note !== "" && options.cssclases.note !== $.fn.postitall.defaults.cssclases.note) {
+                if (options.useCssProperties || options.width === "") {
+                    cssVal = this.getCssClassProperty(options.cssclases.note, "width") + "px";
+                    if(cssVal === "" || parseInt(cssVal, 10) == 0 || parseInt(cssVal, 10) < options.minWidth)
+                        cssVal = options.width + "px";
+                }
+                /*if (options.useCssProperties || options.minWidth === "") {
+                    //minwidth
+                    var minVal = this.getCssClassProperty(options.cssclases.note, "min-width");
+                    //if(minVal !== "" && parseInt(minVal, 10) != 0) options.minWidth = parseInt(minVal, 10);
+                    //Set minwidth as width if this is inferior
+                    if(parseInt(minVal, 10) > parseInt(cssVal, 10)) cssVal = options.minWidth + "px";
+                    //else if(cssVal !== "" && parseInt(cssVal, 10) != 0) options.minWidth = parseInt(cssVal, 10);
+                }*/
+            }
+            obj.css('width', cssVal);
+
+            //Height
+            cssVal = options.height + "px";
+            if(options.cssclases.note !== "" && options.cssclases.note !== $.fn.postitall.defaults.cssclases.note) {
+                if (options.useCssProperties || options.height === "") {
+                    cssVal = this.getCssClassProperty(options.cssclases.note, "height") + "px";
+                    if(cssVal === "" || parseInt(cssVal, 10) == 0 || parseInt(cssVal, 10) < options.minHeight)
+                        cssVal = options.width + "px";
+                }
+                /*if (options.useCssProperties || options.minHeight === "") {
+                    //minHeight
+                    var minVal = this.getCssClassProperty(options.cssclases.note, "min-height");
+                    //if(minVal !== "" && parseInt(minVal, 10) != 0) options.minHeight = parseInt(minVal, 10);
+                    //Set minheight as height if this is inferior
+                    if(parseInt(minVal, 10) > parseInt(cssVal, 10)) cssVal = options.minHeight + "px";
+                    //else if(cssVal !== "" && parseInt(cssVal, 10) != 0) options.minHeight = parseInt(cssVal, 10);
+                }*/
+            }
+            obj.css('height', cssVal);
+
+            //Top / Bottom
+            cssVal = this.getCssClassProperty(options.cssclases.note, "bottom");
+            if(options.position == "absolute") {
+                if(cssVal !== "" && cssVal !== "auto") {
+                    obj.css('bottom', parseInt(cssVal, 10));
+                    options.posY = obj.css('top');
+                } else {
+                    cssVal = this.getCssClassProperty(options.cssclases.note, "top");
+                    if(cssVal !== "" && cssVal !== "auto") {
+                        options.posY = cssVal;
+                    }
+                    obj.css('top', options.posY);
+                }
             } else {
-                obj.addClass('dosd');
+                if(options.position == "relative") {
+                    options.position = "absolute";
+                    obj.css('position', options.position);
+                }
+                if(cssVal !== "" && cssVal !== "auto") {
+                    obj.css('bottom', options.posY + ($(window).height() - parseInt(cssVal, 10)));
+                    options.posY = obj.css('top');
+                } else {
+                    cssVal = this.getCssClassProperty(options.cssclases.note, "top");
+                    if(cssVal !== "" && cssVal !== "auto") {
+                        options.posY = parseInt(options.posY, 10) + parseInt(cssVal, 10);
+                    }
+                    obj.css('top', options.posY + "px");
+                }
+            }
+
+            //Left / Right
+            if(options.cssclases.note !== "" && options.cssclases.note !== $.fn.postitall.defaults.cssclases.note && options.right === $.fn.postitall.defaults.right) {
+                cssVal = this.getCssClassProperty(options.cssclases.note, "right");
+                if(cssVal !== "" && cssVal !== "auto") {
+                    options.right = cssVal;
+                    obj.css('right', options.right);
+                } else {
+                    cssVal = this.getCssClassProperty(options.cssclases.note, "left");
+                    if(cssVal !== "" && cssVal !== "auto") options.posX = cssVal;
+                    obj.css('left', options.posX)
+                }
+            } else {
+                if (options.right !== "") {
+                    obj.css('right', options.right);
+                    //options.right = "";
+                } else {
+                    obj.css('left', options.posX)
+                }
+            }
+
+            if (options.style.textshadow) {
+                obj.addClass(t.getTextShadowStyle(options.style.textcolor, options.cssclases));
+            } else {
+                obj.addClass(options.cssclases.withoutTextShadow);
             }
             obj.html(postit)
             .on('focus', '#pia_editable_' + index, function () {
@@ -2456,7 +3018,6 @@ var delay = (function(){
                 var objeto = $(this);
                 if (objeto.data('before') !== objeto.html()) {
                     delay(function() {
-                        //console.log('change!');
                         var content = objeto.text();
                         if ($.fn.postitall.globals.pasteHtml || options.features.pasteHtml)
                             content = objeto.html();
@@ -2483,7 +3044,7 @@ var delay = (function(){
                             //Remove draggable postit option
                             $('.PIApostit').css('z-index', 999995);
                             $(this).css('z-index', 999999);
-                            $(this).draggable('disable');
+                            $(this).draggable('disable').removeClass("ui-state-disabled");
                             if(!options.flags.minimized) {
                                 t.switchTrasparentNoteOn();
                             }
@@ -2525,7 +3086,6 @@ var delay = (function(){
                 }
                 if ($.fn.postitall.globals.resizable &&  options.features.resizable) {
                     var pos = false;
-                    //console.log('options.minHeight',options.minHeight);
                     obj.resizable({
                         animate: true,
                         helper: 'ui-resizable-helper',
@@ -2537,20 +3097,17 @@ var delay = (function(){
                             var tmpHeigth = $('#pia_editable_'+index).height();
                             if(tmpHeigth <= options.minHeight)
                                 tmpHeigth = options.minHeight;
-                            //$(this).resizable({minHeight: tmpHeigth });
                             //onSelect event
                             options.onSelect($.fn.postitall.globals.prefix + options.id);
                         },
                         stop: function () {
                             delay(function(){
-                                //console.log('stop autoresize');
                                 t.autoresize();
                                 options.right = '';
-                                //if ($.fn.postitall.globals.savable && options.features.savable) {
-                                    options.posY = obj.css('top');
-                                    options.posX = obj.css('left');
-                                    t.saveOptions(options);
-                                //}
+                                options.posY = obj.css('top');
+                                options.posX = obj.css('left');
+                                t.autoresize();
+                                t.saveOptions(options);
                                 //onRelease event
                                 options.onRelease($.fn.postitall.globals.prefix + options.id);
                             }, 1000);
@@ -2564,7 +3121,7 @@ var delay = (function(){
                     obj.css('overflow', 'hidden');
                     obj.css('resize', 'both');
                     obj.find('.PIAfront').css('height', '92%');
-                    obj.find('.PIAIconBottom').css('bottom', '0%');
+                    obj.find('.' + options.cssclases.icons.bottomToolbar).css('bottom', '0%');
                 }
             }
             //hide back
@@ -2603,15 +3160,14 @@ var delay = (function(){
             //Select arrow in front
             if( ($.fn.postitall.globals.addArrow == "front" || $.fn.postitall.globals.addArrow == "all")
             || (options.features.addArrow == "all" || options.features.addArrow == "front") ) {
-                var checks = "<div class='PIAicon icon_box icon_box_top selectedArrow_"+index+"' data-index='"+index+"' data-value='top'><span class='ui-icon ui-icon-triangle-1-n'></span></div>";
-                checks += "<div class='PIAicon icon_box icon_box_right selectedArrow_"+index+"' data-index='"+index+"' data-value='right'><span class='ui-icon ui-icon-triangle-1-e'></span></div>";
-                checks += "<div class='PIAicon icon_box icon_box_bottom selectedArrow_"+index+"' data-index='"+index+"' data-value='bottom'><span class='ui-icon ui-icon-triangle-1-s'></span></div>";
-                checks += "<div class='PIAicon icon_box icon_box_left selectedArrow_"+index+"' data-index='"+index+"' data-value='left'><span class='ui-icon ui-icon-triangle-1-w'></span></div>";
+                var cssClases = options.cssclases.icons.icon + " " + options.cssclases.icons.iconLeft + " icon_box ";
+                var checks = "<div class='" + cssClases + " icon_box_top selectedArrow_"+index+"' data-index='"+index+"' data-value='top'><span class='ui-icon ui-icon-triangle-1-n'></span></div>";
+                checks += "<div class='" + cssClases + " icon_box_right selectedArrow_"+index+"' data-index='"+index+"' data-value='right'><span class='ui-icon ui-icon-triangle-1-e'></span></div>";
+                checks += "<div class='" + cssClases + " icon_box_bottom selectedArrow_"+index+"' data-index='"+index+"' data-value='bottom'><span class='ui-icon ui-icon-triangle-1-s'></span></div>";
+                checks += "<div class='" + cssClases + " icon_box_left selectedArrow_"+index+"' data-index='"+index+"' data-value='left'><span class='ui-icon ui-icon-triangle-1-w'></span></div>";
                 obj.append(checks);
 
                 $('.selectedArrow_'+index).click(function(e) {
-                    //console.log('click al link', $(this).attr('data-index'), $(this).attr('data-value'));
-                    console.log('arrowChangeOption');
                     if (obj.hasClass('PIAdragged')) {
                         obj.removeClass('PIAdragged');
                     } else {
@@ -2624,7 +3180,6 @@ var delay = (function(){
                 var icon = $($.fn.postitall.globals.prefix+index).find('div[data-value="'+options.style.arrow+'"]');
                 icon.show();
                 icon.find('span').hide();
-                //console.log('arrowPaso', arrowPaso, index, options.style.arrow);
             }
 
             //Change hidden state if note is higlighted
@@ -2639,10 +3194,15 @@ var delay = (function(){
                     $('#textshadow_' + index).click(function () {
 
                         if ($(this).is(':checked')) {
-                            $(this).closest('.PIApostit').find('.PIAcontent').addClass(t.getTextShadowStyle($('#minicolors_text_' + index).val())).removeClass('dosd');
+                            $(this).closest('.PIApostit').find('.PIAcontent')
+                            .addClass(t.getTextShadowStyle($('#minicolors_text_' + index).val(), options.cssclases))
+                            .removeClass(options.cssclases.withoutTextShadow);
                             options.style.textshadow = true;
                         } else {
-                            $(this).closest('.PIApostit').find('.PIAcontent').addClass('dosd').removeClass('tresd').removeClass('tresdblack');
+                            $(this).closest('.PIApostit').find('.PIAcontent')
+                            .addClass(options.cssclases.withoutTextShadow)
+                            .removeClass(options.cssclases.withTextShadowWhite)
+                            .removeClass(options.cssclases.withTextShadowBlack);
                             options.style.textshadow = false;
                         }
                         t.setOptions(options, true);
@@ -2650,21 +3210,35 @@ var delay = (function(){
                     //3d or plain
                     $('#generalstyle_' + index).click(function () {
                         if ($(this).is(':checked')) {
-                            $($.fn.postitall.globals.prefix + index).removeClass('PIAplainpanel').addClass('PIApanel');
+                            $($.fn.postitall.globals.prefix + index).removeClass(options.cssclases.withoutBoxShadow).addClass(options.cssclases.withBoxShadow);
                             options.style.tresd = true;
                         } else {
-                            $($.fn.postitall.globals.prefix + index).removeClass('PIApanel').addClass('PIAplainpanel');
+                            $($.fn.postitall.globals.prefix + index).removeClass(options.cssclases.withBoxShadow).addClass(options.cssclases.withoutBoxShadow);
                             options.style.tresd = false;
                         }
                         t.setOptions(options, true);
                     });
+
+                    var setTextColor = function(t, options, hex) {
+                        var index = options.id;
+                        options.style.textcolor = hex;
+                        if (options.style.textshadow) {
+                            //var obj = $(this).closest('.PIApostit').find('.PIAcontent');
+                            var obj = $($.fn.postitall.globals.prefix + index);
+                            obj.removeClass(options.cssclases.withTextShadowWhite)
+                                .removeClass(options.cssclases.withTextShadowBlack)
+                                .addClass(t.getTextShadowStyle($('#minicolors_text_' + index).val(), options.cssclases));
+
+                        }
+                        t.setOptions(options, true);
+                    };
+
                     //Background and text color
                     if ($.minicolors) {
                         //Config: change background-color
                         $('#minicolors_bg_' + index).minicolors({
                             //opacity: true,
                             change: function (hex, rgb) {
-                                console.log(hex, rgb);
                                 $($.fn.postitall.globals.prefix + index).css('background-color', hex);
                                 //$($.fn.postitall.globals.prefix + index).css('opacity', rgb);
                                 options.style.backgroundcolor = hex;
@@ -2675,8 +3249,7 @@ var delay = (function(){
                         $('#minicolors_text_' + index).minicolors({
                             change: function (hex) {
                                 $($.fn.postitall.globals.prefix + index).css('color', hex);
-                                options.style.textcolor = hex;
-                                t.setOptions(options, true);
+                                setTextColor(t, options, hex);
                             }
                         });
                     } else {
@@ -2687,8 +3260,7 @@ var delay = (function(){
                         });
                         $('#minicolors_text_' + index).change(function () {
                             $(this).closest('.PIApostit').css('color', $(this).val());
-                            options.style.textcolor = $(this).val();
-                            t.setOptions(options, true);
+                            setTextColor(t, options, $(this).val());
                         });
                     }
 
@@ -2699,8 +3271,7 @@ var delay = (function(){
                 if(options.features.hideUntil !== null)
                     t.showAgain(index, options.features.hideUntil);
                 else
-                    console.log('estic amagat sense data de fi', options.features);
-
+                    console.log('Hidden note without show-again date', options.features);
             }
 
             //Hover options
@@ -2711,7 +3282,7 @@ var delay = (function(){
             //disable draggable on mouseenter in contenteditable div
             if ($.fn.postitall.globals.draggable && options.features.draggable) {
                 $("#pia_editable_" + index).mouseenter(function (e) {
-                    if($.ui) obj.draggable({disabled: true});
+                    if($.ui) obj.draggable({disabled: true}).removeClass("ui-state-disabled");
                 }).mouseleave(function(e) {
                     if($.ui && !options.flags.blocked && !options.flags.expand) {
                         obj.draggable({disabled: false});
@@ -2737,7 +3308,7 @@ var delay = (function(){
                                      replace(/<style[^>]*?>.*?<\/style>/gi, '').
                                      replace(/<![\s\S]*?--[ \t\n\r]*>/gi, '');
                         //htmlClean sanitize plugin
-                        if($.htmlClean !== undefined) {
+                        if($.htmlClean !== undefined && !($.fn.postitall.globals.htmlEditor && options.features.htmlEditor && $.trumbowyg)) {
                             //htmlClean plugin
                             text = $.htmlClean(text, { format: true });
                         }
@@ -2794,16 +3365,14 @@ var delay = (function(){
                 //Close config icon
                 .append($('<div />', {
                     'id': 'pia_close_' + index,
-                    'class': 'PIAclose PIAicon',
+                    'class': options.cssclases.icons.icon + ' ' + options.cssclases.icons.iconRight + ' ' + options.cssclases.icons.close,
                     'style': 'display:block;'
                 })
                 .click(function (e) {
-                    //var id = $(this).closest('.PIApostit').children().attr('data-id');
                     t.switchBackNoteOff('PIAflip2');
                     t.switchOnLights();
-                    //t.showArrow();
                     e.preventDefault();
-                })
+                }).attr("title", "Close")
             )
             .append($('<span />', {
                     'id': 'idDateBackToolbar_' + index,
@@ -2936,7 +3505,7 @@ var delay = (function(){
                     }).append("<div class='PIAtitle'>Delete note!</div>")
                         .append($('<span />', {
                                 'style': 'line-height:10px;font-size:10px;',
-                                'class': 'PIAdelwar float-left'
+                                'class': 'PIAdelwar ' + options.cssclases.icons.iconLeft
                             }))
                             .append($('<div />', { 'class': 'PIAconfirmOpt' }).append(
                                     $('<a />', { 'id': 'sure_delete_' + index, 'href': '#' })
@@ -2961,7 +3530,7 @@ var delay = (function(){
                                         t.switchBackNoteOff('PIAflip2');
                                         e.preventDefault();
                                     }).append($('<span />', { 'class': 'PIAdelno' }).append("Cancel"))))
-                            .append($('<div />', { 'class': 'clear', 'style': 'line-height:10px;font-size:10px;font-weight: bold;' }).append("*This action cannot be undone"))
+                            .append($('<div />', { 'style': 'line-height:10px;font-size:10px;font-weight: bold;clear:both;' }).append("*This action cannot be undone"))
                 );
             }
             return deleteInfo;
@@ -3328,9 +3897,13 @@ var delay = (function(){
         },
         get: function (id, callback) {
             this.loadManager(function() {
-                $storage.get(id, function(varvalue) {
-                    if(callback != null) callback(varvalue);
-                });
+                if(id !== "") {
+                    $storage.get(id, function(varvalue) {
+                        if(callback != null) callback(varvalue);
+                    });
+                } else {
+                    if(callback != null) callback(null);
+                }
             });
         },
         getAll: function (callback) {
@@ -3344,7 +3917,11 @@ var delay = (function(){
             this.loadManager(function() {
                 if (key != null && key.slice(0,7) === "PostIt_") {
                     key = key.slice(7,key.length);
-                    storageManager.get(key, callback);
+                    if(key !== "") {
+                        storageManager.get(key, callback);
+                    } else {
+                        if(callback != null) callback(null);
+                    }
                 } else {
                     if(callback != null) callback(null);
                 }
@@ -3414,7 +3991,6 @@ var delay = (function(){
             var varname = 'PostIt_' + obj.id.toString();
             var testPrefs = JSON.stringify(obj);
             $localStorage.setItem(varname, testPrefs);
-            //console.log('Saved', varname, testPrefs);
             if(callback != null) callback("");
         },
         get: function (id, callback) {
@@ -3424,7 +4000,6 @@ var delay = (function(){
                 varvalue = JSON.parse(varvalue);
             else
                 varvalue = "";
-            //console.log('Loaded', varname, varvalue);
             if(callback != null) callback(varvalue);
         },
         remove: function (id, callback) {
@@ -3455,4 +4030,9 @@ var delay = (function(){
         }
     };
 
-}(jQuery, window.localStorage));
+    //Initialize environement
+    $(document).ready(function() {
+        $.PostItAll.__initialize();
+    });
+
+})(jQuery, window.localStorage, window, document);

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/bootstrap-theme.min.css">
-<link href="css/bootstrap-switch.min.css" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<link href="css/bootstrap-switch.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/app.css">
 <style> body { margin: 10px 0px; min-width:180px; min-height:165px; } </style>
 </head>
 <body>
@@ -12,19 +12,47 @@
 <div class="container-fluid" id="idContanier" style="display:none;">
 	<div class="row">
 		<div class="col-md-12">
-			<div id="menu">
+			<div id="menu" class="menu">
 				<div><input type="checkbox" name="state" id="idState" data-off-color="danger" data-on-color="success" data-size="mini" data-on-text="Running" data-off-text="Paused" data-label-text="State"></div>
 				<hr >
 				<div id="add-postit" class="menuitem page-option" i18n="new_note"></div>
-				<div id="view-postit" class="menuitem page-option" i18n="view_notes"></div>
-				<div id="hide-postit" class="menuitem page-option" i18n="hide_notes"></div>
-				<div id="delete-postit" class="menuitem page-option" i18n="delete_all_notes"></div>
+				<div id="custom-postit" class="menuitem page-option"><span i18n="new_note_custom"></span>&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-arrow-right"></span></div>
+				<div id="options" class="menuitem page-option"><span i18n="note_options"></span>&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-arrow-right"></span></div>
 				<hr class="page-option">
 				<div id="add-postit-dashboard" class="menuitem" i18n="new_note_dashboard"></div>
 				<div id="dashboard" class="menuitem" i18n="my_dashboard"></div>
 				<hr>
 				<div id="notelist" class="menuitem" i18n="my_notelist"></div>
 				<div id="idSettings" class="menuitem" i18n="menu_settings"></div>
+			</div>
+			<div id="cutom-postit-options" class="menu" style="display:none;">
+				<span i18n="submenu_title_custom"></span>
+				<hr class="page-option">
+				<div class="menuitem page-option custom-postit" data-cssclass="talkbubbleleft" i18n="talkbubble1"></div>
+				<div class="menuitem page-option custom-postit" data-cssclass="talkbubbleright" i18n="talkbubble2"></div>
+				<div class="menuitem page-option custom-postit" data-cssclass="tv" i18n="tv"></div>
+				<div class="menuitem page-option custom-postit" data-cssclass="circle" i18n="circle"></div>
+				<div class="menuitem page-option custom-postit" data-cssclass="parallelogram" i18n="parallelogram"></div>
+				<div class="menuitem page-option custom-postit" data-cssclass="arrowright" i18n="arrow_right"></div>
+				<div class="menuitem page-option custom-postit" data-cssclass="arrowleft" i18n="arrow_left"></div>
+				<div class="menuitem page-option custom-postit" data-cssclass="arrowup" i18n="arrow_up"></div>
+				<div class="menuitem page-option custom-postit" data-cssclass="arrowdown" i18n="arrow_down"></div>
+				<hr class="page-option">
+				<div class="menuitem page-option close-submenu"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;&nbsp;<span i18n="back"></span></div>
+			</div>
+			<div id="postit-options" class="menu" style="display:none;">
+				<b i18n="note_options"></b>
+				<hr class="page-option">
+				<div id="view-postit" class="menuitem page-option" i18n="view_notes"></div>
+				<div id="hide-postit" class="menuitem page-option" i18n="hide_notes"></div>
+				<div id="delete-postit" class="menuitem page-option" i18n="delete_all_notes"></div>
+				<br />
+				<b i18n="import_export"></b>
+				<hr class="page-option">
+				<div id="export-postit" class="menuitem page-option" i18n="export_notes"></div>
+				<div id="import-postit" class="menuitem page-option" i18n="import_notes"></div>
+				<hr class="page-option">
+				<div class="menuitem page-option close-submenu"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;&nbsp;<span i18n="back"></span></div>
 			</div>
 		</div>
 	</div>

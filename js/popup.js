@@ -58,7 +58,7 @@ $(function() {
     });
 
     $('#add-postit-dashboard').click(function() {
-        abm.sendMessage('new_dashboard');
+        abm.sendMessage('newdashboard');
         postitShown = true;
         window.close();
     }).removeClass('disabled');
@@ -71,6 +71,7 @@ popup.setMenu = function() {
     $('.page-option').show();
 
     $('#add-postit').click(function() {
+        console.log('new');
         abm.sendMessage('new');
         postitShown = true;
         window.close();
@@ -81,35 +82,66 @@ popup.setMenu = function() {
         abm.autoloadEnabled = false;
     }).removeClass('disabled');
 
+    $('#viewexport-postit').click(function() {
+        abm.sendMessage('export');
+        window.close();
+    }).removeClass('disabled');
+
+    $('#viewimport-postit').click(function() {
+        abm.sendMessage('import');
+        window.close();
+    }).removeClass('disabled');
+
     $('#hide-postit').click(function() {
-        //console.log("hide postit");
         abm.sendMessage('hide');
         postitShown = false;
-        //$('#view-postit').show();
-        //$('#hide-postit').hide();
         abm.autoloadEnabled = false;
     }).removeClass('disabled');
     $('#view-postit').click(function() {
-        //console.log("view postit");
         abm.sendMessage('show');
         postitShown = true;
-        //$('#hide-postit').show();
-        //$('#view-postit').hide();
         abm.autoloadEnabled = false;
     }).removeClass('disabled');
 
     $('#delete-postit').click(function() {
-        //console.log("delete postit");
         abm.sendMessage('delete');
         window.close();
     }).removeClass('disabled');
 
     $('#share-postit').click(function() {
-        //console.log("share postit");
         abm.sendMessage('share', 'all');
     }).removeClass('disabled');
 
-    //abm.setIcon(true);
+    $('#export-postit').click(function() {
+        abm.sendMessage('export');
+        window.close();
+    }).removeClass('disabled');
+
+    $('#import-postit').click(function() {
+        abm.sendMessage('import');
+        postitShown = true;
+        window.close();
+    }).removeClass('disabled');
+
+    $('#custom-postit').click(function() {
+        $('#menu').hide();
+        $('#cutom-postit-options').show();
+    }).removeClass('disabled');
+    $('.custom-postit').click(function() {
+        abm.sendMessage('new_' + $(this).data('cssclass'));
+        postitShown = true;
+        window.close();
+    }).removeClass('disabled');
+    $('.close-submenu').click(function() {
+        $('#menu').show();
+        $('#cutom-postit-options').hide();
+        $('#postit-options').hide();
+    }).removeClass('disabled');
+
+    $('#options').click(function() {
+        $('#menu').hide();
+        $('#postit-options').show();
+    }).removeClass('disabled');
 }
 
 popup.setMenuOff = function() {
@@ -119,10 +151,6 @@ popup.setMenuOff = function() {
     $('#add-postit').click(function(e) {
       e.preventDefault();
     }).addClass('disabled');
-
-    /*$('#add-postit-dashboard').click(function(e) {
-        e.preventDefault();
-    }).addClass('disabled');*/
 
     $('#viewhide-postit').click(function(e) {
         e.preventDefault();
@@ -144,7 +172,13 @@ popup.setMenuOff = function() {
         e.preventDefault();
     }).addClass('disabled');
 
-    //abm.setIcon(false);
+    $('#export-postit').click(function(e) {
+        e.preventDefault();
+    }).addClass('disabled');
+
+    $('#import-postit').click(function(e) {
+        e.preventDefault();
+    }).addClass('disabled');
 }
 
 //Fired when DOM was loaded
@@ -180,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('domain', tab.url, domain);
             if(domain && abm.state) {
                 if(domain === "Dashboard")
-                    abm.sendMessage('new_dashboard', '');
+                    abm.sendMessage('newdashboard', '');
                 else
                     abm.sendMessage('new', '');
                 postitShown = true;

@@ -56,8 +56,11 @@ backgroundPage._OnUpdated = function(tabid, changeinfo, tab) {
                 } else if(xhr.status == 404) {
                     console.log("404 page:", tab.url);
                 } else if(xhr.status == 200) {
+                    console.log("restore:", tab.url);
+                    abm.sendMessage('hide');
                     //Restore storage options
                     abm._Restore(function() {
+                        console.log("init:", tab.url);
                         backgroundPage._Init(tab);
                     });
                 }
@@ -98,6 +101,7 @@ backgroundPage._Init = function(tab) {
         chrome.tabs.insertCSS(tab.id, {file: "css/jquery.minicolors.css"});
         //chrome.tabs.insertCSS(tab.id, {file: "css/jquery.postitall.fontstyles.css"});
         chrome.tabs.insertCSS(tab.id, {file: "css/jquery.postitall.css"});
+        chrome.tabs.insertCSS(tab.id, {file: "css/app.css"});
 
         chrome.tabs.executeScript(tab.id, { file: "js/jquery-ui-1.10.1.min.js" }, function() {
             chrome.tabs.executeScript(tab.id, { file: "js/jquery-ui-timepicker-addon.min.js" });
@@ -120,7 +124,7 @@ backgroundPage._Init = function(tab) {
                                     functs.delay(function(){
                                         backgroundPage._SetEnv(tab.windowId)
                                         backgroundPage._LoadAll(tab.url);
-                                        console.log('Extension loaded!');
+                                        //console.log('Extension loaded!');
                                     }, 200);
                                 });
                             });
@@ -251,7 +255,7 @@ backgroundPage._SetContextMenuActions = function() {
         if(e.menuItemId == "idContextMenuPIA1" || e.menuItemId == "idContextMenuPIA3") {
             action = "new2";
         } else {
-            action = "new_dashboard";
+            action = "newdashboard";
         }
         //Congtent
         var content = "";
