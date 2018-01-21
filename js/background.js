@@ -101,7 +101,7 @@ backgroundPage._Init = function(tab) {
         chrome.tabs.insertCSS(tab.id, {file: "css/jquery.minicolors.css"});
         //chrome.tabs.insertCSS(tab.id, {file: "css/jquery.postitall.fontstyles.css"});
         chrome.tabs.insertCSS(tab.id, {file: "css/jquery.postitall.css"});
-        chrome.tabs.insertCSS(tab.id, {file: "css/app.css"});
+        chrome.tabs.insertCSS(tab.id, {file: "css/shapes.css"});
 
         chrome.tabs.executeScript(tab.id, { file: "js/jquery-ui-1.10.1.min.js" }, function() {
             chrome.tabs.executeScript(tab.id, { file: "js/jquery-ui-timepicker-addon.min.js" });

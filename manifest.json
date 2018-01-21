@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_extName__",
   "short_name": "__MSG_extName__",
-  "version": "0.0.1.1",
+  "version": "0.0.1.2",
   "default_locale": "en",
   "description": "__MSG_extDescription__",
   "icons": {
@@ -37,7 +37,7 @@
   "content_scripts": [{
     "run_at": "document_end",
     "js": ["js/contentscript.js"],
-    "css": ["css/jquery.postitall.fontstyles.css", "css/app.css"],
+    "css": ["css/jquery.postitall.fontstyles.css", "css/shapes.css"],
     "matches": ["http://*/*","https://*/*","file://*"],
     "all_frames": true
   }],
