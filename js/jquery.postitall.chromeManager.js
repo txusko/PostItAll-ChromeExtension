@@ -65,12 +65,14 @@ var externalManager = {
         if(options === undefined || typeof options === "function") {
             callback = options;
             options = {
-                domain : window.location.origin,
-                page : window.location.pathname
+                domain: window.location.origin,
+                page: window.location.pathname,
+                hash: window.location.hash
             };
         }
         var domain = options.domain;
         var page = options.page;
+        var hash = options.hash;
         var t = this;
         //console.log('hola?', domain, page, $.fn.postitall.globals.filter);
         t.getlength(function(len) {
@@ -85,7 +87,7 @@ var externalManager = {
                             if($.fn.postitall.globals.filter == "domain")
                                 finded = (getUrl(o.domain) === getUrl(domain));
                             else if($.fn.postitall.globals.filter == "page")
-                                finded = (getUrl(o.domain) === getUrl(domain) && (o.page === page || page === undefined));
+                                finded = (getUrl(o.domain) === getUrl(domain) && (o.page === page || page === undefined) && (o.hash === hash || hash === undefined));
                             else
                                 finded = true;
                             //console.log('finded', finded, o.domain, domain);
