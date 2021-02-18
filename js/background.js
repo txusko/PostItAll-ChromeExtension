@@ -90,7 +90,7 @@ backgroundPage._Init = function(tab) {
 
     //Jquery
     if(chrome.runtime.lastError !== undefined) { console.log('Error loading PIA', chrome.runtime.lastError); return; }
-    chrome.tabs.executeScript(tab.id, { file: "js/jquery-2.1.4.min.js" }, function() {
+    chrome.tabs.executeScript(tab.id, { file: "js/jquery-3.5.1.min.js" }, function() {
         //UI
         if(chrome.runtime.lastError !== undefined) { console.log('Error loading PIA', chrome.runtime.lastError); return; }
         //console.log('jquery loaded!');
