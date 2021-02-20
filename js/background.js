@@ -220,6 +220,8 @@ backgroundPage._SaveScreenShotInExtProv = function(img) {
 }
 
 backgroundPage._ReloadAll = function() {
+  return;
+
     //chrome.tabs.create({url: chrome.extension.getURL("options.html")});
     chrome.tabs.query({}, function (tabs) {
         var myTabs = [];
@@ -290,7 +292,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 });
 //When the extension finished installing
 chrome.runtime.onInstalled.addListener(function (object) {
-    backgroundPage._ReloadAll();
+    // backgroundPage._ReloadAll();
     console.log('Created context menu!');
     backgroundPage._SetContextMenu(3, 'New note with selected text', ['selection']);
     backgroundPage._SetContextMenu(4, 'New note with selected text in dashboard', ['selection']);
