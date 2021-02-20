@@ -65,14 +65,13 @@ var externalManager = {
         if(options === undefined || typeof options === "function") {
             callback = options;
             options = {
-                domain : window.location.origin,
-                page : window.location.pathname
+                domain: window.location.origin,
+                page: window.location.pathname
             };
         }
         var domain = options.domain;
         var page = options.page;
         var t = this;
-        //console.log('hola?', domain, page, $.fn.postitall.globals.filter);
         t.getlength(function(len) {
             if(!len) {
                 callback();
@@ -88,7 +87,6 @@ var externalManager = {
                                 finded = (getUrl(o.domain) === getUrl(domain) && (o.page === page || page === undefined));
                             else
                                 finded = true;
-                            //console.log('finded', finded, o.domain, domain);
                             if (finded) {
                                 t.remove(o.id);
                             }
@@ -131,17 +129,14 @@ var externalManager = {
     },
     getlength: function(callback) {
         var total = 0;
-        //console.log('chromeManager.getlength');
         chrome.storage.sync.get(null,function(data) {
             total = Object.keys(data).length;
-            //console.log('chromeManager.getlength', total);
             callback(total);
         });
     },
     key: function (i, callback) {
         var varname = 'PostIt_' + parseInt(i, 10);
         chrome.storage.sync.get(null,function(retVal) {
-            //console.log('chromeManager.key ' + varname, retVal);
             if(retVal[varname] !== undefined)
                 callback(varname);
             else
