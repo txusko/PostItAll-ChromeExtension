@@ -170,18 +170,18 @@ abm.initState = function(message, callback) {
       abm._Restore(function() {
         if(callback != null) callback();
       });
-      chrome.tabs.query({}, function (tabs) {
-          var myTabs = [];
-          for (var i = 0; i < tabs.length; i++) {
-              if (tabs[i].url.indexOf('http') === 0) {
-                  myTabs.push(tabs[i].id);
-              }
-          }
-          //console.log(myTabs);
-          for (var i = 0; i < myTabs.length; i++) {
-              chrome.tabs.reload(myTabs[i]);
-          }
-      });
+      // chrome.tabs.query({}, function (tabs) {
+      //     var myTabs = [];
+      //     for (var i = 0; i < tabs.length; i++) {
+      //         if (tabs[i].url.indexOf('http') === 0) {
+      //             myTabs.push(tabs[i].id);
+      //         }
+      //     }
+      //     //console.log(myTabs);
+      //     for (var i = 0; i < myTabs.length; i++) {
+      //         chrome.tabs.reload(myTabs[i]);
+      //     }
+      // });
       ////if(typeof message !== "undefined") abm.sendMessage(message);
 
     });
@@ -291,7 +291,7 @@ abm._OnMessage = function(request, sender, sendResponse) {
                         console.log(request.type.substring(0, 4), request.type.substring(4));
                         //Execute script
                         chrome.tabs.executeScript(tab.id, { code: byPassCode }, function() {
-                            backgroundPage._GetNumberOfPostits();
+                            if (typeof backgroundPage !== 'undefined') { backgroundPage._GetNumberOfPostits(); }
                         });
                     } else {
                         //console.log('create on new page for userId', userId);
@@ -328,26 +328,28 @@ abm._OnMessage = function(request, sender, sendResponse) {
                 if(tab.url.indexOf('http') === 0) {
                     //console.log("loadPostits('" + request.description + "');");
                     chrome.tabs.executeScript(tab.id, { code: "loadPostits('" + request.description + "');" }, function() {
-                        //console.log('All postits loaded on background.js');
-                        //backgroundPage._GetNumberOfPostits();
+                        if (typeof backgroundPage !== 'undefined') { backgroundPage._GetNumberOfPostits(); }
                     });
                 }
             });
         break;
         case "hide":
             chrome.tabs.getSelected(null,function(tab) {
-                chrome.tabs.executeScript(tab.id, { code: "hidePostits();" }, function() {
-                    //console.log('All postits hiden on background.js');
-                    backgroundPage._GetNumberOfPostits();
+              if(tab.url.indexOf('http') === 0) {
+                chrome.tabs.executeScript(tab.id, { code: "if (typeof hidePostits !== 'undefined') { hidePostits(); }" }, function() {
+                    if (typeof backgroundPage !== 'undefined') { backgroundPage._GetNumberOfPostits(); }
                     abm._HiddenNotes = true;
                 });
+              }
             });
         break;
         case "viewhide":
             chrome.tabs.getSelected(null,function(tab) {
+              if(tab.url.indexOf('http') === 0) {
                 chrome.tabs.executeScript(tab.id, { code: "viewhidePostits();" }, function() {
-                    backgroundPage._GetNumberOfPostits();
+                    if (typeof backgroundPage !== 'undefined') { backgroundPage._GetNumberOfPostits(); }
                 });
+              }
             });
         break;
 
@@ -371,15 +373,15 @@ abm._OnMessage = function(request, sender, sendResponse) {
 
         case "show":
             chrome.tabs.getSelected(null,function(tab) {
+              if(tab.url.indexOf('http') === 0) {
                 chrome.tabs.executeScript(tab.id, { code: "showPostits();" }, function() {
-                    let e = chrome.runtime.lastError;
-                    if(e === undefined){
-                        //console.log('All postits hiden on background.js');
-                        backgroundPage._GetNumberOfPostits();
-                        abm._HiddenNotes = true;
-                    }
-
+                  let e = chrome.runtime.lastError;
+                  if(e === undefined){
+                      if (typeof backgroundPage !== 'undefined') { backgroundPage._GetNumberOfPostits(); }
+                      abm._HiddenNotes = true;
+                  }
                 });
+              }
             });
         break;
 
@@ -393,8 +395,7 @@ abm._OnMessage = function(request, sender, sendResponse) {
         case "delete":
             chrome.tabs.getSelected(null,function(tab) {
                 chrome.tabs.executeScript(tab.id, { code: "deletePostits();" }, function() {
-                    //console.log('All postits deleted on background.js');
-                    backgroundPage._GetNumberOfPostits();
+                    if (typeof backgroundPage !== 'undefined') { backgroundPage._GetNumberOfPostits(); }
                 });
             });
         break;
@@ -450,7 +451,7 @@ abm._OnMessage = function(request, sender, sendResponse) {
                 if(abm.state)
                     backgroundPage._GetNumberOfPostits();
             });*/
-            backgroundPage._ReloadAll();
+            // backgroundPage._ReloadAll();
         break;
 
         case "refresh":
