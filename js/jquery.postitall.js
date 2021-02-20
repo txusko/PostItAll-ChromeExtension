@@ -3246,10 +3246,14 @@ var delay = (function(){
                     t.autoresize();
                 });
             } else {
-                if(options.features.hideUntil !== null)
-                    t.showAgain(index, options.features.hideUntil);
-                else
-                    console.log('Hidden note without show-again date', options.features);
+              if(options.features.hideUntil !== null) {
+                t.showAgain(index, options.features.hideUntil);
+              } else {
+                setTimeout(function(){
+                  console.log('Hidden note without show-again date', options);
+                  t.show(options.id);
+                }, 3000);
+              }
             }
 
             //Hover options
