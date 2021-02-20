@@ -16,13 +16,13 @@
       "default_title": "__MSG_extName__",
       "default_icon": "img/icono_256.png",
       "default_popup": "popup.html",
-      "scripts": ["js/jquery.min.js","js/functions.js","js/popup.js","js/loadpostits.js"]
+      "scripts": ["js/jquery-3.5.1.min.js","js/functions.js","js/popup.js","js/loadpostits.js"]
   },
   "author": "Javi Filella",
   "homepage_url": "http://postitall.txusko.com/",
   "background": {
     "scripts": [
-      "js/jquery.min.js",
+      "js/jquery-3.5.1.min.js",
       "js/jquery-ui-1.10.1.min.js",
       "js/jquery.htmlclean.js",
       "js/trumbowyg.js",
