@@ -538,12 +538,6 @@ optionsPage.settingsTab = function() {
 
 optionsPage.listTab = function() {
 
-    //UserId
-    var userId = "";
-    functs.getUserId(function(tmpUserId) {
-        userId = tmpUserId;
-    });
-
     //Note list
     var loadNoteList = function() {
         $('#idNoteList').html("");
@@ -793,11 +787,6 @@ optionsPage.listTab = function() {
             loadNoteList();
         });
     });
-
-    /*$('#idMyDashboard').click(function(e) {
-        window.open("http://postitall.txusko.com/extension?userId=" +userId);
-        e.preventDefault();
-    });*/
 
     $('#idDeleteNotes').click(function() {
         if(confirm(translate('delete_notesquestion'))) {

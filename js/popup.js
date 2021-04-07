@@ -33,22 +33,12 @@ if(chrome.extension.getBackgroundPage() != null)
   console = chrome.extension.getBackgroundPage().console;
 
 $(function() {
-    var userId = "";
-    //UserId
-    chrome.storage.sync.get('userId', function(items) {
-        userId = items.userId;
-        if (!userId) {
-            userId = functs.guid();
-            chrome.storage.sync.set({userId: userId});
-        }
-    });
     //Options link
     $('#idSettings').click(function() {
         chrome.tabs.update({ url: chrome.extension.getURL("options.html") });
         window.close();
     });
     $('#dashboard').click(function() {
-    //chrome.tabs.create({ url: "http://postitall.txusko.com/extension/?userId=" + userId });
         chrome.tabs.update({ url: "/dashboard.html" });
         window.close();
     });

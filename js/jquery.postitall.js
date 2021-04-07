@@ -171,9 +171,9 @@ var delay = (function(){
                 case 'hide':
                     elem.each(function (i, e) {
                         if($(e).hasClass('PIApostit')) {
-                            t.hide($(e).data('PIA-id'));
+                            t.hide($(e).data('PIA-id'), false);
                         } else if($(e).attr('PIA-original') !== undefined) {
-                            t.hide($(e).parent().parent().parent().parent().data('PIA-id'));
+                            t.hide($(e).parent().parent().parent().parent().data('PIA-id'), false);
                         }
                     });
                 return $(this);
@@ -332,6 +332,7 @@ var delay = (function(){
         created         : Date.now(),               //Creation date
         domain          : window.location.origin,   //Domain in the url
         page            : window.location.pathname, //Page in the url
+        hash            : window.location.hash,     //Hash in the url
         pageParams      : (window.location.search !== null && window.location.search !== "") ? window.location.search.substr(1) : "",
         osname          : navigator.appVersion,     //Browser informtion & OS name,
         content         : '',                       //Content of the note (text or html)
@@ -469,6 +470,7 @@ var delay = (function(){
                                             {
                                                 delete obj.domain;
                                                 delete obj.page;
+                                                delete obj.hash;
                                             }
                                             $.PostItAll.new(obj, callback);
                                         }
@@ -711,6 +713,10 @@ var delay = (function(){
                     options.id = index;
                     //Random bg & textcolor
                     options = randCol(options);
+                    //Page options
+                    options.domain = window.location.origin;
+                    options.page = window.location.pathname;
+                    options.hash = window.location.hash;
                     //Initialize
                     setTimeout(function() { note.init(obj, options); if(callback !== undefined) callback($.fn.postitall.globals.prefix + options.id, options, obj[0]); }, 100);
                 });
@@ -760,13 +766,19 @@ var delay = (function(){
         },
 
         //Get all notes
-        getNotes : function(callback, filtered) {
+        getNotes : function(callback, filtered, domain, page, hash) {
           var len = -1;
           var iteration = 0;
           var finded = false;
           var notes = [];
           if(typeof filtered === 'undefined')
             filtered = $.fn.postitall.globals.filter;
+          if(typeof domain === 'undefined')
+            domain = window.location.origin;
+          if(typeof page === 'undefined')
+            page = window.location.pathname;
+          if(typeof hash === 'undefined')
+            hash = window.location.hash;
           storageManager.getlength(function(len) {
               if(!len) {
                   if(typeof callback === 'function') callback(notes);
@@ -777,9 +789,11 @@ var delay = (function(){
                       storageManager.getByKey(key, function(o) {
                           if (o != null) {
                               if(filtered == "domain")
-                                  finded = (o.domain === window.location.origin);
+                                  finded = (o.domain === domain);
                               else if(filtered == "page")
-                                  finded = (o.domain === window.location.origin && o.page === window.location.pathname);
+                                  {
+                                    finded = (o.domain === domain && o.page === page && (o.hash === undefined || o.hash === hash));
+                                  }
                               else
                                   finded = true;
                               if(finded) {
@@ -1333,25 +1347,43 @@ var delay = (function(){
                 $(window).off('resize');
         },
 
-        hide : function(id) {
-            //hide object
-            if($($.fn.postitall.globals.prefix + id).length) {
-                var options = $($.fn.postitall.globals.prefix + id).data('PIA-options');
-                options.flags.hidden = true;
-                $($.fn.postitall.globals.prefix + id).slideUp();
+        hide : function(id, saveit) {
+          if(saveit === undefined) {
+              saveit = true;
+          }
+          //hide object
+          if($($.fn.postitall.globals.prefix + id).length) {
+            var options = $($.fn.postitall.globals.prefix + id).data('PIA-options');
+            if (options) {
+              options.flags.hidden = true;
+              $($.fn.postitall.globals.prefix + id).slideUp();
+              if (saveit) {
                 this.saveOptions(options);
+              }
+            } else {
+              $($.fn.postitall.globals.prefix + id).hide();
             }
+          }
         },
 
-        show : function(id) {
-            //show object
-            if($($.fn.postitall.globals.prefix + id).length) {
-                var options = $($.fn.postitall.globals.prefix + id).data('PIA-options');
-                options.flags.hidden = false;
-                options.features.hideUntil = null;
-                $($.fn.postitall.globals.prefix + id).slideDown();
+        show : function(id, saveit) {
+          if(saveit === undefined) {
+              saveit = true;
+          }
+          //show object
+          if($($.fn.postitall.globals.prefix + id).length) {
+            var options = $($.fn.postitall.globals.prefix + id).data('PIA-options');
+            if (options) {
+              options.flags.hidden = false;
+              options.features.hideUntil = null;
+              $($.fn.postitall.globals.prefix + id).slideDown();
+              if (saveit) {
                 this.saveOptions(options);
+              }
+            } else {
+              $($.fn.postitall.globals.prefix + id).show();
             }
+          }
         },
 
         //Show the note in a specific date
@@ -3672,6 +3704,7 @@ var delay = (function(){
                 if(typeof options.domain === 'object' && options.domain.indexOf("http") >= 0)
                     textInfo += "<strong>Domain:</strong> "+options.domain+"<br>";
                 textInfo += "<strong>Page:</strong> "+options.page+"<br>";
+                textInfo += "<strong>Hash:</strong> "+options.hash+"<br>";
                 textInfo += "<strong>Op.System:</strong> " + t.getOSName() + " - "+options.osname+"<br>";
             }
 

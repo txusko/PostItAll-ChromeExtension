@@ -26,7 +26,6 @@ function checkLoaded() {
 
 //Create a postit
 function loadPostit(description, posY, posX, customClass) {
-	//console.log('loadPostit',description, posX, posY);
 	var postit;
 	if(description === undefined) {
 		description = "";
@@ -58,19 +57,15 @@ function loadPostit(description, posY, posX, customClass) {
 		}
 	}
 
-	//console.log('Create a new postit', postit, description);
 	postit.onCreated = function() {
-		//console.log('onCreated');
 		lengthPostits();
 		getScreenShoot();
 	};
 	postit.onDelete = function() {
-		//console.log('onDelete');
 		lengthPostits();
 		getScreenShoot();
 	};
 	postit.onChange = function() {
-		//console.log('onChange');
 		getScreenShoot();
 	};
 
@@ -100,7 +95,7 @@ function loadPostitPosition(description, posX, posY) {
 	$.PostItAll.save();
 }
 //Load postits
-var loaded = false;
+var loaded = (typeof loaded === 'undefined') ? false : loaded;
 function loadPostits(index) {
 	setTimeout(function() {
 		if ($.PostItAll) {
@@ -128,15 +123,15 @@ function loadPostits(index) {
 }
 //hide
 function hidePostits() {
-	$.PostItAll.hide();
+  $.PostItAll.hide();
 }
 function showPostits() {
-	if(!loaded) {
+  if(!loaded) {
 		loadPostits();
 	}
 	$.PostItAll.show();
 }
-var viewHide = false;
+var viewHide = (typeof viewHide === 'undefined') ? false : viewHide;
 function viewhidePostits() {
 	if(!loaded) {
 		loadPostits();
@@ -179,12 +174,20 @@ function refreshPostits() {
 function lengthPostits() {
 	var total = 0;
 	$.PostItAll.length(function(total) {
-		//console.log('total on loadpostits.js', total);
 		chrome.extension.sendMessage({
 		    type: 'badge',
 		    description: total
 		});
 	});
+}
+
+function getPostits(domain, page) {
+	$.PostItAll.getNotes(function(notes) {
+		chrome.extension.sendMessage({
+		    type: 'loadnotes',
+		    notes: notes
+		});
+	}); //, undefined, domain, page
 }
 
 //Screenshots
@@ -198,7 +201,6 @@ var delay = (function(){
 function getScreenShoot() {
 	delay(function(){
 		chrome.runtime.sendMessage({ type: 'screenshot' });
-		//console.log('Screenshot done!');
 	},1500);
 }
 

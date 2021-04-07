@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_extName__",
   "short_name": "__MSG_extName__",
-  "version": "0.0.1.3",
+  "version": "0.0.1.4",
   "default_locale": "en",
   "description": "__MSG_extDescription__",
   "icons": {
@@ -23,12 +23,6 @@
   "background": {
     "scripts": [
       "js/jquery-3.5.1.min.js",
-      "js/jquery-ui-1.10.1.min.js",
-      "js/jquery.htmlclean.js",
-      "js/trumbowyg.js",
-      "js/jquery.minicolors.js",
-      "js/jquery.postitall.chromeManager.js",
-      "js/jquery.postitall.js",
       "js/functions.js",
       "js/background.js"
     ],
@@ -36,8 +30,29 @@
   },
   "content_scripts": [{
     "run_at": "document_end",
-    "js": ["js/contentscript.js"],
-    "css": ["css/jquery.postitall.fontstyles.css", "css/shapes.css"],
+    "js": [
+      "js/jquery-3.5.1.min.js",
+      "js/jquery-ui-1.10.1.min.js",
+      "js/jquery.htmlclean.js",
+      "js/trumbowyg.js",
+      "js/jquery.minicolors.js",
+      "js/jquery.postitall.chromeManager.js",
+      "js/jquery.postitall.js",
+      "js/functions.js",
+      "js/loadpostits.js",
+      "js/contentscript.js"
+    ],
+    "css": [
+      "css/jquery-ui-1.10.0.custom.css",
+      "css/jquery-ui-timepicker-addon.min.css",
+      "css/jquery-ui-timepicker-addon.min.css",
+      "css/trumbowyg.css",
+      "css/trumbowyg.smallicons.css",
+      "css/jquery.minicolors.css",
+      "css/jquery.postitall.fontstyles.css",
+      "css/jquery.postitall.css",
+      "css/shapes.css"
+    ],
     "matches": ["http://*/*","https://*/*","file://*"],
     "all_frames": true
   }],
@@ -45,10 +60,8 @@
   "permissions": [
     "storage",
     "unlimitedStorage",
-    "activeTab",
-    "tabs",
     "contextMenus",
-    "*://*/*",
+    "activeTab",
     "<all_urls>"
   ],
   "options_page": "options.html",

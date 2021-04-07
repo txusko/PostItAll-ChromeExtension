@@ -112,7 +112,7 @@ var defaults = {
     autoPosition    : true,         //Automatic reposition of the notes when user resize screen
     hidden          : true,         //Hidden note
   }
-}
+};
 
 //Extension vars
 var abm = $.extend({}, defaults);
@@ -122,22 +122,24 @@ var functs = {};
 
 //Restore configuration
 abm._Restore = function(callback) {
-  chrome.storage.sync.get(defaults, function(retVal) {
-    //console.log('abm._Restore', retVal);
-    //Recover vars
-    abm.state = retVal.state;
-    abm.autoloadEnabled = retVal.autoloadEnabled;
-    abm.trayIconMenu = retVal.trayIconMenu;
-    abm.postit = retVal.postit;
-    abm.cssclases = retVal.cssclases;
-    abm.style = retVal.style;
-    abm.enabledFeatures = retVal.enabledFeatures;
-    //Localize
-    localizePage();
-    //Callback
-    if(callback != null) callback();
-  });
-}
+  functs.delay(function(){
+    chrome.storage.sync.get(defaults, function(retVal) {
+      //console.log('abm._Restore', retVal);
+      //Recover vars
+      abm.state = retVal.state;
+      abm.autoloadEnabled = retVal.autoloadEnabled;
+      abm.trayIconMenu = retVal.trayIconMenu;
+      abm.postit = retVal.postit;
+      abm.cssclases = retVal.cssclases;
+      abm.style = retVal.style;
+      abm.enabledFeatures = retVal.enabledFeatures;
+      //Localize
+      localizePage();
+      //Callback
+      if(callback != null) callback();
+    });
+  }, 500);
+};
 
 abm.initState = function(message, callback) {
   //State
@@ -170,23 +172,9 @@ abm.initState = function(message, callback) {
       abm._Restore(function() {
         if(callback != null) callback();
       });
-      // chrome.tabs.query({}, function (tabs) {
-      //     var myTabs = [];
-      //     for (var i = 0; i < tabs.length; i++) {
-      //         if (tabs[i].url.indexOf('http') === 0) {
-      //             myTabs.push(tabs[i].id);
-      //         }
-      //     }
-      //     //console.log(myTabs);
-      //     for (var i = 0; i < myTabs.length; i++) {
-      //         chrome.tabs.reload(myTabs[i]);
-      //     }
-      // });
-      ////if(typeof message !== "undefined") abm.sendMessage(message);
-
     });
   });
-}
+};
 
 abm.sendMessage = function(message, description, callback) {
     var chromeVersion = window.navigator.userAgent.match(/Chrom(?:e|ium)\/([0-9\.]+)/)[1];
@@ -197,18 +185,10 @@ abm.sendMessage = function(message, description, callback) {
         chrome.extension.sendMessage({ type: message, description: description });
     }
     if(callback != null) callback();
-}
+};
 
 abm._OnMessage = function(request, sender, sendResponse) {
-
-    //console.log('chrome.runtime.onMessage.addListener request', request);
     if(!abm.state) return;
-
-    //UserId
-    var userId = "";
-    functs.getUserId(function(tmpUserId) {
-        userId = tmpUserId;
-    });
 
     var description = request.description;
     if(description === undefined) {
@@ -216,13 +196,13 @@ abm._OnMessage = function(request, sender, sendResponse) {
     }
 
     var byPassCode = "loadPostit('"+description+"');";
-    var dashUrl = "dashboard.html?userId="+userId;
+    var dashUrl = "dashboard.html?";
     if((request.type == "new2" || request.type == "newdashboard") && mousePosition != null) {
         byPassCode = "loadPostit('"+description+"', '"+mousePosition.posX+"', '" + mousePosition.posY + "');"
-        dashUrl += "&posX="+mousePosition.posX+"&posY=" + mousePosition.posY;
+        dashUrl += "posX="+mousePosition.posX+"&posY=" + mousePosition.posY;
     }
     if(description)
-        dashUrl += "&desc="+description;
+        dashUrl += "desc="+description;
 
     function createPostItOnBg(tabId, info, tab){
         if (info.status == "complete") {
@@ -288,14 +268,12 @@ abm._OnMessage = function(request, sender, sendResponse) {
                             var cssName = request.type.substring(4);
                             byPassCode = "loadPostit('"+description+"', undefined, undefined, '"+cssName+"');"
                         }
-                        console.log(request.type.substring(0, 4), request.type.substring(4));
+                        console.log(request, byPassCode, request.type.substring(0, 4), request.type.substring(4));
                         //Execute script
                         chrome.tabs.executeScript(tab.id, { code: byPassCode }, function() {
                             if (typeof backgroundPage !== 'undefined') { backgroundPage._GetNumberOfPostits(); }
                         });
                     } else {
-                        //console.log('create on new page for userId', userId);
-                        //chrome.tabs.update(tab.id, {url: "http://postitall.txusko.com/extension/?userId=" +userId}, function(info) {
                         chrome.tabs.update(tab.id, {url: dashUrl}, function(info) {
                             console.log(info);
                             //chrome.tabs.onUpdated.addListener(createPostItOnBg);
@@ -387,9 +365,7 @@ abm._OnMessage = function(request, sender, sendResponse) {
 
         case "dashboard":
             chrome.tabs.getSelected(null,function(tab) {
-                //chrome.tabs.create({url: "http://postitall.txusko.com/extension/?userId=" +userId});
-                //chrome.tabs.update(tab.id, {url: "http://postitall.txusko.com/extension/?userId=" +userId});
-                chrome.tabs.update(tab.id, {url: "dashboard.html?userId=" +userId});
+                chrome.tabs.update(tab.id, {url: "dashboard.html"});
             });
         break;
         case "delete":
@@ -444,16 +420,6 @@ abm._OnMessage = function(request, sender, sendResponse) {
             });
         break;
 
-        case "reload":
-            //Get selected tab
-            /*chrome.tabs.getSelected(null,function(tab) {
-                chrome.tabs.reload(tab.id);
-                if(abm.state)
-                    backgroundPage._GetNumberOfPostits();
-            });*/
-            // backgroundPage._ReloadAll();
-        break;
-
         case "refresh":
             chrome.tabs.getSelected(null,function(tab) {
                 chrome.tabs.executeScript(tab.id, { code: "refreshPostits();" }, function() {
@@ -464,20 +430,7 @@ abm._OnMessage = function(request, sender, sendResponse) {
         break;
     }
     return true;
-}
-
-functs.getUserId = function(callback) {
-    var userId = "";
-    //UserId
-    chrome.storage.sync.get('userId', function(items) {
-        userId = items.userId;
-        if (!userId) {
-            userId = functs.guid();
-            chrome.storage.sync.set({userId: userId});
-        }
-        callback(userId);
-    });
-}
+};
 
 //Format date
 functs.dateToYMD = function(date) {
@@ -490,14 +443,14 @@ functs.dateToYMD = function(date) {
     var retVal = '' + y + '-' + (m<=9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
     retVal += ' ' + (hh<=9 ? '0' + hh : hh) + ":" + (mm<=9 ? '0' + mm : mm) + ":" + (ss<=9 ? '0' + ss : ss);
     return retVal;
-}
+};
 
 functs.checkUrl = function(url) {
   if (url !== undefined && url.substring(0, 6) != "chrome" && url.indexOf("chrome.google.com/webstore") < 0) {
     return true;
   }
   return false;
-}
+};
 
 functs.getUrlParameter = function getUrlParameter(sParam, sPageURL) {
     if(sPageURL.indexOf('?') > 0 && sPageURL.indexOf(sParam) > 0) {
@@ -526,7 +479,7 @@ functs.guid = function() {
   }
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
     s4() + '-' + s4() + s4() + s4();
-}
+};
 
 //Return unique domain name
 functs.getUniqueId = function(url) {
@@ -544,13 +497,13 @@ functs.getUniqueId = function(url) {
         return domain;
     }
     return "";
-}
+};
 
 //Check for a valid domain
 functs.CheckIsValidDomain = function(domain) {
     var re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
     return domain.match(re);
-}
+};
 
 functs.delay = (function(){
   var timer = 0;
@@ -605,7 +558,7 @@ functs.versionCompare = function (v1, v2, options) {
     }
 
     return 0;
-}
+};
 
 abm.setIcon = function(state, changeEnableOption) {
   if(changeEnableOption === undefined) {
@@ -623,14 +576,14 @@ abm.setIcon = function(state, changeEnableOption) {
       chrome.browserAction.disable();
     //chrome.browserAction.setPopup({popup: ""});
   }
-}
+};
 
-//Adblock plus : translate function
+//Translate function
 translate = function(messageID, args) {
   return chrome.i18n.getMessage(messageID, args);
 };
 
-//Adblock plus : localizePage function
+//LocalizePage function
 localizePage = function() {
   //translate a page into the users language
   $("[i18n]:not(.i18n-replaced)").each(function() {
