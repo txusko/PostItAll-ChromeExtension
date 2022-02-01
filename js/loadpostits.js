@@ -26,7 +26,6 @@ function checkLoaded() {
 
 //Create a postit
 function loadPostit(description, posY, posX, customClass) {
-	//console.log('loadPostit',description, posX, posY);
 	var postit;
 	if(description === undefined) {
 		description = "";
@@ -58,19 +57,15 @@ function loadPostit(description, posY, posX, customClass) {
 		}
 	}
 
-	//console.log('Create a new postit', postit, description);
 	postit.onCreated = function() {
-		//console.log('onCreated');
 		lengthPostits();
 		getScreenShoot();
 	};
 	postit.onDelete = function() {
-		//console.log('onDelete');
 		lengthPostits();
 		getScreenShoot();
 	};
 	postit.onChange = function() {
-		//console.log('onChange');
 		getScreenShoot();
 	};
 
@@ -179,7 +174,6 @@ function refreshPostits() {
 function lengthPostits() {
 	var total = 0;
 	$.PostItAll.length(function(total) {
-		//console.log('total on loadpostits.js', total);
 		chrome.extension.sendMessage({
 		    type: 'badge',
 		    description: total
@@ -198,7 +192,6 @@ var delay = (function(){
 function getScreenShoot() {
 	delay(function(){
 		chrome.runtime.sendMessage({ type: 'screenshot' });
-		//console.log('Screenshot done!');
 	},1500);
 }
 

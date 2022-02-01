@@ -63,9 +63,6 @@ optionsPage._Init = function() {
 }
 
 optionsPage.settingsTab = function() {
-    //Autoload enabled
-    //console.log('optionsPage.settingsTab');
-
     //Add new demo-postit
     $('#idAddDemoPostit').click(function(e) {
         abm._Restore(function() {
@@ -105,8 +102,6 @@ optionsPage.settingsTab = function() {
                     var content = $(this).find('.PIAeditable').html();
                     var xTop = $(this).css('top');
                     var xLeft = $(this).css('left');
-                    //var xPosition = $(this).css('position');
-                    //console.log('content',content, xTop, xLeft);//, xPosition);
                     $(this).postitall('destroy');
                     $.PostItAll.new({
                         content: content,
@@ -159,7 +154,6 @@ optionsPage.settingsTab = function() {
             "postit": abm.postit
         }, function() {
             abm._Restore(function() {
-                console.log(abm.postit);
                 $.fn.postitall.defaults.height = abm.postit.height;
                 $.fn.postitall.defaults.minHeight = abm.postit.minHeight;
                 $.fn.postitall.defaults.width = abm.postit.width;
@@ -183,9 +177,7 @@ optionsPage.settingsTab = function() {
         chrome.storage.sync.set({
             autoloadEnabled: state
         }, function() {
-            abm._Restore(function() {
-                //console.log('aki1',abm.autoloadEnabled);
-            });
+            abm._Restore();
         });
     });
 
@@ -204,9 +196,7 @@ optionsPage.settingsTab = function() {
         chrome.storage.sync.set({
             trayIconMenu: state
         }, function() {
-            abm._Restore(function() {
-                //console.log('aki1',abm.autoloadEnabled);
-            });
+            abm._Restore();
         });
     });
 
@@ -250,7 +240,6 @@ optionsPage.settingsTab = function() {
     //Postit: note size
     $('#idNoteSize').change(function() {
         var noteSize = $(this).val();
-        //console.log('noteSize', noteSize);
         $('#idOptCusW').hide();
         $('#idOptCusH').hide();
         switch(noteSize) {
@@ -291,7 +280,6 @@ optionsPage.settingsTab = function() {
                 abm.postit.height = 400;
             break;
             case 'custom':
-                console.log(abm.postit.width, abm.postit.height);
                 $('#idOptCusW').show();
                 $('#idNoteWidth').val(abm.postit.width);
                 $('#idOptCusH').show();
@@ -369,7 +357,6 @@ optionsPage.settingsTab = function() {
     optionsPage.switchCheckBox("idRandomColor", "randomColor", abm.enabledFeatures.randomColor, function(state) {
         abm.enabledFeatures.randomColor = state;
         saveFeatures(function() {
-            console.log('Saved abm.enabledFeatures.randomColor',abm.enabledFeatures.randomColor);
             if(abm.enabledFeatures.randomColor) {
                 $('#idOptBgCol').hide();
                 $('#idOptTxCol').hide();
@@ -499,7 +486,6 @@ optionsPage.settingsTab = function() {
     if(abm.style.fontfamily)
         $('#idFontFamily').val(abm.style.fontfamily);
     $('#idFontFamily').change(function() {
-        console.log('fontfamily', $(this).val());
         abm.style.fontfamily = $(this).val();
         saveStyle(function() {
             console.log('Saved abm.style.fontfamily',abm.style.fontfamily);
@@ -509,7 +495,6 @@ optionsPage.settingsTab = function() {
     if(abm.style.fontsize)
         $('#idFontSize').val(abm.style.fontsize);
     $('#idFontSize').change(function() {
-        console.log('fontsize', $(this).val());
         abm.style.fontsize = $(this).val();
         saveStyle(function() {
             console.log('Saved abm.style.fontsize',abm.style.fontsize);
@@ -517,11 +502,9 @@ optionsPage.settingsTab = function() {
     });
 
     //Note class
-    //console.log(abm.cssclases.note);
     if(abm.cssclases.note)
         $('#idCustomStyle').val(abm.cssclases.note);
     $('#idCustomStyle').change(function() {
-        console.log('cssclases.note', $(this).val());
         abm.cssclases.note = $(this).val();
 
         chrome.storage.sync.set({
@@ -537,12 +520,6 @@ optionsPage.settingsTab = function() {
 }
 
 optionsPage.listTab = function() {
-
-    //UserId
-    var userId = "";
-    functs.getUserId(function(tmpUserId) {
-        userId = tmpUserId;
-    });
 
     //Note list
     var loadNoteList = function() {
@@ -562,9 +539,6 @@ optionsPage.listTab = function() {
                         return b.domain;
                     }
                 })
-                /*$(llista).each(function(a,b) {
-                    console.log(a,b);
-                });*/
                 return llista;
             };
 
@@ -602,7 +576,6 @@ optionsPage.listTab = function() {
                     var finded = false;
                     if(screenshots != null) {
                         for(var j = 0; j < screenshots.length; j++) {
-                            //console.log(screenshots[j].domain, functs.getUniqueId(note.domain), (screenshots[j].domain == functs.getUniqueId(note.domain)));
                             if(screenshots[j].domain == functs.getUniqueId(note.domain + note.page)) {
                                 finded = true;
                                 screenshots[j].notes.push(note);
@@ -617,13 +590,10 @@ optionsPage.listTab = function() {
                         var notes = [];
                         notes.push(note);
                         var page = { url: note.domain+note.page, domain: functs.getUniqueId(note.domain + note.page), img: defaultImg, notes: notes };
-                        console.log('default', note, page);
                         screenshots.push(page);
                     }
                 }
             }
-
-            //console.log('loadTable', loadTable);
 
             var addHighLightNote = function(index, url, params) {
                 return url + (url.indexOf('?') < 0 ? '?' : '&') + "highlightNote=" + index
@@ -793,11 +763,6 @@ optionsPage.listTab = function() {
             loadNoteList();
         });
     });
-
-    /*$('#idMyDashboard').click(function(e) {
-        window.open("http://postitall.txusko.com/extension?userId=" +userId);
-        e.preventDefault();
-    });*/
 
     $('#idDeleteNotes').click(function() {
         if(confirm(translate('delete_notesquestion'))) {
